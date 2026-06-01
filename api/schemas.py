@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Literal
+from typing import Any, Literal
 from pydantic import BaseModel, Field
 
 
@@ -140,6 +140,14 @@ class PredictResponse(BaseModel):
     scorecard_score: float | None = Field(
         None,
         description="Raw WOE-based credit score (scorecard model only)",
+    )
+    scorecard_breakdown: list[dict[str, Any]] | None = Field(
+        None,
+        description=(
+            "Per-feature score breakdown when scorecard model is active. "
+            "Each entry: {feature, raw_value, bin, woe, score_contribution, iv}. "
+            "Sorted by |score_contribution| descending."
+        ),
     )
 
 

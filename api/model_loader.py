@@ -136,6 +136,14 @@ class ModelLoader:
             return self._model.predict_credit_score(df)
         return None
 
+    def explain(self, X_raw) -> list | None:
+        """Return per-feature score breakdown for scorecard model, else None."""
+        if self._is_scorecard and hasattr(self._model, "explain"):
+            import pandas as pd
+            df = pd.DataFrame([X_raw]) if isinstance(X_raw, dict) else X_raw
+            return self._model.explain(df)
+        return None
+
     @property
     def is_scorecard(self) -> bool:
         return self._is_scorecard

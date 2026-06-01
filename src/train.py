@@ -185,7 +185,7 @@ def train_scorecard(data_version: str) -> str:
     fp = FeaturePipeline.load()
 
     model = ScorecardModel()
-    model.fit(X_train_raw, y_train, fp)
+    model.fit(X_train_raw, y_train, feature_pipeline=fp)
 
     y_prob_train = model.predict_proba(X_train_raw)
     y_prob_test = model.predict_proba(X_test_raw)

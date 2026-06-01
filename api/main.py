@@ -182,9 +182,10 @@ def predict(request: Request, payload: PredictRequest):
         proba = loader.predict_proba(df)
         default_prob = float(proba[0])
 
-        # Optional WOE-based score from scorecard model
+        # WOE-based score + per-feature breakdown (scorecard model only)
         sc_scores = loader.predict_credit_score(df)
         scorecard_score = float(sc_scores[0]) if sc_scores is not None else None
+        sc_breakdown = loader.explain(df) if loader.is_scorecard else None
 
         result = make_decision(default_prob)
         latency_ms = round((time.monotonic() - t0) * 1000, 2)
@@ -194,6 +195,7 @@ def predict(request: Request, payload: PredictRequest):
             model_version=loader.version,
             latency_ms=latency_ms,
             scorecard_score=scorecard_score,
+            scorecard_breakdown=sc_breakdown,
         )
 
         # Observability
