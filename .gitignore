@@ -1,0 +1,40 @@
+# Secrets
+.env
+
+# Large ML artifacts (tracked via MLflow / DVC)
+artifacts/feature_pipeline.joblib
+artifacts/scorecard_model.joblib
+artifacts/lr_scaler.joblib
+
+# Raw dataset (too large for git)
+data/raw/
+
+# Processed data (reproducible via pipeline)
+data/processed/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Docker volumes
+postgres_data/
+
+# MLflow local cache
+mlruns/
+mlartifacts/
+
+# Monitoring reports (generated at runtime)
+monitoring/reports/
+
+# Temp
+/tmp/
+*.tmp

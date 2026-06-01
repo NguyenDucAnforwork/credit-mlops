@@ -1,0 +1,28 @@
+groups:
+  - name: credit_scoring_alerts
+    rules:
+      - alert: HighErrorRate
+        expr: rate(api_errors_total[5m]) > 0.01
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Error rate above 1%"
+          description: "API error rate is {{ $value | humanizePercentage }} over last 5m"
+
+      - alert: HighLatencyP95
+        expr: histogram_quantile(0.95, rate(api_latency_seconds_bucket[5m])) > 0.5
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "p95 latency above 500ms"
+          description: "p95 latency is {{ $value | humanizeDuration }}"
+
+      - alert: APIDown
+        expr: up{job="credit_scoring_api"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Credit Scoring API is down"
