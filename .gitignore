@@ -22,6 +22,10 @@ dist/
 build/
 .eggs/
 
+# uv
+.venv/
+.python-version
+
 # Jupyter
 .ipynb_checkpoints/
 
