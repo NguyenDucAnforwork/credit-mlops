@@ -16,14 +16,14 @@ End-to-end credit default prediction system with MLflow experiment tracking, Fas
 │                     Inference Stack (Docker)                        │
 │                                                                     │
 │  ┌──────────┐  ┌──────────┐  ┌───────────┐  ┌────────────────┐    │
-│  │  FastAPI  │  │ Postgres │  │   Redis   │  │   Prometheus   │    │
-│  │  :8000   │→ │ audit log│  │rate limit │  │ + Alertmanager │    │
+│  │ Streamlit│  │  FastAPI  │  │ Postgres │  │   Prometheus   │    │
+│  │  UI :8501│→ │  :8000   │→ │ audit log│  │ + Alertmanager │    │
 │  └──────────┘  └──────────┘  └───────────┘  └────────┬───────┘    │
-│       ↑                                               ↓            │
-│  POST /predict                                  ┌──────────┐       │
-│  GET  /health                                   │  Grafana │       │
-│  GET  /metrics                                  │  :3000   │       │
-└─────────────────────────────────────────────────└──────────┘───────┘
+│                     ↑                                  ↓            │
+│               POST /predict                      ┌──────────┐      │
+│               GET  /health                       │  Grafana │      │
+│               GET  /metrics                      │  :3000   │      │
+└──────────────────────────────────────────────────└──────────┘──────┘
 ```
 
 ## Models
@@ -82,6 +82,9 @@ Wait ~30 seconds for the API to download the champion model from DagsHub.
 # Health check
 curl http://localhost:8000/health
 # → {"status":"ok","model_version":"credit_score_model@champion v3","uptime_s":...}
+
+# Streamlit UI (non-technical user interface)
+open http://localhost:8501
 
 # Grafana dashboard
 open http://localhost:3000   # admin / admin
@@ -223,6 +226,16 @@ Prometheus metrics in text format. Scraped automatically by Prometheus at `:9090
 
 ---
 
+## Services Overview
+
+| Service | URL | Purpose |
+|---------|-----|---------|
+| **Streamlit UI** | http://localhost:8501 | Non-technical user interface — fill form, get decision |
+| **FastAPI** | http://localhost:8000 | REST API for programmatic access |
+| **Grafana** | http://localhost:3000 | Monitoring dashboards (admin / admin) |
+| **Prometheus** | http://localhost:9090 | Metrics scraping |
+| **Alertmanager** | http://localhost:9093 | Alert routing |
+
 ## Monitoring
 
 | Service | URL | Credentials |
@@ -302,5 +315,8 @@ credit-mlops/
 ├── artifacts/
 │   └── fallback_model.joblib  # Disaster recovery fallback
 ├── Dockerfile
-└── docker-compose.yml      # 6 services: api, postgres, redis, prometheus, alertmanager, grafana
+├── ui/
+│   ├── streamlit_app.py    # Streamlit UI — form inputs, decision badge, score gauge, breakdown chart
+│   └── Dockerfile          # Lightweight container: streamlit + requests only (~37 packages)
+└── docker-compose.yml      # 7 services: ui, api, postgres, redis, prometheus, alertmanager, grafana
 ```

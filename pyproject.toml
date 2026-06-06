@@ -25,6 +25,9 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+ui = [
+    "streamlit==1.45.1",
+]
 dev = [
     "pytest==9.0.3",
     "httpx==0.28.1",
@@ -33,6 +36,9 @@ dev = [
 ]
 
 [dependency-groups]
+ui = [
+    "streamlit==1.45.1",
+]
 dev = [
     "pytest==9.0.3",
     "httpx==0.28.1",
