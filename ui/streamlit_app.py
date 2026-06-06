@@ -12,16 +12,51 @@ import streamlit as st
 
 API_URL = os.getenv("API_URL", "http://localhost:8000")
 
+# Winsorizer bounds learned from training data.
+# Values outside [lower, upper] are clipped to the nearest bound before scoring.
+# ⚠️  The effective range is very narrow — likely a unit mismatch in training data
+#     (balance may have been stored in a different scale). See reports/debug_workflows.md.
+BAL_LOAN_BOUNDS = (1_000_000, 1_001_790)
+BAL_ALL_BOUNDS  = (1_000_000, 1_002_770)
+
 # ── Page config ───────────────────────────────────────────────────────────────
 st.set_page_config(
     page_title="Credit Scoring",
     page_icon="💳",
     layout="wide",
-    initial_sidebar_state="collapsed",
+    initial_sidebar_state="expanded",
 )
 
 st.title("💳 Credit Scoring System")
-st.caption(f"Model API: `{API_URL}` · Scorecard WOE-LR with full interpretability")
+
+# ── Sidebar: model/source selector ───────────────────────────────────────────
+with st.sidebar:
+    st.header("Model Settings")
+    model_option = st.selectbox(
+        "Model alias",
+        ["scorecard", "champion", "challenger"],
+        index=0,
+        help=(
+            "**scorecard** — WOE + LR, full breakdown (recommended)\n\n"
+            "**champion** — XGBoost, highest AUC (0.822)\n\n"
+            "**challenger** — LR + SMOTE baseline"
+        ),
+    )
+    source_option = st.selectbox(
+        "Registry source",
+        ["auto", "local", "dagshub"],
+        index=0,
+        help=(
+            "**auto** — try DagsHub registry, fall back to local if offline\n\n"
+            "**local** — offline mode; uses local joblib artifact\n\n"
+            "**dagshub** — require DagsHub; returns 503 if unavailable"
+        ),
+    )
+    st.caption(f"Active: `{model_option}` · source: `{source_option}`")
+    st.divider()
+    st.caption(f"API: `{API_URL}`")
+
+st.caption(f"API: `{API_URL}` · model: `{model_option}` · source: `{source_option}`")
 
 # ── Input form ────────────────────────────────────────────────────────────────
 left, right = st.columns([1, 1], gap="large")
@@ -51,16 +86,33 @@ with left:
         enq_6m        = c2.number_input("Credit enquiries (6M)", min_value=0, max_value=50, value=3, step=1)
 
     with st.expander("💰 Outstanding Balances (VND)", expanded=True):
-        bal_loan = st.number_input(
+        bal_loan_raw = st.number_input(
             "Outstanding loan balance (current)",
             min_value=0, max_value=10_000_000_000, value=50_000_000,
             step=1_000_000, format="%d",
+            help=(
+                f"Model accepts {BAL_LOAN_BOUNDS[0]:,} – {BAL_LOAN_BOUNDS[1]:,} VND. "
+                "Values outside this range are clipped to the nearest bound before scoring."
+            ),
         )
-        bal_all = st.number_input(
+        bal_loan = int(max(BAL_LOAN_BOUNDS[0], min(BAL_LOAN_BOUNDS[1], bal_loan_raw)))
+        if bal_loan != bal_loan_raw:
+            bound = "maximum" if bal_loan_raw > BAL_LOAN_BOUNDS[1] else "minimum"
+            st.caption(f"⚠️ Clipped to model {bound}: **{bal_loan:,} VND**")
+
+        bal_all_raw = st.number_input(
             "Outstanding balance — all products (current)",
             min_value=0, max_value=10_000_000_000, value=55_000_000,
             step=1_000_000, format="%d",
+            help=(
+                f"Model accepts {BAL_ALL_BOUNDS[0]:,} – {BAL_ALL_BOUNDS[1]:,} VND. "
+                "Values outside this range are clipped to the nearest bound before scoring."
+            ),
         )
+        bal_all = int(max(BAL_ALL_BOUNDS[0], min(BAL_ALL_BOUNDS[1], bal_all_raw)))
+        if bal_all != bal_all_raw:
+            bound = "maximum" if bal_all_raw > BAL_ALL_BOUNDS[1] else "minimum"
+            st.caption(f"⚠️ Clipped to model {bound}: **{bal_all:,} VND**")
 
     submitted = st.button("🔍 Score this customer", type="primary", use_container_width=True)
 
@@ -91,7 +143,12 @@ with right:
 
     with st.spinner("Calling scoring API…"):
         try:
-            resp = requests.post(f"{API_URL}/predict", json=payload, timeout=30)
+            resp = requests.post(
+                f"{API_URL}/predict",
+                params={"model": model_option, "source": source_option},
+                json=payload,
+                timeout=30,
+            )
             resp.raise_for_status()
             data = resp.json()
         except requests.exceptions.ConnectionError:

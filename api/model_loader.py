@@ -4,27 +4,42 @@ Falls back to a local artifact if MLflow is unreachable (disaster recovery).
 
 Supported aliases: champion (XGBoost), challenger (LR), scorecard (WOE-LR).
 The active alias is controlled by MLFLOW_MODEL_ALIAS env var (default: champion).
+
+Per-request overrides: pass alias/source to get_loader(alias, source).
+  source="auto"    – try DagsHub registry first, fall back to local (default)
+  source="local"   – skip registry entirely, use local joblib artifacts
+  source="dagshub" – require registry; raise RuntimeError if unavailable
 """
 from __future__ import annotations
 
 import os
 import time
 from pathlib import Path
+from typing import Optional
 
 import joblib
 import mlflow
+import mlflow.artifacts
 import mlflow.pyfunc
+import mlflow.sklearn
 import numpy as np
 
 FALLBACK_MODEL_PATH = Path(__file__).parent.parent / "artifacts" / "fallback_model.joblib"
 FALLBACK_PIPELINE_PATH = Path(__file__).parent.parent / "artifacts" / "feature_pipeline.joblib"
 FALLBACK_SCORECARD_PATH = Path(__file__).parent.parent / "artifacts" / "scorecard_model.joblib"
 MODEL_NAME = "credit_score_model"
-RELOAD_INTERVAL_S = 60  # re-check alias every 60 s
+# Local fallback reload: instant (disk read).
+# Registry reload: 5-10s (DagsHub artifact download).
+# 60s interval caused every-minute 5-10s blocking spikes on requests that
+# happened to trigger the reload. 3600s (1h) is appropriate — aliases
+# don't change more often than that in practice.
+RELOAD_INTERVAL_S = 3600
 
 
 class ModelLoader:
-    def __init__(self) -> None:
+    def __init__(self, alias: Optional[str] = None, source: str = "auto") -> None:
+        self._alias_override = alias   # None → use MLFLOW_MODEL_ALIAS env var
+        self._source = source          # "auto" | "local" | "dagshub"
         self._model = None
         self._pipeline = None
         self._version: str = "not_loaded"
@@ -32,6 +47,8 @@ class ModelLoader:
         self._is_scorecard: bool = False  # True when serving the WOE scorecard
 
     def _active_alias(self) -> str:
+        if self._alias_override:
+            return self._alias_override
         return os.getenv("MLFLOW_MODEL_ALIAS", "champion")
 
     def _load_from_registry(self) -> bool:
@@ -42,20 +59,15 @@ class ModelLoader:
             client = mlflow.MlflowClient()
             mv = client.get_model_version_by_alias(MODEL_NAME, alias)
 
-            # Scorecard is a joblib artifact — download and load directly
+            # Scorecard: registered with sklearn flavor (no python_function flavor).
+            # mlflow.sklearn.load_model uses cloudpickle and returns the fitted
+            # ScorecardModel instance directly. mlflow.pyfunc.load_model would fail
+            # with "Model does not have the python_function flavor".
             if "scorecard" in (mv.tags or {}).get("model_type", "") or alias == "scorecard":
-                import mlflow.artifacts
-                sc_local = Path(mlflow.artifacts.download_artifacts(
-                    artifact_uri=f"models:/{MODEL_NAME}@{alias}",
-                    dst_path="/tmp/scorecard_download",
-                ))
-                # Try to find scorecard_model.joblib in downloaded artifacts
-                sc_files = list(sc_local.rglob("scorecard_model.joblib"))
-                if sc_files:
-                    self._model = joblib.load(sc_files[0])
-                    self._is_scorecard = True
-                    self._version = f"{MODEL_NAME}@{alias} v{mv.version} (scorecard)"
-                    return True
+                self._model = mlflow.sklearn.load_model(model_uri)
+                self._is_scorecard = True
+                self._version = f"{MODEL_NAME}@{alias} v{mv.version} (scorecard/dagshub)"
+                return True
 
             # Generic pyfunc load (XGBoost / LR)
             self._model = mlflow.pyfunc.load_model(model_uri)
@@ -66,9 +78,8 @@ class ModelLoader:
             print(f"[model_loader] registry unavailable: {exc}")
             return False
 
-    def _load_fallback(self) -> None:
+    def _load_fallback(self, strict: bool = False) -> None:
         alias = self._active_alias()
-        # Try scorecard fallback first if alias is scorecard
         if alias == "scorecard" and FALLBACK_SCORECARD_PATH.exists():
             self._model = joblib.load(FALLBACK_SCORECARD_PATH)
             self._is_scorecard = True
@@ -81,13 +92,23 @@ class ModelLoader:
             self._version = "fallback_local"
             print("[model_loader] using local fallback model")
         else:
-            # No fallback available — stay unloaded; health returns degraded
-            # API still starts so health/metrics endpoints remain reachable
-            print("[model_loader] WARNING: no fallback artifact — API degraded until registry available")
+            msg = f"No local fallback artifact for alias '{alias}'"
+            if strict:
+                raise RuntimeError(msg)
+            # Non-strict (auto mode): stay unloaded; health returns degraded
+            print(f"[model_loader] WARNING: {msg} — API degraded until registry available")
 
     def load(self) -> None:
-        if not self._load_from_registry():
-            self._load_fallback()
+        if self._source == "local":
+            self._load_fallback(strict=True)
+        elif self._source == "dagshub":
+            if not self._load_from_registry():
+                raise RuntimeError(
+                    f"DagsHub registry unavailable for alias '{self._active_alias()}'"
+                )
+        else:  # "auto"
+            if not self._load_from_registry():
+                self._load_fallback()
         if not self._is_scorecard:
             self._pipeline = self._load_pipeline()
         self._last_load = time.monotonic()
@@ -102,6 +123,33 @@ class ModelLoader:
         if time.monotonic() - self._last_load > RELOAD_INTERVAL_S:
             self.load()
 
+    def _fill_nulls_with_medians(self, df):
+        """
+        Pre-fill NaN with column medians from training data before running the
+        feature pipeline.
+
+        Why: KNNImputer finds neighbors using only non-null columns. For API
+        requests with 14/122 features, those neighbors are biased toward
+        whatever segment the 14 provided count-features select — typically
+        high-risk customers — inflating P(default) to ~0.93 on average.
+        Median imputation is neutral (population-level average) and removes
+        that bias. KNNImputer then has no NaN to process and returns instantly.
+        """
+        import pandas as pd
+        if self._pipeline is None or not hasattr(self._pipeline, "pipeline_"):
+            return df
+        knn = self._pipeline.pipeline_.named_steps.get("imputer")
+        if knn is None or not hasattr(knn, "_fit_X"):
+            return df
+        if not hasattr(self, "_train_medians"):
+            self._train_medians = np.nanmedian(knn._fit_X, axis=0)
+        arr = df.values.astype(float)
+        for j, med in enumerate(self._train_medians):
+            null_mask = np.isnan(arr[:, j])
+            if null_mask.any():
+                arr[null_mask, j] = med
+        return pd.DataFrame(arr, columns=df.columns, index=df.index)
+
     def predict_proba(self, X_raw) -> np.ndarray:
         """Transform raw features then predict. Returns array of default probabilities."""
         import pandas as pd
@@ -112,6 +160,10 @@ class ModelLoader:
         if self._is_scorecard and hasattr(self._model, "predict_proba"):
             return self._model.predict_proba(df)
 
+        # Pre-fill nulls with training medians so KNNImputer is a no-op.
+        # Avoids segment bias from KNN neighbor selection on partial inputs.
+        df = self._fill_nulls_with_medians(df)
+
         # Apply feature pipeline if available (XGBoost / LR path)
         if self._pipeline is not None:
             X_transformed = self._pipeline.transform(df)
@@ -121,11 +173,17 @@ class ModelLoader:
         if hasattr(self._model, "predict_proba"):
             return self._model.predict_proba(X_transformed)[:, 1]
         else:
-            # MLflow pyfunc model
+            # MLflow pyfunc — detect and handle 2-column probability DataFrame.
+            # MLflow 3.x sklearn/xgboost pyfunc can return DataFrame shaped (n, 2)
+            # with columns [P(class=0), P(class=1)].  Taking index [0] would give
+            # P(no_default) instead of P(default).  Always take the last column.
             import pandas as _pd
             preds = self._model.predict(_pd.DataFrame(X_transformed))
             if hasattr(preds, "values"):
-                preds = preds.values.flatten()
+                arr = preds.values
+                if arr.ndim == 2 and arr.shape[1] >= 2:
+                    return arr[:, -1].astype(float)   # P(class=last) = P(default)
+                preds = arr.flatten()
             return np.array(preds, dtype=float)
 
     def predict_credit_score(self, X_raw) -> np.ndarray | None:
@@ -144,6 +202,19 @@ class ModelLoader:
             return self._model.explain(df)
         return None
 
+    def predict_all(self, X_raw) -> dict:
+        """
+        Single-pass predict for scorecard model (KNN runs once instead of 3×).
+        Returns {"proba": ..., "credit_score": ..., "breakdown": ...}.
+        Falls back to separate calls for non-scorecard models.
+        """
+        import pandas as pd
+        df = pd.DataFrame([X_raw]) if isinstance(X_raw, dict) else X_raw
+        if self._is_scorecard and hasattr(self._model, "predict_all"):
+            return self._model.predict_all(df)
+        proba = self.predict_proba(df)
+        return {"proba": proba, "credit_score": None, "breakdown": None}
+
     @property
     def is_scorecard(self) -> bool:
         return self._is_scorecard
@@ -157,9 +228,26 @@ class ModelLoader:
         return self._model is not None
 
 
-# Module-level singleton
+# Default singleton — serves requests with no explicit model/source override
 _loader = ModelLoader()
 
+# Cache for per-request model overrides keyed by (alias, source)
+_loader_cache: dict[tuple[str, str], ModelLoader] = {}
 
-def get_loader() -> ModelLoader:
-    return _loader
+
+def get_loader(alias: Optional[str] = None, source: str = "auto") -> ModelLoader:
+    """Return a ModelLoader for the given alias+source combination.
+
+    Called with no args → returns the default singleton (uses MLFLOW_MODEL_ALIAS env var).
+    Called with alias/source → creates and caches a dedicated loader on first call.
+    Raises RuntimeError for source="dagshub" when the registry is unavailable.
+    """
+    if alias is None and source == "auto":
+        return _loader
+    resolved_alias = alias or os.getenv("MLFLOW_MODEL_ALIAS", "champion")
+    key = (resolved_alias, source)
+    if key not in _loader_cache:
+        ldr = ModelLoader(alias=resolved_alias, source=source)
+        ldr.load()  # may raise RuntimeError for source="dagshub"
+        _loader_cache[key] = ldr
+    return _loader_cache[key]

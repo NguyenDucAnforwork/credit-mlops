@@ -4,13 +4,16 @@ Endpoints: GET /health  POST /predict  GET /metrics
 """
 from __future__ import annotations
 
+import json
 import os
 import time
 from contextlib import asynccontextmanager
 
 import pandas as pd
 from dotenv import load_dotenv
-from fastapi import FastAPI, HTTPException, Request, status
+from typing import Optional
+
+from fastapi import FastAPI, HTTPException, Query, Request, status
 from fastapi.responses import PlainTextResponse
 from prometheus_client import Counter, Histogram, generate_latest, CONTENT_TYPE_LATEST
 from sqlalchemy import create_engine, text
@@ -82,7 +85,7 @@ def _audit_log(features: dict, result: dict) -> None:
                     (:features, :default_probability, :credit_score, :risk_band,
                      :decision, :model_version, :latency_ms)
             """), {
-                "features": str(features),
+                "features": json.dumps(features),
                 "default_probability": result["default_probability"],
                 "credit_score": result["credit_score"],
                 "risk_band": result["risk_band"],
@@ -160,14 +163,22 @@ def health():
 
 
 @app.post("/predict", response_model=PredictResponse)
-def predict(request: Request, payload: PredictRequest):
+def predict(
+    request: Request,
+    payload: PredictRequest,
+    model: Optional[str] = Query(None, description="Model alias: champion, challenger, scorecard"),
+    source: str = Query("auto", description="Source: auto | local | dagshub"),
+):
     client_ip = request.client.host if request.client else "unknown"
 
     if not _check_rate_limit(client_ip):
         REQUEST_COUNT.labels(endpoint="/predict", status="429").inc()
         raise HTTPException(status_code=429, detail="Rate limit exceeded (100 req/min)")
 
-    loader = get_loader()
+    try:
+        loader = get_loader(alias=model, source=source)
+    except RuntimeError as exc:
+        raise HTTPException(status_code=503, detail=str(exc))
     loader.maybe_reload()
 
     if not loader.is_loaded:
@@ -179,13 +190,11 @@ def predict(request: Request, payload: PredictRequest):
         features = payload.model_dump(exclude_none=False)
         df = pd.DataFrame([features])
 
-        proba = loader.predict_proba(df)
-        default_prob = float(proba[0])
-
-        # WOE-based score + per-feature breakdown (scorecard model only)
-        sc_scores = loader.predict_credit_score(df)
-        scorecard_score = float(sc_scores[0]) if sc_scores is not None else None
-        sc_breakdown = loader.explain(df) if loader.is_scorecard else None
+        # Single pass: KNN runs once regardless of model type
+        all_results = loader.predict_all(df)
+        default_prob    = float(all_results["proba"][0])
+        scorecard_score = float(all_results["credit_score"][0]) if all_results["credit_score"] is not None else None
+        sc_breakdown    = all_results["breakdown"]
 
         result = make_decision(default_prob)
         latency_ms = round((time.monotonic() - t0) * 1000, 2)

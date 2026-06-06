@@ -297,43 +297,83 @@ class ScorecardModel:
     def predict_credit_score(self, X_raw) -> np.ndarray:
         """Return per-row WOE-based credit scores."""
         df = self._get_df(X_raw)
+        return self._credit_score_from_df(df)
+
+    def explain(self, X_raw) -> list[dict[str, Any]]:
+        """Per-feature score breakdown. Returns list sorted by abs(contribution)."""
+        df = self._get_df(X_raw)
+        return self._explain_from_df(df)
+
+    def predict_all(self, X_raw) -> dict:
+        """
+        Single-pass predict: runs KNNImputer once and returns all three outputs.
+        Use this instead of calling predict_proba / predict_credit_score / explain
+        separately — avoids running the expensive feature pipeline 3 times.
+        """
+        df = self._get_df(X_raw)           # KNN runs exactly once
+        woe_per_feature = {
+            col: self.binners_[col].transform(df[col].values)
+            for col in self._active_features_
+        }
+        X_woe = np.column_stack([woe_per_feature[c] for c in self._active_features_])
+        proba = self.lr_.predict_proba(X_woe)[:, 1]
+
+        betas  = dict(zip(self._active_features_, self.lr_.coef_[0]))
+        alpha  = float(self.lr_.intercept_[0])
+        n      = len(self._active_features_)
+        iv_map = dict(zip(self.iv_table_["feature"], self.iv_table_["IV"]))
+
+        scores    = np.zeros(len(df))
+        breakdown = []
+        for col in self._active_features_:
+            woe_vals = woe_per_feature[col]
+            contribs = np.array([_credit_score_formula(betas[col], alpha, w, n=n) for w in woe_vals])
+            scores  += contribs
+            breakdown.append({
+                "feature":            col,
+                "raw_value":          round(float(df[col].iloc[0]), 4),
+                "bin":                self.binners_[col].bin_label(float(df[col].iloc[0])),
+                "woe":                round(float(woe_vals[0]), 4),
+                "score_contribution": round(float(contribs[0]), 2),
+                "iv":                 round(iv_map.get(col, 0.0), 4),
+            })
+
+        return {
+            "proba":        proba,
+            "credit_score": scores,
+            "breakdown":    sorted(breakdown, key=lambda x: abs(x["score_contribution"]), reverse=True),
+        }
+
+    # ── Internal helpers (accept pre-transformed df to avoid redundant KNN) ──
+
+    def _credit_score_from_df(self, df: pd.DataFrame) -> np.ndarray:
         betas = dict(zip(self._active_features_, self.lr_.coef_[0]))
         alpha = float(self.lr_.intercept_[0])
-        n = len(self._active_features_)
+        n     = len(self._active_features_)
         scores = np.zeros(len(df))
         for col in self._active_features_:
             woe_vals = self.binners_[col].transform(df[col].values)
-            scores += np.array([
-                _credit_score_formula(betas[col], alpha, w, n=n) for w in woe_vals
-            ])
+            scores += np.array([_credit_score_formula(betas[col], alpha, w, n=n) for w in woe_vals])
         return scores
 
-    def explain(self, X_raw) -> list[dict[str, Any]]:
-        """
-        Per-feature score breakdown for one observation.
-        Returns list sorted by absolute score contribution (largest first).
-        Useful for regulatory transparency: shows exactly why a score is X.
-        """
-        df = self._get_df(X_raw)
-        betas = dict(zip(self._active_features_, self.lr_.coef_[0]))
-        alpha = float(self.lr_.intercept_[0])
-        n = len(self._active_features_)
+    def _explain_from_df(self, df: pd.DataFrame) -> list[dict[str, Any]]:
+        betas  = dict(zip(self._active_features_, self.lr_.coef_[0]))
+        alpha  = float(self.lr_.intercept_[0])
+        n      = len(self._active_features_)
         iv_map = dict(zip(self.iv_table_["feature"], self.iv_table_["IV"]))
-
         breakdown = []
         for col in self._active_features_:
             raw_val = float(df[col].iloc[0])
             woe_val = float(self.binners_[col].transform(df[col].values)[0])
-            score = _credit_score_formula(betas[col], alpha, woe_val, n=n)
+            score   = _credit_score_formula(betas[col], alpha, woe_val, n=n)
             breakdown.append({
-                "feature": col,
-                "raw_value": round(raw_val, 4),
-                "bin": self.binners_[col].bin_label(raw_val),
-                "woe": round(woe_val, 4),
+                "feature":            col,
+                "raw_value":          round(raw_val, 4),
+                "bin":                self.binners_[col].bin_label(raw_val),
+                "woe":                round(woe_val, 4),
                 "score_contribution": round(score, 2),
-                "iv": round(iv_map.get(col, 0.0), 4),
+                "iv":                 round(iv_map.get(col, 0.0), 4),
             })
-
         return sorted(breakdown, key=lambda x: abs(x["score_contribution"]), reverse=True)
 
     # ── Persistence ──────────────────────────────────────────────────────────

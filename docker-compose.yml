@@ -66,6 +66,8 @@ services:
       - "8501:8501"
     environment:
       API_URL: http://api:8000   # resolved via Docker internal network
+    volumes:
+      - ./ui:/app   # bind mount: edit ui/ locally, changes visible immediately
     depends_on:
       api:
         condition: service_healthy

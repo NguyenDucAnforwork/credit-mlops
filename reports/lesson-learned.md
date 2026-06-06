@@ -118,3 +118,102 @@ Never apply SMOTE to test data or to raw data with missing values.
 **Impact:** Using n=12 with 18 features shifts all score values (the offset term `alpha/n` changes). The score scale would be inconsistent.
 
 **Fix:** Set `N_FEATURES = len(SCORECARD_NBINS)` (18) and pass it to `_credit_score_formula`. The 300-850 range is preserved since it's controlled by `thres_score=600` and `pdo=-50`.
+
+---
+
+## 12. KNN imputer causes segment bias for partial-input requests
+
+**Context:** The production API accepts partial requests — only 14 of 122 features are provided; the rest are null.
+
+**What happens:** `KNNImputer(n_neighbors=20)` selects the 20 nearest training neighbors using only non-null columns. With 14 count-based features (number of loans, enquiries), it selects neighbors from a specific demographic: thin-file customers (1 loan, 0 enquiries). In the Vietnamese credit market, thin-file customers are genuinely higher-risk than thick-file customers. The imputed values reflect that segment's balance/behaviour patterns, not the population average.
+
+**Effect on models:**
+- **Scorecard:** Handles this correctly — its features are the same 14 count-based ones. The score is based on what's actually provided.
+- **XGBoost:** Fails — it was trained on fully-populated 122-feature rows. Median-filled values for 108 features violate the feature interactions the model learned. Even after switching from KNN-imputed to median-imputed, XGBoost inverts predictions (low-risk → P=0.999, high-risk → P=0.64).
+
+**Rule:** XGBoost (and tree models trained on dense features) should NEVER be used for inference on sparse/partial inputs. Use the scorecard for partial-input workflows. Only use XGBoost when most features are populated.
+
+---
+
+## 13. Inference optimization: `predict_all()` pattern to deduplicate pipeline runs
+
+**Problem:** If `predict_proba()`, `predict_credit_score()`, and `explain()` are separate methods that each call the feature pipeline internally, a single API request runs the pipeline N times. With KNNImputer, each pipeline run is O(n_train × n_features) ≈ 300 ms.
+
+**Pattern:** Add a `predict_all()` method that runs the pipeline once and computes all outputs from the same transformed DataFrame:
+
+```python
+def predict_all(self, X_raw) -> dict:
+    df = self._get_df(X_raw)          # KNN runs exactly once
+    woe_per_feature = {col: binner.transform(df[col]) for col, binner in ...}
+    proba = self.lr_.predict_proba(woe_matrix)[:, 1]
+    scores = sum(contributions)
+    breakdown = [per_feature_details...]
+    return {"proba": proba, "credit_score": scores, "breakdown": breakdown}
+```
+
+**Result:** 3221 ms → 288 ms (11× speedup). This pattern applies to any multi-output inference pipeline where computing outputs from the same transformed representation is cheap.
+
+**Rule:** Any inference endpoint that computes multiple outputs from one model should go through a single-pass method. Never expose separate `predict_X()` methods that each re-run a shared expensive step.
+
+---
+
+## 14. Prometheus histogram + Grafana panel type — know the difference between raw and pre-bucketed data
+
+**Core distinction:**
+- Grafana `"type": "histogram"` — designed for **raw data**. Grafana bins the data itself. Correct for: `[0.12, 0.34, 0.78, ...]` (list of raw values).
+- Prometheus `Histogram` metric — data is **already pre-bucketed** server-side with `le` labels. Grafana should NOT re-bucket it.
+
+**Double-bucketing failure:** When you attach a Prometheus pre-bucketed histogram (`_bucket` metric with `le` labels) to a Grafana `"histogram"` panel, Grafana sees count values like `2, 2, 3` and runs them through its internal bucketer. X-axis becomes count ranges `[0–1], [1–2], [2–3]` instead of probability values `[0.1, 0.2, ..., 1.0]`.
+
+**Correct panel types for Prometheus histograms:**
+- `"barchart"` + Reduce transformation: shows one bar per `le` value (CDF shape). Best for low-traffic systems where you want a static snapshot.
+- `"heatmap"` + "Time series buckets": shows how the distribution changes over time. Best for production traffic monitoring.
+- `"timeseries"` with `histogram_quantile()`: shows P50/P90/P99 lines over time. Best for SLA monitoring.
+
+**Never use `"type": "histogram"` for Prometheus `_bucket` metrics.**
+
+**Heatmap is the best panel type for P(default) distribution in production MLOps:**
+- X=time, Y=probability bucket, Color=density → drift is visible at a glance
+- A horizontal color band that shifts upward over weeks means the model is outputting higher risk scores than before (potential data drift or population shift)
+- `calculate: false` is the critical flag — without it, Grafana re-buckets already-bucketed data
+- `filterValues.le: 1e-9` hides empty cells, making rare-bucket colors more salient
+- `scheme: "YlOrRd"` (yellow→orange→red) is intuitive: brighter = more predictions clustered there
+
+**The correct full configuration for a Prometheus histogram heatmap:**
+```json
+{
+  "type": "heatmap",
+  "targets": [{
+    "expr": "sum(increase(prediction_default_prob_bucket[$__rate_interval])) by (le)",
+    "legendFormat": "{{le}}"
+  }],
+  "options": {
+    "calculate": false,
+    "color": {"scheme": "YlOrRd", "mode": "scheme", "scale": "exponential", "exponent": 0.5},
+    "filterValues": {"le": 1e-9},
+    "yAxis": {"label": "P(default)", "decimals": 1}
+  }
+}
+```
+
+---
+
+## 15. GridSearchCV `make_scorer` returns NaN in sklearn 1.8
+
+**Bug:** Custom `make_scorer(roc_auc_score, needs_proba=True)` returns `cv_gini=nan` for all hyperparameter combinations in sklearn 1.8.
+
+**Root cause:** sklearn 1.8 changed internal validation in `make_scorer`. The custom scorer silently fails (returns NaN) when the estimator's `predict_proba` output shape doesn't match internal expectations — likely related to WOE-encoded features producing outputs that trip a new validation check.
+
+**Fix:** Use the built-in string scorer instead of a custom scorer object:
+
+```python
+# Wrong (NaN in sklearn 1.8)
+scorer = make_scorer(roc_auc_score, needs_proba=True)
+gs = GridSearchCV(lr, param_grid, scoring=scorer, cv=5)
+
+# Correct
+gs = GridSearchCV(lr, param_grid, scoring='roc_auc', cv=5)
+cv_gini = 2 * gs.best_score_ - 1   # convert AUC to Gini
+```
+
+**Lesson:** Prefer built-in sklearn scorer strings over `make_scorer` when the built-in exists. They are version-stable and tested. Custom scorers can silently fail on version upgrades.
