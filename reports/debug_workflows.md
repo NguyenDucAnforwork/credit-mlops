@@ -223,3 +223,27 @@ api:
 **Fix:** Re-ran only the XGBoost training step (`train_xgboost`), which creates a new run and uploads the model artifact. Then set the `champion` alias on the new version.
 
 **Lesson:** For large artifact uploads (XGBoost model ~20MB), use `--timeout` flags or split the upload from the training step. Monitor artifact upload completion before marking a run as done.
+
+---
+
+## 11. sklearn version mismatch — `'LogisticRegression' object has no attribute 'multi_class'`
+
+**Symptom:** `POST /predict` returns `{"detail":"'LogisticRegression' object has no attribute 'multi_class'"}` after `docker compose up`.
+
+**Root cause:** Training ran on sklearn 1.8.0 (local conda env). The Docker image used `scikit-learn==1.7.2` from `requirements.txt`. sklearn 1.8.0 removed the `multi_class` attribute from the fitted `LogisticRegression` state. When Docker's sklearn 1.7.2 loads the pickled model artifact, its internal `predict_proba` tries to access `self.multi_class` → `AttributeError`.
+
+This is a forward-compatibility pickle issue: a model serialised by a newer sklearn version cannot always be deserialised by an older one if attributes were removed between versions.
+
+**Fix:** Pin `requirements.txt` to match the training environment exactly:
+
+```
+# Before (wrong)
+scikit-learn==1.7.2
+
+# After (correct)
+scikit-learn==1.8.0
+```
+
+Then rebuild the API image: `docker compose build api && docker compose up -d api`
+
+**Prevention:** After every training run, sync `requirements.txt` with `pip freeze | grep scikit-learn`. Treat model artifacts and their training environment as a matched pair — mismatched sklearn versions are a silent source of predict failures at serving time.

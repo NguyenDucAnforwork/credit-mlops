@@ -20,7 +20,7 @@ prometheus-client==0.24.1
 evidently==0.7.21
 
 joblib==1.5.3
-scipy==1.17.1
+scipy==1.15.3
 
 pytest==9.0.3
 httpx==0.28.1
