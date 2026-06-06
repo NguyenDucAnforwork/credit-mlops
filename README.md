@@ -32,7 +32,7 @@ End-to-end credit default prediction system with MLflow experiment tracking, Fas
 |-------|-------|-----|------|-------|
 | `champion` | XGBoost | 0.8223 | 0.6446 | Default serving model |
 | `challenger` | LR + SMOTE | 0.8229 | 0.6459 | Baseline comparison |
-| `scorecard` | WOE + LR | ~0.81+ | ~0.63+ | Full interpretability |
+| `scorecard` | WOE + LR | 0.8102 | 0.6205 | Full interpretability |
 
 Switch serving model via env var — no code change needed:
 ```bash
@@ -93,14 +93,21 @@ open http://localhost:3000   # admin / admin
 
 ### Requirements
 
-- Python **3.12.x** (3.13 has no numpy 1.26.4 pip wheel)
-- Conda or venv
+- Python **3.12.x** (3.13 has no numpy 1.26.4 wheel)
+- [uv](https://docs.astral.sh/uv/) (fast Python package manager)
 
 ```bash
-conda create -n credit python=3.12 -y
-conda activate credit
-pip install -r requirements.txt
+# Install uv (once)
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Create venv + install all deps from lockfile in seconds
+uv sync
+
+# Activate (optional — uv run works without it)
+source .venv/bin/activate
 ```
+
+> **Why uv?** Resolves 161 packages in 52 ms and installs them in ~1 s (vs pip's minutes). The `uv.lock` file pins every transitive dependency for bit-for-bit reproducibility. Docker uses the same lockfile via `uv sync --frozen`.
 
 ### Run the training pipeline
 
@@ -121,7 +128,7 @@ Pipeline steps:
 ### Run tests
 
 ```bash
-pytest tests/ -v
+uv run pytest tests/ -v
 # 62 tests: unit, integration, chaos (fault injection)
 ```
 
@@ -131,9 +138,24 @@ pytest tests/ -v
 # Start dependencies
 docker compose up -d postgres redis
 
-# Run API
-cd api && uvicorn main:app --reload --port 8000
+# Run API with auto-reload (code changes in api/ take effect immediately)
+cd api && uv run uvicorn main:app --reload --port 8000
 ```
+
+### Hot-reload in Docker (bind mounts)
+
+The `docker-compose.yml` mounts `./api` and `./src` into the running container.
+Edit any file in `api/` or `src/` locally and uvicorn's `--reload` picks it up — no
+rebuild needed:
+
+```bash
+docker compose up -d  # start once
+# ... edit api/main.py or src/scorecard.py ...
+# changes are live within ~1 s, no docker compose build required
+```
+
+> `--reload` is enabled in the container CMD. To disable in production, remove it or
+> override `CMD` in `docker-compose.yml`.
 
 ---
 

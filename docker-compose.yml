@@ -37,6 +37,10 @@ services:
     ports:
       - "8000:8000"
     env_file: .env
+    volumes:
+      - ./api:/app/api   # bind mount: edit api/ locally, changes visible immediately
+      - ./src:/app/src   # bind mount: edit src/ locally, changes visible immediately
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER:-credituser}:${POSTGRES_PASSWORD:-creditpass}@postgres:5432/${POSTGRES_DB:-creditdb}
       REDIS_URL: redis://redis:6379/0
