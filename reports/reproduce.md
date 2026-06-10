@@ -83,7 +83,8 @@ print('Saved fallback model')
 
 ```bash
 pytest tests/ -v
-# Expected: 54+ passed, 0 failed
+# Expected: 76 passed, 0 failed
+# New: tests/test_deployment.py — 14 tests for champion/challenger deployment
 ```
 
 ## 6. Start the full stack with Docker Compose
@@ -92,15 +93,18 @@ pytest tests/ -v
 docker compose up -d --build
 ```
 
-Services started:
+Services started (8 always-on + nannyml_monitor profile = 9 total):
 | Service | Port | Description |
 |---------|------|-------------|
 | api | 8000 | FastAPI inference service |
+| streamlit | 8501 | Streamlit UI |
 | postgres | 5432 | Audit log database |
 | redis | 6379 | Rate limiting |
 | prometheus | 9090 | Metrics scraping |
 | alertmanager | 9093 | Alert routing |
 | grafana | 3000 | Dashboards (admin/admin) |
+| pushgateway | 9091 | Receives NannyML batch metrics (Pushgateway) |
+| nannyml_monitor | — | NannyML drift/performance monitor (monitoring profile) |
 
 ## 7. Verify the stack
 
@@ -125,26 +129,127 @@ curl http://localhost:8000/metrics
 open http://localhost:3000  # admin / admin
 ```
 
-## 8. Run drift detection
+## 8. Champion/Challenger deployment workflow
+
+### Promote a model version to an alias
+```bash
+# Promote version 8 to champion alias (e.g. after a successful challenger evaluation)
+python scripts/promote_model.py --version 8 --alias champion --promoted-by alice
+
+# Promote scorecard version 7 to the scorecard alias
+python scripts/promote_model.py --version 7 --alias scorecard --promoted-by ci-bot
+```
+The script sets the MLflow registry alias and logs a `promote` event to the `model_deployment_events` Postgres table.
+
+### Roll back to the previous version
+```bash
+# Roll back champion to whatever version it was before the last promotion
+python scripts/rollback_model.py --alias champion --reason "P95 latency spike" --triggered-by oncall
+```
+Reads the last `promote` record from `model_deployment_events`, reverses the alias, logs a `rollback` event.
+
+### Check deployment history
+```bash
+# View all promote/rollback events
+psql postgresql://credituser:creditpass@localhost:5432/creditdb \
+  -c "SELECT ts, event_type, alias, from_version, to_version, triggered_by, reason FROM model_deployment_events ORDER BY ts DESC LIMIT 10;"
+```
+
+### API model/source override (per-request, no restart needed)
+```bash
+# Use scorecard model, force DagsHub source
+curl -X POST "http://localhost:8000/predict?model=scorecard&source=dagshub" \
+  -H "Content-Type: application/json" \
+  -d '{"NUMBER_OF_LOANS": 3.0}'
+
+# Use local fallback model
+curl -X POST "http://localhost:8000/predict?model=champion&source=local" \
+  -H "Content-Type: application/json" \
+  -d '{"NUMBER_OF_LOANS": 3.0}'
+```
+
+## 9. Run NannyML performance estimation and drift detection
+
+NannyML estimates model AUC **without ground truth labels** using CBPE (Confidence-Based Performance Estimation). Useful because credit default labels arrive 3–12 months after the loan decision.
+
+### Seed production data (first run only)
+The monitor requires ≥50 predictions in the `predictions` table:
+```bash
+python -c "
+import requests, random
+for _ in range(60):
+    r = requests.post('http://localhost:8000/predict', json={
+        'NUMBER_OF_LOANS': random.uniform(1, 10),
+        'ENQUIRIES_3M': random.uniform(0, 8),
+        'NUMBER_OF_CREDIT_CARDS': random.uniform(0, 5),
+    })
+    assert r.status_code == 200
+print('Seeded 60 predictions')
+"
+```
+
+### Run the monitor
+```bash
+docker compose --profile monitoring run --rm nannyml_monitor
+```
+
+Expected output:
+```
+[nannyml] building reference predictions (runs once, then cached)…
+[nannyml] reference saved: monitoring/nannyml_reference.csv  (4000 rows, base_rate=0.182)
+[nannyml] production: 60 rows  2026-06-06 → 2026-06-06
+[nannyml] chunk_size=50  (1 chunks)
+[nannyml] CBPE → AUC≈0.7968  F1≈0.6687  alerts=0
+[nannyml] drift → 12 features drifted: [...]
+[nannyml] metrics pushed to http://pushgateway:9091
+[nannyml] done  estimated_auc=0.7968  drifted=12
+```
+
+### Outputs
+- `reports/nannyml/latest_summary.json` — machine-readable summary
+- `reports/nannyml/cbpe_YYYY-MM-DD.html` — CBPE performance chart
+- `reports/nannyml/drift_YYYY-MM-DD.html` — univariate drift chart
+- Prometheus Pushgateway metrics at `http://localhost:9091` — visible in Grafana NannyML row
+
+### Force reference rebuild (after model version change)
+```bash
+rm monitoring/nannyml_reference.csv
+docker compose --profile monitoring run --rm nannyml_monitor
+```
+
+## 10. Run drift detection (legacy)
 
 ```bash
 python monitoring/drift_report.py
 # Outputs: monitoring/reports/drift_report.html + drift_summary.json
 ```
 
-## 9. Switching the serving model
+## 11. Switching the serving model
 
-Set the `MLFLOW_MODEL_ALIAS` environment variable before starting the API:
-
+### Option A: Environment variable (persistent, requires restart)
 ```bash
 # Serve scorecard model
-MLFLOW_MODEL_ALIAS=scorecard docker compose up -d --build api
+echo "MLFLOW_MODEL_ALIAS=scorecard" >> .env
+docker compose up -d api   # no rebuild needed — bind-mounted code
 
 # Serve XGBoost champion (default)
-MLFLOW_MODEL_ALIAS=champion docker compose up -d --build api
+echo "MLFLOW_MODEL_ALIAS=champion" >> .env
+docker compose up -d api
+```
 
-# Serve LR challenger
-MLFLOW_MODEL_ALIAS=challenger docker compose up -d --build api
+### Option B: Per-request query parameter (instant, no restart)
+```bash
+# Use challenger model for this request only
+curl -X POST "http://localhost:8000/predict?model=challenger&source=auto" \
+  -H "Content-Type: application/json" -d '{"NUMBER_OF_LOANS": 3.0}'
+```
+The Streamlit UI exposes the same `model` and `source` dropdowns in the sidebar.
+
+### Option C: Promote/rollback scripts (registry-level, persists across restarts)
+```bash
+python scripts/promote_model.py --version 8 --alias champion --promoted-by alice
+# API picks up the new version within RELOAD_INTERVAL_S (3600s) via background thread
+# Or restart api to reload immediately: docker compose restart api
 ```
 
 ## Common issues
@@ -156,3 +261,10 @@ MLFLOW_MODEL_ALIAS=challenger docker compose up -d --build api
 | API health = `degraded` | Champion alias not set in registry, or `artifacts/fallback_model.joblib` missing |
 | Docker build fails on `psycopg2` | Install `gcc libpq-dev` (already in Dockerfile) |
 | MLflow auth fails | Use `MLFLOW_TRACKING_PASSWORD` (not `DAGSHUB_TOKEN`) |
+| `nannyml_monitor` exits with "insufficient production data" | Need ≥50 rows in `predictions` table — seed with the snippet in Step 9 |
+| NannyML CBPE estimated AUC is None | NannyML `to_df()` uses MultiIndex `('roc_auc', 'value')` — sub-column is `'value'` not `'estimated'` |
+| Pushgateway metrics missing in Grafana | Check `honor_labels: true` in `monitoring/prometheus.yml`; verify Prometheus scraping pushgateway:9091 |
+| NannyML Grafana row shows "No data" after a reboot | Pushgateway lost in-memory metrics on restart. Persistence is now enabled (`--persistence.file` + `pushgateway_data` volume + `user: root`); if metrics are still gone, just re-run the monitor (Step 9). Verify it survives: `docker compose restart pushgateway && curl -s localhost:9091/metrics \| grep nannyml` |
+| Pushgateway store file not written (`permission denied` in logs) | Image runs as `nobody` (UID 65534) but the named volume is root-owned. `user: root` on the pushgateway service (already in compose) fixes it |
+| `nannyml_reference.csv` shows stale model metrics | Delete the file and re-run the monitor to regenerate with the current model version |
+| Docker disk full during nannyml build | Run `docker builder prune -f` — freed 14.6 GB of build cache in our case |

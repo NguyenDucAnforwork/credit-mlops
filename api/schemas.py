@@ -149,6 +149,8 @@ class PredictResponse(BaseModel):
             "Sorted by |score_contribution| descending."
         ),
     )
+    model_alias: str = Field(default="unknown", description="MLflow alias serving this request")
+    trace_id: str = Field(default="", description="UUID4 per-request trace identifier")
 
 
 class HealthResponse(BaseModel):

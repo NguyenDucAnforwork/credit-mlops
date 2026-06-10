@@ -23,8 +23,16 @@ def _make_app_with_mock_model():
     mock_loader = MagicMock()
     mock_loader.is_loaded = True
     mock_loader.version = "mock_model@champion v1"
+    mock_loader.active_alias = "champion"  # PredictResponse.model_alias must be a str
     mock_loader.predict_proba.return_value = np.array([0.3])
     mock_loader.maybe_reload.return_value = None
+    # The endpoint calls predict_all() (single-pass). Derive it from predict_proba
+    # so tests that set predict_proba.return_value still control the probability.
+    mock_loader.predict_all.side_effect = lambda df: {
+        "proba": mock_loader.predict_proba.return_value,
+        "credit_score": None,
+        "breakdown": None,
+    }
 
     loader_mod._loader = mock_loader
     return main_mod.app, mock_loader

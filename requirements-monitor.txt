@@ -1,0 +1,13 @@
+# Dependencies for the NannyML monitoring service.
+# Kept separate from requirements.txt so the API image stays lean.
+# nannyml pulls in lightgbm + plotly; not needed for the inference path.
+pandas==2.2.3
+numpy==1.26.4
+scikit-learn==1.8.0
+sqlalchemy==2.0.50
+psycopg2-binary==2.9.12
+python-dotenv==1.1.0
+prometheus-client==0.24.1
+joblib==1.5.3
+scipy==1.15.3
+nannyml>=0.13,<1.0

@@ -1,29 +1,41 @@
 # Credit Scoring MLOps
 
-End-to-end credit default prediction system with MLflow experiment tracking, FastAPI inference service, and full observability stack.
+End-to-end credit default prediction system with MLflow experiment tracking, FastAPI inference service, champion/challenger deployment scripts, and a full observability stack including NannyML model monitoring.
 
 ## Architecture
 
 ```
-┌─────────────────────────────────────────────────────────────────────┐
-│                        Training Pipeline                            │
-│  raw CSV → data_prep → feature_fit → train (LR/XGB/Scorecard)      │
-│                          ↓ MLflow (DagsHub)                         │
-│              champion / challenger / scorecard aliases              │
-└─────────────────────────┬───────────────────────────────────────────┘
-                          │ model artifacts
-┌─────────────────────────▼───────────────────────────────────────────┐
-│                     Inference Stack (Docker)                        │
-│                                                                     │
-│  ┌──────────┐  ┌──────────┐  ┌───────────┐  ┌────────────────┐    │
-│  │ Streamlit│  │  FastAPI  │  │ Postgres │  │   Prometheus   │    │
-│  │  UI :8501│→ │  :8000   │→ │ audit log│  │ + Alertmanager │    │
-│  └──────────┘  └──────────┘  └───────────┘  └────────┬───────┘    │
-│                     ↑                                  ↓            │
-│               POST /predict                      ┌──────────┐      │
-│               GET  /health                       │  Grafana │      │
-│               GET  /metrics                      │  :3000   │      │
-└──────────────────────────────────────────────────└──────────┘──────┘
+┌──────────────────────────────────────────────────────────────────────────┐
+│                          Training Pipeline                               │
+│   raw CSV → data_prep → feature_fit → train (LR/XGB/Scorecard)          │
+│                            ↓ MLflow (DagsHub)                            │
+│               champion / challenger / scorecard aliases                  │
+└──────────────────────────┬───────────────────────────────────────────────┘
+                           │ model artifacts
+┌──────────────────────────▼───────────────────────────────────────────────┐
+│                      Inference Stack (Docker)                            │
+│                                                                          │
+│  ┌──────────┐   ┌──────────────────────────────┐   ┌─────────────────┐  │
+│  │Streamlit │   │          FastAPI :8000        │   │    Postgres     │  │
+│  │  UI:8501 │──▶│  /predict  /health  /metrics  │──▶│  predictions   │  │
+│  └──────────┘   │  model_loader (bg thread)     │   │  deploy_events │  │
+│                 └──────────────┬─────────────────┘   └─────────────────┘  │
+│                                │ Prometheus metrics                       │
+│  ┌─────────────────────────────▼──────────────────────────────────────┐  │
+│  │                     Observability Layer                            │  │
+│  │                                                                    │  │
+│  │  Prometheus:9090 ──scrapes──▶ /metrics                            │  │
+│  │  Pushgateway:9091 ◀── push ── NannyML monitor (batch, profile)    │  │
+│  │  Alertmanager:9093 ◀─ rules ─ alert_rules.yml (5 rules)          │  │
+│  │  Grafana:3000 ─────────────▶ 3-row dashboard                      │  │
+│  └────────────────────────────────────────────────────────────────────┘  │
+│                                                                          │
+│  ┌──────────────────────────────────────────────────────────────────┐    │
+│  │               Champion/Challenger Deployment                     │    │
+│  │   scripts/promote_model.py  ──▶  MLflow registry + audit log    │    │
+│  │   scripts/rollback_model.py ──▶  MLflow registry + audit log    │    │
+│  └──────────────────────────────────────────────────────────────────┘    │
+└──────────────────────────────────────────────────────────────────────────┘
 ```
 
 ## Models
@@ -35,6 +47,7 @@ End-to-end credit default prediction system with MLflow experiment tracking, Fas
 | `scorecard` | WOE + LR | 0.8102 | 0.6205 | Full interpretability |
 
 Switch serving model via env var — no code change needed:
+
 ```bash
 MLFLOW_MODEL_ALIAS=scorecard docker compose up -d --build api
 ```
@@ -90,6 +103,12 @@ open http://localhost:8501
 open http://localhost:3000   # admin / admin
 ```
 
+The Streamlit UI now supports two scoring paths:
+- `Mode A` — load a real row from `data/processed/test_data.csv` and send all non-null features for reproducible demo scenarios
+- `Mode B` — manually enter the original 14 headline features for quick partial-input scoring
+
+In Docker, `ui` reads Mode-A rows through the read-only `./data:/data:ro` mount and `TEST_DATA_PATH=/data/processed/test_data.csv`.
+
 ---
 
 ## Local Development Setup
@@ -132,7 +151,7 @@ Pipeline steps:
 
 ```bash
 uv run pytest tests/ -v
-# 62 tests: unit, integration, chaos (fault injection)
+# 76 tests: unit, integration, chaos, deployment
 ```
 
 ### Run the API locally
@@ -188,6 +207,8 @@ Response (XGBoost champion):
   "risk_band": "Good",
   "decision": "approve",
   "model_version": "credit_score_model@champion v3",
+  "model_alias": "champion",
+  "trace_id": "a3f1c2d4-8b7e-4e2a-9f0d-1c2b3a4e5f60",
   "latency_ms": 45.2,
   "scorecard_score": null,
   "scorecard_breakdown": null
@@ -202,6 +223,8 @@ Response (scorecard model — includes interpretability):
   "risk_band": "Good",
   "decision": "approve",
   "model_version": "credit_score_model@scorecard v5",
+  "model_alias": "scorecard",
+  "trace_id": "b7d2e1f3-9c8a-4f3b-a1e2-2d3c4b5a6e71",
   "latency_ms": 38.1,
   "scorecard_score": 623.4,
   "scorecard_breakdown": [
@@ -212,46 +235,158 @@ Response (scorecard model — includes interpretability):
 }
 ```
 
+**New response fields:**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `model_alias` | `str` | The MLflow alias that served this request (e.g. `"champion"`) |
+| `trace_id` | `str` | UUID4 per-request identifier for distributed tracing and log correlation |
+
 ### Decision thresholds
 
 | default_probability | decision |
 |---------------------|----------|
 | < 0.45 | approve |
 | 0.45 – 0.69 | manual_review |
-| ≥ 0.70 | reject |
+| >= 0.70 | reject |
 
 ### `GET /metrics`
 
 Prometheus metrics in text format. Scraped automatically by Prometheus at `:9090`.
 
+**Model reload metrics** (emitted by `model_loader.py`):
+
+| Metric | Type | Labels | Description |
+|--------|------|--------|-------------|
+| `model_reload_success_total` | counter | `alias`, `source` | Successful background reloads |
+| `model_reload_failure_total` | counter | `alias`, `error_type` | Failed background reloads |
+| `model_version_info` | gauge | `alias`, `version`, `source` | Set to 1 for the currently active version |
+| `feature_missing_rate` | histogram | — | Fraction of null features per request (0–1) |
+
 ---
 
 ## Services Overview
 
-| Service | URL | Purpose |
-|---------|-----|---------|
-| **Streamlit UI** | http://localhost:8501 | Non-technical user interface — fill form, get decision |
-| **FastAPI** | http://localhost:8000 | REST API for programmatic access |
-| **Grafana** | http://localhost:3000 | Monitoring dashboards (admin / admin) |
-| **Prometheus** | http://localhost:9090 | Metrics scraping |
-| **Alertmanager** | http://localhost:9093 | Alert routing |
+| Service | Port | Purpose |
+|---------|------|---------|
+| `api` | 8000 | FastAPI inference |
+| `ui` | 8501 | Streamlit UI |
+| `postgres` | 5432 | `predictions` table + `model_deployment_events` audit log |
+| `redis` | 6379 | Rate limiting |
+| `prometheus` | 9090 | Metrics scraping (API + Pushgateway) |
+| `pushgateway` | 9091 | Receives NannyML batch metrics |
+| `alertmanager` | 9093 | Alert routing |
+| `grafana` | 3000 | Dashboards |
+| `nannyml_monitor` | — | Profile: `monitoring`; one-shot CBPE + drift batch job |
+
+---
+
+## Champion/Challenger Deployment
+
+Alias promotion and rollback are managed by two scripts in `scripts/`. Every operation is recorded in the `model_deployment_events` Postgres table (columns: `event_type`, `model_name`, `alias`, `from_version`, `to_version`, `triggered_by`, `reason`, `ts`).
+
+### Promote a model version
+
+Promotes a registered model version to the given alias and logs a `promote` event:
+
+```bash
+python scripts/promote_model.py --version 8 --alias champion --promoted-by alice
+```
+
+The API's background reload thread picks up the new version within `RELOAD_INTERVAL_S` seconds (default: 60) without blocking in-flight requests.
+
+### Roll back to the previous version
+
+Reads the last `promote` event from `model_deployment_events`, reverses the alias to the previous version, and logs a `rollback` event:
+
+```bash
+python scripts/rollback_model.py --alias champion --reason "P95 latency spike" --triggered-by oncall
+```
+
+### Model switching via environment variable
+
+For switching between the three registered aliases without a registry promotion:
+
+```bash
+# Switch to the scorecard (interpretable) model
+echo "MLFLOW_MODEL_ALIAS=scorecard" >> .env
+docker compose up -d --build api
+
+# One-liner without modifying .env
+MLFLOW_MODEL_ALIAS=scorecard docker compose up -d api
+```
+
+### Non-blocking background reload
+
+`ModelLoader.maybe_reload()` spawns a daemon thread so reloads never block in-flight requests. Health checks return `200` throughout a reload, even if the reload fails. The active alias and version are always reflected in the `model_version_info` gauge.
+
+---
 
 ## Monitoring
+
+### Observability services
 
 | Service | URL | Credentials |
 |---------|-----|-------------|
 | Grafana | http://localhost:3000 | admin / admin |
 | Prometheus | http://localhost:9090 | — |
+| Pushgateway | http://localhost:9091 | — |
 | Alertmanager | http://localhost:9093 | — |
 
-Grafana dashboard includes: request rate, P95 latency, error rate, score distribution, decision breakdown.
+### Grafana dashboard (3 rows)
 
-Alert rules (in `monitoring/alert_rules.yml`):
-- **HighErrorRate**: error rate > 1% for 5 min
-- **HighLatencyP95**: P95 latency > 500ms for 5 min
-- **APIDown**: API unreachable for 1 min
+**Row 1 — System Observability**
+Request Rate, Latency p50/p95, Error Rate, Model Reload Events
 
-### Drift detection
+**Row 2 — Model Observability**
+Probability Heatmap, Decision Distribution, Feature Missing Rate, Reload Success/Failure, Active Model Version
+
+**Row 3 — NannyML: Estimated Performance and Drift**
+Estimated AUC (CBPE), Estimated F1, Drifted Features count, Last NannyML Run timestamp
+
+### Alert rules
+
+Five rules defined in `monitoring/alert_rules.yml`:
+
+| Rule | Condition |
+|------|-----------|
+| `HighErrorRate` | Error rate > 1% for 5 min |
+| `HighLatencyP95` | P95 latency > 500 ms for 5 min |
+| `APIDown` | API unreachable for 1 min |
+| `ModelReloadFailing` | `model_reload_failure_total` increases in any 15 min window |
+| `HighFeatureMissingRate` | p90 missing-feature fraction > 70% for 5 min |
+
+### NannyML monitoring (CBPE + drift)
+
+`monitoring/nannyml_monitor.py` is a batch job that estimates model performance without ground-truth labels and detects feature drift.
+
+**What it does:**
+1. Builds reference predictions from `data/processed/test_data.csv` (4000 rows), cached as `monitoring/nannyml_reference.csv`
+2. Pulls live predictions from the Postgres `predictions` table
+3. Runs **CBPE** (Confidence-Based Performance Estimation) to estimate AUC and F1 without ground truth
+4. Runs univariate drift (Jensen-Shannon divergence) and multivariate drift (PCA reconstruction error)
+5. Pushes 5 metrics to Prometheus Pushgateway
+6. Saves HTML reports and `reports/nannyml/latest_summary.json`
+
+**Pushgateway metrics:**
+
+| Metric | Description |
+|--------|-------------|
+| `nannyml_estimated_auc` | CBPE-estimated AUC for the current window |
+| `nannyml_estimated_f1` | CBPE-estimated F1 for the current window |
+| `nannyml_drifted_features_count` | Number of features flagged as drifted |
+| `nannyml_production_rows` | Number of production rows analysed |
+| `nannyml_last_run_timestamp_seconds` | Unix timestamp of the last completed run |
+
+**Run the monitor:**
+
+```bash
+docker compose --profile monitoring run --rm nannyml_monitor
+```
+
+The `nannyml_monitor` service uses a separate `requirements-monitor.txt` (nannyml, lightgbm, etc.) so the main API image stays lean (2.96 GB unchanged).
+
+### Evidently drift reports
 
 ```bash
 python monitoring/drift_report.py
@@ -260,63 +395,62 @@ python monitoring/drift_report.py
 
 ---
 
-## Model Switching
-
-The serving model is controlled by `MLFLOW_MODEL_ALIAS` (default: `champion`).
-
-```bash
-# Switch to scorecard (interpretable)
-echo "MLFLOW_MODEL_ALIAS=scorecard" >> .env
-docker compose up -d --build api
-
-# Or one-liner without modifying .env
-MLFLOW_MODEL_ALIAS=scorecard docker compose up -d api
-```
-
-To promote a new model version to champion:
-
-```bash
-python -c "
-from src.register import promote_to_champion
-promote_to_champion('<version_number>')
-"
-# API reloads within 60s (RELOAD_INTERVAL_S)
-```
-
----
-
 ## Project Structure
 
 ```
 credit-mlops/
-├── src/                    # Training pipeline
-│   ├── data_prep.py        # Data loading, versioning, train/test split
-│   ├── features.py         # sklearn Pipeline: KNN impute → Winsorize → GroupPCA → RFE
-│   ├── scorecard.py        # WOE binning + LR scorecard + explain()
-│   ├── train.py            # MLflow runs: LR, XGBoost, Scorecard
-│   ├── register.py         # Model registry aliases
-│   └── pipeline.py         # DAG orchestrator
-├── api/                    # Inference service
-│   ├── main.py             # FastAPI app + Prometheus metrics + audit log
-│   ├── model_loader.py     # MLflow registry loader with fallback
-│   ├── decision.py         # Threshold logic, score-to-band mapping
-│   └── schemas.py          # Pydantic request/response models
+├── src/
+│   ├── data_prep.py          # Data loading, versioning, train/test split
+│   ├── features.py           # sklearn Pipeline: KNN impute → Winsorize → GroupPCA → RFE
+│   ├── scorecard.py          # WOE binning + LR scorecard + explain()
+│   ├── train.py              # MLflow runs: LR, XGBoost, Scorecard
+│   ├── evaluate.py           # Evaluation utilities
+│   ├── register.py           # Model registry aliases
+│   └── pipeline.py           # DAG orchestrator
+├── api/
+│   ├── main.py               # FastAPI app + FEATURE_MISSING_RATE + deployment_events + trace_id + model_alias
+│   ├── model_loader.py       # MLflow registry loader, background reload thread, MODEL_RELOAD metrics, MODEL_INFO gauge
+│   ├── decision.py           # Threshold logic, score-to-band mapping
+│   └── schemas.py            # Pydantic models; PredictResponse includes model_alias + trace_id
+├── scripts/
+│   ├── promote_model.py      # Promote a version to an alias; logs promote event to Postgres
+│   └── rollback_model.py     # Reverse last promotion; logs rollback event to Postgres
 ├── monitoring/
-│   ├── prometheus.yml       # Scrape config
-│   ├── alert_rules.yml      # HighErrorRate, HighLatency, APIDown
-│   ├── drift_report.py      # Evidently drift detection
-│   └── grafana/            # Dashboard + datasource provisioning
-├── tests/                  # 62 tests: unit, integration, chaos
+│   ├── prometheus.yml        # Scrapes API + Pushgateway (honor_labels=true)
+│   ├── alert_rules.yml       # 5 alert rules
+│   ├── drift_report.py       # Evidently HTML drift reports
+│   ├── nannyml_monitor.py    # CBPE + univariate/multivariate drift → Pushgateway
+│   ├── Dockerfile.monitor    # Separate image using requirements-monitor.txt
+│   └── grafana/
+│       ├── dashboard.json    # 3-row dashboard (System / Model / NannyML)
+│       ├── datasource.yml
+│       └── dashboards.yml
+├── tests/
+│   ├── test_api.py
+│   ├── test_chaos.py
+│   ├── test_contract.py
+│   ├── test_decision.py
+│   ├── test_deployment.py    # 14 tests: non-blocking reload, trace_id, model_alias, metrics, promote/rollback
+│   ├── test_evaluate.py
+│   ├── test_features.py
+│   └── test_scorecard.py
 ├── reports/
-│   ├── reproduce.md         # Step-by-step reproduction guide
-│   ├── results.md           # Model comparison & metrics summary
-│   ├── debug_workflows.md   # Environment & deployment bugs + fixes
-│   └── lesson-learned.md    # Training/evaluation logic lessons
-├── artifacts/
-│   └── fallback_model.joblib  # Disaster recovery fallback
-├── Dockerfile
+│   ├── nannyml/              # latest_summary.json + HTML report per run
+│   ├── reproduce.md
+│   ├── results.md
+│   ├── debug_workflows.md
+│   └── lesson-learned.md
 ├── ui/
-│   ├── streamlit_app.py    # Streamlit UI — form inputs, decision badge, score gauge, breakdown chart
-│   └── Dockerfile          # Lightweight container: streamlit + requests only (~37 packages)
-└── docker-compose.yml      # 7 services: ui, api, postgres, redis, prometheus, alertmanager, grafana
+│   ├── streamlit_app.py      # Model alias + source dropdowns in sidebar
+│   └── Dockerfile
+├── artifacts/
+│   ├── fallback_model.joblib
+│   ├── scorecard_model.joblib
+│   └── feature_pipeline.joblib
+├── Dockerfile
+├── docker-compose.yml        # 9 services + nannyml_monitor profile
+├── requirements.txt
+├── requirements-monitor.txt  # nannyml, lightgbm etc. — monitor image only
+├── pyproject.toml
+└── uv.lock
 ```

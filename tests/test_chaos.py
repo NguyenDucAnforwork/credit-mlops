@@ -31,8 +31,12 @@ class TestModelLoaderFallback:
 
         with patch.object(loader_mod, "FALLBACK_MODEL_PATH", fallback_path), \
              patch.object(loader_mod, "FALLBACK_PIPELINE_PATH", missing_pipeline), \
+             patch("mlflow.MlflowClient", side_effect=Exception("MLflow down")), \
              patch("mlflow.pyfunc.load_model", side_effect=Exception("MLflow down")):
-            loader = loader_mod.ModelLoader()
+            # Explicit non-scorecard alias: main.py's load_dotenv() can leak
+            # MLFLOW_MODEL_ALIAS=scorecard into the env, which would otherwise
+            # route this to the scorecard fallback. We want the generic path.
+            loader = loader_mod.ModelLoader(alias="champion")
             loader.load()
             assert loader.version == "fallback_local"
             assert loader.is_loaded
@@ -42,8 +46,10 @@ class TestModelLoaderFallback:
         import model_loader as loader_mod
 
         with patch.object(loader_mod, "FALLBACK_MODEL_PATH", tmp_path / "nonexistent.joblib"), \
+             patch.object(loader_mod, "FALLBACK_SCORECARD_PATH", tmp_path / "nonexistent_sc.joblib"), \
+             patch("mlflow.MlflowClient", side_effect=Exception("MLflow down")), \
              patch("mlflow.pyfunc.load_model", side_effect=Exception("MLflow down")):
-            loader = loader_mod.ModelLoader()
+            loader = loader_mod.ModelLoader(alias="champion")
             loader.load()  # must not raise
             assert not loader.is_loaded
             assert loader.version == "not_loaded"

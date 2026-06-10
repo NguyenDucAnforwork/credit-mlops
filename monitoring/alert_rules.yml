@@ -26,3 +26,21 @@ groups:
           severity: critical
         annotations:
           summary: "Credit Scoring API is down"
+
+      - alert: ModelReloadFailing
+        expr: increase(model_reload_failure_total[15m]) > 0
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Model background reload is failing"
+          description: "Registry reload failed {{ $value }} times in last 15m — API is serving a stale model"
+
+      - alert: HighFeatureMissingRate
+        expr: histogram_quantile(0.9, rate(feature_missing_rate_bucket[10m])) > 0.7
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High feature missing rate (>70% null at p90)"
+          description: "p90 feature missing rate is {{ $value | humanizePercentage }} — check upstream data pipeline"

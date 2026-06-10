@@ -14,6 +14,8 @@ from __future__ import annotations
 
 import os
 import time
+import threading
+import uuid
 from pathlib import Path
 from typing import Optional
 
@@ -23,11 +25,27 @@ import mlflow.artifacts
 import mlflow.pyfunc
 import mlflow.sklearn
 import numpy as np
+from prometheus_client import Counter, Gauge
 
 FALLBACK_MODEL_PATH = Path(__file__).parent.parent / "artifacts" / "fallback_model.joblib"
 FALLBACK_PIPELINE_PATH = Path(__file__).parent.parent / "artifacts" / "feature_pipeline.joblib"
 FALLBACK_SCORECARD_PATH = Path(__file__).parent.parent / "artifacts" / "scorecard_model.joblib"
 MODEL_NAME = "credit_score_model"
+
+MODEL_RELOAD_SUCCESS = Counter(
+    "model_reload_success_total", "Successful background model reloads",
+    ["alias", "source"],
+)
+MODEL_RELOAD_FAILURE = Counter(
+    "model_reload_failure_total", "Failed background model reloads",
+    ["alias", "error_type"],
+)
+MODEL_INFO = Gauge(
+    "model_version_info", "Currently loaded model (1=active)",
+    ["alias", "version", "source"],
+)
+_global_reload_lock = threading.Lock()
+
 # Local fallback reload: instant (disk read).
 # Registry reload: 5-10s (DagsHub artifact download).
 # 60s interval caused every-minute 5-10s blocking spikes on requests that
@@ -45,6 +63,7 @@ class ModelLoader:
         self._version: str = "not_loaded"
         self._last_load: float = 0.0
         self._is_scorecard: bool = False  # True when serving the WOE scorecard
+        self._reload_thread: threading.Thread | None = None
 
     def _active_alias(self) -> str:
         if self._alias_override:
@@ -113,15 +132,51 @@ class ModelLoader:
             self._pipeline = self._load_pipeline()
         self._last_load = time.monotonic()
         print(f"[model_loader] loaded: {self._version}")
+        MODEL_INFO.labels(alias=self._active_alias(), version=self._version, source=self._source).set(1)
 
     def _load_pipeline(self):
         if FALLBACK_PIPELINE_PATH.exists():
-            return joblib.load(FALLBACK_PIPELINE_PATH)
+            # Route through FeaturePipeline.load so the artifact unpickles
+            # regardless of cwd / sys.path (module-alias shim).
+            from features import FeaturePipeline
+            return FeaturePipeline.load(FALLBACK_PIPELINE_PATH)
         return None
 
     def maybe_reload(self) -> None:
+        """Spawn a background reload thread — never blocks the request path."""
         if time.monotonic() - self._last_load > RELOAD_INTERVAL_S:
-            self.load()
+            if self._reload_thread is None or not self._reload_thread.is_alive():
+                self._reload_thread = threading.Thread(
+                    target=self._reload_safe, daemon=True,
+                    name=f"model-reload-{self._active_alias()}",
+                )
+                self._reload_thread.start()
+
+    def _reload_safe(self) -> None:
+        """Load new model in background; atomically swap attributes when ready."""
+        alias = self._active_alias()
+        if not _global_reload_lock.acquire(blocking=False):
+            return  # another reload already in progress
+        try:
+            tmp = ModelLoader(alias=self._alias_override, source=self._source)
+            tmp.load()
+            # Atomic swap — in-flight requests complete with old model
+            self._model      = tmp._model
+            self._pipeline   = tmp._pipeline
+            self._version    = tmp._version
+            self._is_scorecard = tmp._is_scorecard
+            if hasattr(tmp, "_train_medians"):
+                self._train_medians = tmp._train_medians
+            self._last_load = time.monotonic()
+            MODEL_RELOAD_SUCCESS.labels(alias=alias, source=self._source).inc()
+            MODEL_INFO.labels(alias=alias, version=self._version, source=self._source).set(1)
+            print(f"[model_loader] background reload OK: {self._version}")
+        except Exception as exc:
+            self._last_load = time.monotonic()  # reset timer — avoid tight retry loop
+            MODEL_RELOAD_FAILURE.labels(alias=alias, error_type=type(exc).__name__).inc()
+            print(f"[model_loader] background reload FAILED: {exc}")
+        finally:
+            _global_reload_lock.release()
 
     def _fill_nulls_with_medians(self, df):
         """
@@ -214,6 +269,10 @@ class ModelLoader:
             return self._model.predict_all(df)
         proba = self.predict_proba(df)
         return {"proba": proba, "credit_score": None, "breakdown": None}
+
+    @property
+    def active_alias(self) -> str:
+        return self._active_alias()
 
     @property
     def is_scorecard(self) -> bool:

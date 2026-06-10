@@ -1,0 +1,25 @@
+{
+  "run_ts": "2026-06-10T10:55:25.190479Z",
+  "production_rows": 442,
+  "chunk_size": 63,
+  "cbpe_estimated_auc": NaN,
+  "cbpe_estimated_f1": 1.0,
+  "cbpe_n_alerts": 0,
+  "drifted_features_count": 13,
+  "drifted_features": [
+    "CREDIT_CARD_MONTH_SINCE_30DPD",
+    "CREDIT_CARD_NUMBER_OF_LATE_PAYMENT",
+    "ENQUIRIES_3M",
+    "ENQUIRIES_6M",
+    "NUMBER_OF_CREDIT_CARDS",
+    "NUMBER_OF_LOANS",
+    "NUMBER_OF_RELATIONSHIP",
+    "NUM_NEW_LOAN_TAKEN_3M",
+    "NUM_NEW_LOAN_TAKEN_6M",
+    "OUTSTANDING_BAL_ALL_CURRENT",
+    "OUTSTANDING_BAL_LOAN_CURRENT",
+    "SHORT_TERM_COUNT_BANK",
+    "SHORT_TERM_COUNT_NON_BANK"
+  ],
+  "reconstruction_error": 1.4816406429451474
+}

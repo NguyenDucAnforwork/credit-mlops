@@ -198,6 +198,67 @@ def predict_all(self, X_raw) -> dict:
 
 ---
 
+## 16. NannyML CBPE — reference data must contain model predictions, not just features
+
+**Context:** Integrating NannyML for performance estimation without ground truth labels.
+
+**Rule:** NannyML's `CBPE.fit()` requires three columns on the reference dataset: `y_true` (actual labels), `y_pred_proba` (model probability), and `y_pred` (binary prediction). A feature-only CSV (like `reference.csv`) will cause a `KeyError` at fit time.
+
+**Why:** CBPE fits an internal calibration curve that maps predicted probabilities to true positive rates. Without `y_true` on the reference data, it has no ground truth to calibrate against.
+
+**Implementation pattern for this project:**
+1. Use `test_data.csv` as the NannyML reference (it has `label` column).
+2. Run the local scorecard model once on those 4,000 rows to generate `y_pred_proba` / `y_pred`.
+3. Cache as `monitoring/nannyml_reference.csv`. Delete this file whenever the model version is promoted — stale reference predictions cause miscalibrated CBPE estimates.
+
+**The calibration consistency requirement:**
+CBPE's probability calibration is only valid if the reference predictions and production predictions come from the **same model version**. If you promote a new model but forget to delete `nannyml_reference.csv`, CBPE will estimate AUC using a calibration curve fitted on the old model's probabilities — and the estimate will be silently wrong.
+
+---
+
+## 17. NannyML vs Evidently — when to use which
+
+**Core distinction:**
+
+| | Evidently | NannyML |
+|---|---|---|
+| Detects feature drift | ✅ | ✅ |
+| Detects data quality issues | ✅ | partial |
+| Estimates performance without labels | ❌ | ✅ CBPE |
+| Requires ground truth | for performance metrics | only for reference fit |
+| Best for | per-request HTML reports | weekly batch monitoring |
+| Output | HTML reports | Prometheus + HTML |
+
+**Rule for this project:**
+- **Evidently** → use for ad-hoc drift reports triggered by the data team; output is a standalone HTML file suitable for sharing.
+- **NannyML** → use for weekly automated monitoring; output feeds into Grafana via Pushgateway for trend visibility.
+
+**Why NannyML is uniquely valuable for credit scoring:**
+Ground truth labels (did the customer default?) arrive 3–12 months after the loan decision. Any monitoring system that requires labels cannot give an early warning. CBPE provides a statistically principled AUC estimate from probabilities alone — the earliest possible signal that the model is degrading, before a single confirmed default arrives.
+
+**CBPE's one hard requirement:** The model's probabilities must be well-calibrated. WOE logistic regression (our scorecard) is naturally well-calibrated. XGBoost and tree ensembles are typically not — they need isotonic or Platt scaling before CBPE will give reliable estimates.
+
+---
+
+## 18. Batch monitoring jobs need Pushgateway, not a scrape endpoint
+
+**Problem:** NannyML runs as a one-shot Docker Compose job (`run --rm`). Prometheus scrapes running HTTP endpoints. A container that exits cannot serve `/metrics`.
+
+**Solution — Pushgateway pattern:**
+```
+Batch job → push_to_gateway(url, job="nannyml_monitor", registry=reg)
+           ↑
+Prometheus scrapes pushgateway with honor_labels=true
+           ↓
+Grafana queries nannyml_estimated_auc{job="nannyml_monitor"}
+```
+
+**`honor_labels: true` in prometheus.yml is not optional.** Without it, Prometheus overwrites the pushed `job` label with `"pushgateway"`, and all NannyML Grafana panels stop matching.
+
+**Stale metric risk:** Pushgateway never expires values. Add a `nannyml_last_run_timestamp_seconds` gauge to every push. In Grafana, show this as "Last NannyML Run" — if it's > 7 days old, the team knows to trigger a manual run.
+
+---
+
 ## 15. GridSearchCV `make_scorer` returns NaN in sklearn 1.8
 
 **Bug:** Custom `make_scorer(roc_auc_score, needs_proba=True)` returns `cv_gini=nan` for all hyperparameter combinations in sklearn 1.8.
@@ -217,3 +278,58 @@ cv_gini = 2 * gs.best_score_ - 1   # convert AUC to Gini
 ```
 
 **Lesson:** Prefer built-in sklearn scorer strings over `make_scorer` when the built-in exists. They are version-stable and tested. Custom scorers can silently fail on version upgrades.
+
+---
+
+## 19. NannyML library version contracts — always inspect `to_df().columns` before coding
+
+**Context:** Integrating NannyML v0.13 CBPE into the monitoring stack.
+
+**Problem:** The NannyML documentation (and training data) described CBPE result columns using the sub-key `'estimated'`. The installed v0.13 library uses `'value'` instead. The mismatch was silent: `_extract_scalar()` returned `None`, which then failed only when the `None` was passed to an f-string formatter:
+```
+TypeError: unsupported format string passed to NoneType.__format__
+```
+The root cause was one level deeper than the visible error.
+
+**Rule:** Never write column-extraction code for a new monitoring library without first running `result.to_df().columns.tolist()` interactively against the installed version. Documentation may describe a different version or a planned API; the running library is authoritative.
+
+**Diagnostic pattern:**
+```bash
+docker compose run --rm nannyml_monitor python3 -c "
+import nannyml as nml, pandas as pd
+# ... minimal fit/estimate ...
+print(nml.__version__)
+print(result.to_df().columns.tolist())
+"
+```
+
+**NannyML v0.13 column layout (verified):**
+- **CBPE** (`CBPE.estimate().to_df()`): 2-level MultiIndex `(metric, sub)` — sub values include `'value'`, `'alert'`, `'upper_confidence_boundary'`, `'lower_confidence_boundary'`
+- **UnivariateDrift** (`UnivariateDriftCalculator.calculate().to_df()`): 3-level MultiIndex `(feature, method, sub)` — e.g. `('NUMBER_OF_LOANS', 'jensen_shannon', 'alert')`
+- **MultivariateDrift** (`DataReconstructionDriftCalculator.calculate().to_df()`): 2-level MultiIndex similar to CBPE
+
+**The broader lesson:** Any library that returns structured DataFrames with MultiIndex columns (NannyML, Evidently, some sklearn CV results) may change column naming between minor versions. Treat column extraction code as version-pinned and add a version check comment next to any hardcoded column name.
+
+**Related:** [[debug_workflows#21]] — full code for the two helpers (`_extract_scalar`, `_count_alerts`, `_drifted_features`) that correctly handle both 2-level and 3-level MultiIndex layouts.
+
+---
+
+## 20. Pushgateway is ephemeral by default — batch-job metrics need persistence + a writable volume
+
+**Context:** After a reboot (out-of-disk restart), the entire NannyML row in Grafana showed "No data" despite the monitor having run successfully before.
+
+**Root cause (two stacked bugs):**
+1. **Pushgateway holds metrics in memory only by default.** A container restart wipes everything pushed to it. Because the NannyML monitor is a one-shot `run --rm` job, nothing re-pushes after a restart — the gateway stays empty until the next manual run. Prometheus then scrapes nothing, and Grafana correctly shows "No data."
+2. **Enabling persistence is necessary but not sufficient.** Adding `--persistence.file=/data/pushgateway.store` + a named volume still failed silently with `permission denied`, because the `prom/pushgateway` image runs as `nobody` (UID 65534) while a fresh named volume is root-owned. The process could not write the store file. `user: root` on the service fixed it.
+
+**The deeper lesson — distinguish "correct empty" from "broken":**
+A dashboard showing "No data" is ambiguous. It can mean (a) the query is wrong, (b) the metric name changed, or (c) there genuinely is no data. Here it was (c) twice over. The debugging discipline that paid off was walking the metric chain backwards — Grafana panel → Prometheus query → Pushgateway `/metrics` → did the job ever push? — instead of assuming the dashboard JSON was broken. The panels were faithfully reporting reality.
+
+**The architectural lesson — ephemeral receivers are a reboot away from data loss:**
+Any component that *accumulates* state pushed from elsewhere (Pushgateway, in-memory caches, unpersisted queues) must have that state on durable storage if the data matters across restarts. For Pushgateway specifically:
+- `--persistence.file` on a **writable** volume is mandatory, not optional, for production batch-job monitoring.
+- Always verify writability empirically: the store file must appear after `persistence.interval`, and the value must survive a deliberate `docker compose restart`. A misconfigured volume passes config validation but silently drops data — the worst kind of failure because the dashboard looks fine until the next reboot.
+
+**Rule:** Persistence config you haven't watched survive a restart is not persistence — it's a hypothesis. Validate it by restarting and re-querying.
+
+**Related:** [[debug_workflows#22]] — full diagnosis, the `permission denied` log signature, and the restart-survival validation procedure. [[debug_workflows#20]] — the original Pushgateway + `honor_labels` wiring.

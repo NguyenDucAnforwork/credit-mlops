@@ -33,20 +33,21 @@ def sample_test_df():
 
 
 @pytest.fixture(scope="session")
+def sample_test_small(sample_test_df):
+    """Small slice for transform-heavy tests. KNNImputer.transform is
+    O(n_test x n_train), so a small n_test keeps assertions cheap (~2s vs ~77s)."""
+    return sample_test_df.head(100).reset_index(drop=True)
+
+
+@pytest.fixture(scope="session")
 def feature_pipeline():
     from features import FeaturePipeline
     artifact = ARTIFACTS_DIR / "feature_pipeline.joblib"
-    try:
-        return FeaturePipeline.load(artifact)
-    except (AttributeError, Exception):
-        # Artifact was saved under __main__; re-fit from processed data
-        train_df = pd.read_csv(PROCESSED_DIR / "train_data.csv")
-        X = train_df.drop(columns=["label"])
-        y = train_df["label"]
-        fp = FeaturePipeline()
-        fp.fit_transform(X, y)
-        fp.save(artifact)
-        return fp
+    if not artifact.exists():
+        pytest.skip(f"{artifact} missing — run `python src/save_pipeline.py` to create it")
+    # Genuine load errors must FAIL the suite, not silently re-fit a different
+    # pipeline (which would validate an artifact production never serves).
+    return FeaturePipeline.load(artifact)
 
 
 @pytest.fixture

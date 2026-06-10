@@ -5,15 +5,17 @@
   "refresh": "30s",
   "panels": [
     {
+      "id": 10,
+      "title": "System Observability",
+      "type": "row",
+      "collapsed": false,
+      "gridPos": { "x": 0, "y": 0, "w": 24, "h": 1 }
+    },
+    {
       "id": 1,
       "title": "Request Rate (req/min)",
       "type": "timeseries",
-      "gridPos": {
-        "x": 0,
-        "y": 0,
-        "w": 8,
-        "h": 6
-      },
+      "gridPos": { "x": 0, "y": 1, "w": 8, "h": 6 },
       "targets": [
         {
           "expr": "rate(api_requests_total[1m]) * 60",
@@ -25,12 +27,7 @@
       "id": 2,
       "title": "Latency p50 / p95 (ms)",
       "type": "timeseries",
-      "gridPos": {
-        "x": 8,
-        "y": 0,
-        "w": 8,
-        "h": 6
-      },
+      "gridPos": { "x": 8, "y": 1, "w": 8, "h": 6 },
       "targets": [
         {
           "expr": "histogram_quantile(0.5, rate(api_latency_seconds_bucket[5m])) * 1000",
@@ -46,12 +43,7 @@
       "id": 3,
       "title": "Error Rate",
       "type": "stat",
-      "gridPos": {
-        "x": 16,
-        "y": 0,
-        "w": 4,
-        "h": 6
-      },
+      "gridPos": { "x": 16, "y": 1, "w": 4, "h": 6 },
       "targets": [
         {
           "expr": "sum(rate(api_errors_total[5m])) or vector(0)",
@@ -62,46 +54,51 @@
         "colorMode": "background",
         "thresholds": {
           "steps": [
-            {
-              "value": 0,
-              "color": "green"
-            },
-            {
-              "value": 0.01,
-              "color": "red"
-            }
+            { "value": 0, "color": "green" },
+            { "value": 0.01, "color": "red" }
           ]
         }
       }
     },
     {
       "id": 4,
-      "title": "Model Version",
-      "type": "stat",
-      "gridPos": {
-        "x": 20,
-        "y": 0,
-        "w": 4,
-        "h": 6
+      "title": "Model Reload Events",
+      "type": "timeseries",
+      "gridPos": { "x": 20, "y": 1, "w": 4, "h": 6 },
+      "fieldConfig": {
+        "overrides": [
+          {
+            "matcher": { "id": "byName", "options": "failures" },
+            "properties": [
+              { "id": "color", "value": { "mode": "fixed", "fixedColor": "red" } }
+            ]
+          }
+        ]
       },
       "targets": [
         {
-          "expr": "1",
-          "legendFormat": "champion"
+          "expr": "increase(model_reload_success_total[1h]) or vector(0)",
+          "legendFormat": "success"
+        },
+        {
+          "expr": "increase(model_reload_failure_total[1h]) or vector(0)",
+          "legendFormat": "failures"
         }
       ]
+    },
+    {
+      "id": 11,
+      "title": "Model Observability",
+      "type": "row",
+      "collapsed": false,
+      "gridPos": { "x": 0, "y": 7, "w": 24, "h": 1 }
     },
     {
       "id": 5,
       "title": "Default Probability Distribution (Heatmap)",
       "type": "heatmap",
-      "description": "Heatmap of P(default) distribution over time. X = time \u00b7 Y = probability bucket \u00b7 Color = prediction density (yellow \u2192 red = more predictions). Use to detect drift: if the hot zone shifts from 0.2\u20130.4 to 0.7\u20130.9 over time, the model is drifting. calculate=false tells Grafana to use Prometheus pre-bucketed data directly (no double-bucketing).",
-      "gridPos": {
-        "x": 0,
-        "y": 6,
-        "w": 12,
-        "h": 8
-      },
+      "description": "Heatmap of P(default) distribution over time. X = time · Y = probability bucket · Color = prediction density (yellow → red = more predictions). Use to detect drift: if the hot zone shifts from 0.2–0.4 to 0.7–0.9 over time, the model is drifting. calculate=false tells Grafana to use Prometheus pre-bucketed data directly (no double-bucketing).",
+      "gridPos": { "x": 0, "y": 8, "w": 12, "h": 8 },
       "targets": [
         {
           "expr": "sum(increase(prediction_default_prob_bucket[$__rate_interval])) by (le)",
@@ -121,23 +118,11 @@
           "scheme": "YlOrRd",
           "steps": 64
         },
-        "exemplars": {
-          "color": "rgba(255, 140, 0, 0.8)"
-        },
-        "filterValues": {
-          "le": 1e-09
-        },
-        "legend": {
-          "show": true
-        },
-        "rowsFrame": {
-          "layout": "auto"
-        },
-        "tooltip": {
-          "mode": "single",
-          "showColorScale": true,
-          "yHistogram": false
-        },
+        "exemplars": { "color": "rgba(255, 140, 0, 0.8)" },
+        "filterValues": { "le": 1e-09 },
+        "legend": { "show": true },
+        "rowsFrame": { "layout": "auto" },
+        "tooltip": { "mode": "single", "showColorScale": true, "yHistogram": false },
         "yAxis": {
           "axisPlacement": "left",
           "decimals": 1,
@@ -148,19 +133,10 @@
       },
       "fieldConfig": {
         "defaults": {
-          "color": {
-            "mode": "fixed",
-            "fixedColor": "dark-orange"
-          },
+          "color": { "mode": "fixed", "fixedColor": "dark-orange" },
           "custom": {
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "scaleDistribution": {
-              "type": "linear"
-            }
+            "hideFrom": { "legend": false, "tooltip": false, "viz": false },
+            "scaleDistribution": { "type": "linear" }
           }
         },
         "overrides": []
@@ -170,25 +146,233 @@
       "id": 6,
       "title": "Decision Distribution",
       "type": "piechart",
-      "gridPos": {
-        "x": 12,
-        "y": 6,
-        "w": 12,
-        "h": 8
-      },
+      "gridPos": { "x": 12, "y": 8, "w": 12, "h": 8 },
       "targets": [
         {
           "expr": "prediction_decision_total",
           "legendFormat": "{{decision}}"
         }
       ]
+    },
+    {
+      "id": 7,
+      "title": "Feature Missing Rate (p50 / p90)",
+      "type": "timeseries",
+      "description": "Fraction of null features per request. p90 > 0.7 triggers HighFeatureMissingRate alert — check upstream data pipeline.",
+      "gridPos": { "x": 0, "y": 16, "w": 8, "h": 6 },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "min": 0,
+          "max": 1
+        }
+      },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.5, rate(feature_missing_rate_bucket[5m]))",
+          "legendFormat": "p50"
+        },
+        {
+          "expr": "histogram_quantile(0.9, rate(feature_missing_rate_bucket[5m]))",
+          "legendFormat": "p90"
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "title": "Background Reload Success vs Failure",
+      "type": "bargauge",
+      "description": "Cumulative background reload counts since process start. Failures trigger ModelReloadFailing alert — API continues serving the last successfully loaded model.",
+      "gridPos": { "x": 8, "y": 16, "w": 8, "h": 6 },
+      "options": {
+        "orientation": "horizontal",
+        "reduceOptions": { "calcs": ["lastNotNull"] },
+        "displayMode": "gradient"
+      },
+      "fieldConfig": {
+        "overrides": [
+          {
+            "matcher": { "id": "byName", "options": "success" },
+            "properties": [
+              { "id": "color", "value": { "mode": "fixed", "fixedColor": "green" } }
+            ]
+          },
+          {
+            "matcher": { "id": "byName", "options": "failure" },
+            "properties": [
+              { "id": "color", "value": { "mode": "fixed", "fixedColor": "red" } }
+            ]
+          }
+        ]
+      },
+      "targets": [
+        {
+          "expr": "sum(model_reload_success_total) or vector(0)",
+          "legendFormat": "success",
+          "instant": true
+        },
+        {
+          "expr": "sum(model_reload_failure_total) or vector(0)",
+          "legendFormat": "failure",
+          "instant": true
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "title": "Active Model Version",
+      "type": "stat",
+      "description": "The model version currently loaded in memory, as reported by the model_version_info gauge.",
+      "gridPos": { "x": 16, "y": 16, "w": 8, "h": 6 },
+      "options": {
+        "colorMode": "background",
+        "textMode": "value_and_name",
+        "reduceOptions": { "calcs": ["lastNotNull"] }
+      },
+      "targets": [
+        {
+          "expr": "model_version_info",
+          "legendFormat": "{{alias}} · {{version}}",
+          "instant": true
+        }
+      ]
+    },
+    {
+      "id": 20,
+      "title": "NannyML — Estimated Performance & Drift",
+      "type": "row",
+      "description": "Metrics pushed by the NannyML batch monitor (docker compose --profile monitoring run --rm nannyml_monitor). CBPE estimates AUC/F1 without ground truth labels — vital for credit scoring where labels arrive months later.",
+      "collapsed": false,
+      "gridPos": { "x": 0, "y": 22, "w": 24, "h": 1 }
+    },
+    {
+      "id": 21,
+      "title": "Estimated AUC (CBPE, no labels)",
+      "type": "stat",
+      "description": "ROC AUC estimated by Confidence-Based Performance Estimation from prediction probabilities alone. Training AUC was 0.8102. A sustained drop below 0.75 warrants retraining.",
+      "gridPos": { "x": 0, "y": 23, "w": 6, "h": 5 },
+      "options": {
+        "colorMode": "background",
+        "textMode": "value",
+        "reduceOptions": { "calcs": ["lastNotNull"] }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "decimals": 3,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "value": 0,    "color": "red" },
+              { "value": 0.70, "color": "orange" },
+              { "value": 0.78, "color": "green" }
+            ]
+          }
+        }
+      },
+      "targets": [
+        {
+          "expr": "nannyml_estimated_auc{job=\"nannyml_monitor\"}",
+          "legendFormat": "AUC",
+          "instant": true
+        }
+      ]
+    },
+    {
+      "id": 22,
+      "title": "Estimated F1 (CBPE, no labels)",
+      "type": "stat",
+      "description": "F1 score estimated by CBPE. Sensitive to decision threshold (0.45). Useful for tracking precision/recall balance without waiting for confirmed defaults.",
+      "gridPos": { "x": 6, "y": 23, "w": 6, "h": 5 },
+      "options": {
+        "colorMode": "background",
+        "textMode": "value",
+        "reduceOptions": { "calcs": ["lastNotNull"] }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "decimals": 3,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "value": 0,    "color": "red" },
+              { "value": 0.40, "color": "orange" },
+              { "value": 0.55, "color": "green" }
+            ]
+          }
+        }
+      },
+      "targets": [
+        {
+          "expr": "nannyml_estimated_f1{job=\"nannyml_monitor\"}",
+          "legendFormat": "F1",
+          "instant": true
+        }
+      ]
+    },
+    {
+      "id": 23,
+      "title": "Drifted Features",
+      "type": "stat",
+      "description": "Number of features with detected univariate drift (KS or Chi-squared test). 0 = stable population. Any drift here explains performance shifts in the CBPE panel.",
+      "gridPos": { "x": 12, "y": 23, "w": 6, "h": 5 },
+      "options": {
+        "colorMode": "background",
+        "textMode": "value",
+        "reduceOptions": { "calcs": ["lastNotNull"] }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "decimals": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "value": 0, "color": "green" },
+              { "value": 1, "color": "orange" },
+              { "value": 4, "color": "red" }
+            ]
+          }
+        }
+      },
+      "targets": [
+        {
+          "expr": "nannyml_drifted_features_count{job=\"nannyml_monitor\"}",
+          "legendFormat": "drifted",
+          "instant": true
+        }
+      ]
+    },
+    {
+      "id": 24,
+      "title": "Last NannyML Run",
+      "type": "stat",
+      "description": "Unix timestamp of the last successful NannyML monitor run. If this is more than 7 days old, trigger a manual run.",
+      "gridPos": { "x": 18, "y": 23, "w": 6, "h": 5 },
+      "options": {
+        "colorMode": "background",
+        "textMode": "value",
+        "reduceOptions": { "calcs": ["lastNotNull"] }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "dateTimeAsLocal",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [{ "value": 0, "color": "blue" }]
+          }
+        }
+      },
+      "targets": [
+        {
+          "expr": "nannyml_last_run_timestamp_seconds{job=\"nannyml_monitor\"} * 1000",
+          "legendFormat": "last run",
+          "instant": true
+        }
+      ]
     }
   ],
-  "templating": {
-    "list": []
-  },
-  "time": {
-    "from": "now-1h",
-    "to": "now"
-  }
+  "templating": { "list": [] },
+  "time": { "from": "now-1h", "to": "now" }
 }

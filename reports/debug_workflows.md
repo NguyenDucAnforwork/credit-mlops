@@ -408,3 +408,187 @@ Key flags:
 - X=time, Y=P(default) bucket, Color=prediction density → one glance shows if distribution shifts
 - Handles Prometheus cumulative histogram correctly via the native `le` label detection
 - No transformation pipeline needed — the panel type natively understands Prometheus histogram format
+
+---
+
+## 18. NannyML integration — reference dataset must include model predictions
+
+**Context:** Integrating NannyML CBPE for performance estimation without labels.
+
+**Problem:** `data/processed/reference.csv` (16,000 rows, 122 features) has no `label` column and no model predictions. NannyML's `CBPE.fit()` requires `y_true`, `y_pred_proba`, and `y_pred` on the reference data. Using `reference.csv` directly would fail silently with a KeyError.
+
+**Root cause:** `reference.csv` was created in `data_prep.py` as the train+test split of raw features only (no label). The ground truth labels are in `test_data.csv` (4,000 rows, 123 columns including `label`).
+
+**Fix:** Use `test_data.csv` as the NannyML reference:
+1. Load `test_data.csv` (has `label` column).
+2. Run the local fallback scorecard model on all 4,000 rows to generate `y_pred_proba` and `y_pred`.
+3. Cache the result as `monitoring/nannyml_reference.csv` — this avoids repeating the model run on every monitor execution.
+4. Delete `nannyml_reference.csv` to force a rebuild after a model version change.
+
+**Why this matters for CBPE:**
+- CBPE fits an internal probability calibration curve on the reference data using `y_true` and `y_pred_proba`.
+- If the reference predictions come from a **different** model version than the one making production predictions, the calibration will be wrong and CBPE estimates will be misleading.
+- The cache rebuild signal (delete file) must be documented as part of any promote/rollback workflow.
+
+---
+
+## 19. NannyML production data — JSONB unnesting for feature drift
+
+**Context:** Pulling production features from Postgres for NannyML drift detection.
+
+**Problem:** The `predictions` table stores raw request features as a JSONB column. Most API requests only contain 12–14 of the 122 features (partial inputs). NannyML's `UnivariateDriftCalculator` requires consistent non-null columns across the analysis window.
+
+**Approach:**
+1. `pd.json_normalize(df["features"].tolist())` unpacks JSONB into a 122-column DataFrame; columns absent from a request are NaN.
+2. Before running drift, filter to features where `prod[col].notna().mean() >= 0.30` — only drift-check features that are populated in at least 30% of production requests.
+3. This avoids NannyML raising errors on all-null columns while still catching drift in the features that are actually being sent.
+
+**Chunk size selection:**
+- NannyML requires minimum ~50 rows per chunk for statistical tests to have any power.
+- Formula: `chunk_size = max(50, len(prod) // 7)` — targets 7 chunks, guaranteed ≥50 rows each.
+- With small Postgres datasets (< 50 rows), the monitor exits early with a clear log message rather than raising an exception.
+
+---
+
+## 20. Prometheus Pushgateway — batch job metrics pattern
+
+**Context:** NannyML monitor runs as a one-shot batch job (Docker Compose `run --rm`), not a long-running service. Prometheus scrapes running services, not one-shot containers.
+
+**Problem:** A one-shot script cannot expose a `/metrics` endpoint that Prometheus can scrape — the container exits before Prometheus polls it.
+
+**Solution — Pushgateway:**
+- Add `prom/pushgateway:v1.10.0` as a persistent service in docker-compose.
+- NannyML monitor script uses `prometheus_client.push_to_gateway()` to POST metrics to Pushgateway at job completion.
+- Prometheus scrapes Pushgateway with `honor_labels: true` (preserves the `job="nannyml_monitor"` label pushed by the script, not overwritten with `job="pushgateway"`).
+- Grafana queries `nannyml_estimated_auc{job="nannyml_monitor"}` etc.
+
+**`honor_labels: true` is critical:**
+Without it, Prometheus replaces the pushed `job` label with `pushgateway`, making all NannyML metrics show `job="pushgateway"` in Grafana. The Grafana panel queries would stop matching.
+
+**Stale metrics:**
+Pushgateway persists the last pushed value indefinitely. If the monitor hasn't run in a week, Grafana will still show the old AUC. Use the `nannyml_last_run_timestamp_seconds` gauge (also pushed) to detect stale data — if it's > 7 days old, trigger a manual run.
+
+---
+
+## 21. NannyML v0.13 column structure — `to_df()` MultiIndex layout
+
+**Context:** `monitoring/nannyml_monitor.py` needed to extract estimated AUC and drift alert counts from NannyML result objects.
+
+**Problem:** The code was written using column names from the NannyML documentation (`'estimated'`, `'alert'`), but the actual installed version (v0.13) uses different sub-column names. The `_extract_scalar()` helper was passing `sub="estimated"` but the CBPE result DataFrame had no such column, causing:
+```
+TypeError: unsupported format string passed to NoneType.__format__
+```
+(because `_extract_scalar` returned `None` when the lookup failed, which was then passed to an f-string formatter).
+
+**Diagnosis:** Run inside the container to inspect actual column structure:
+```bash
+docker compose run --rm nannyml_monitor python3 -c "
+import nannyml as nml, pandas as pd
+ref = pd.read_csv('monitoring/nannyml_reference.csv')
+prod = pd.read_csv('monitoring/test_dump.csv')  # or any prod slice
+cbpe = nml.CBPE(y_pred_proba='y_pred_proba', y_pred='y_pred', y_true='y_true',
+                problem_type='binary_classification', metrics=['roc_auc', 'f1'],
+                chunk_size=50)
+cbpe.fit(ref)
+res = cbpe.estimate(prod)
+print(res.to_df().columns.tolist())
+"
+```
+Actual output:
+```
+[('roc_auc', 'value'), ('roc_auc', 'sampling_error'), ('roc_auc', 'realized'),
+ ('roc_auc', 'upper_confidence_boundary'), ('roc_auc', 'lower_confidence_boundary'),
+ ('roc_auc', 'upper_threshold'), ('roc_auc', 'lower_threshold'), ('roc_auc', 'alert'), ...]
+```
+CBPE uses a **2-level MultiIndex** `(metric, sub)` where sub is `'value'`, not `'estimated'`.
+
+Drift calculators (`UnivariateDriftCalculator`, `DataReconstructionDriftCalculator`) use a **3-level MultiIndex** `(feature, method, sub)` — e.g. `('NUMBER_OF_LOANS', 'jensen_shannon', 'alert')`.
+
+**Fix — two helpers that handle both structures:**
+```python
+def _extract_scalar(df, keyword, sub="value"):
+    """keyword matches 2-level (CBPE) or outer level of 3-level (drift) MultiIndex."""
+    for col in df.columns:
+        if keyword.lower() in str(col[0]).lower() and col[1] == sub:
+            v = df[col].dropna()
+            return float(v.iloc[-1]) if len(v) else None
+    return None
+
+def _count_alerts(df, keyword):
+    """Count alert chunks; skip 3-level drift columns (they use len(col)==3)."""
+    for col in df.columns:
+        if len(col) == 2 and keyword.lower() in str(col[0]).lower() and col[1] == "alert":
+            return int(df[col].sum())
+    return 0
+
+def _drifted_features(drift_df):
+    """Return feature names where jensen_shannon alert fired."""
+    drifted = []
+    for col in drift_df.columns:
+        if len(col) == 3 and col[2] == "alert":
+            if drift_df[col].any():
+                drifted.append(col[0])
+    return list(set(drifted))
+```
+
+**Rule:** When integrating any NannyML version, always run `result.to_df().columns.tolist()` interactively before writing column-extraction code. The library does not guarantee stable column names across minor versions. The installed version's actual output is the authoritative spec, not the docs.
+
+---
+
+## 22. NannyML Grafana panels show "No data" after a reboot — Pushgateway is ephemeral
+
+**Symptom:** The Grafana "NannyML — Estimated Performance & Drift" row (Estimated AUC, F1, Drifted Features, Last NannyML Run) all show **No data**, even though the monitor ran successfully in a previous session.
+
+**Diagnosis — walk the metric chain backwards:**
+```bash
+# 1. Is the metric in Pushgateway?
+curl -s http://localhost:9091/metrics | grep '^nannyml'      # → EMPTY
+
+# 2. Is Pushgateway even up?
+curl -s http://localhost:9091/metrics | grep pushgateway_build_info   # → up, v1.10.0
+
+# 3. How long has it been up?
+docker compose ps pushgateway    # → "Up 14 minutes"  (recently restarted)
+```
+Pushgateway was up but held **zero** metrics. Both conditions were true:
+1. **Pushgateway stores metrics in memory by default** — a container restart (here, after an out-of-disk reboot) wipes every pushed value.
+2. The `nannyml_monitor` is a one-shot `run --rm` job — nothing re-pushes automatically after a restart.
+
+So the panels were correct: there genuinely was no data. This is **not** a Grafana query bug or a metric-name mismatch.
+
+**Immediate fix:** re-run the monitor.
+```bash
+docker compose --profile monitoring run --rm nannyml_monitor
+```
+
+**Durable fix:** enable Pushgateway persistence so pushed metrics survive restarts. Two parts are both required:
+```yaml
+pushgateway:
+  image: prom/pushgateway:v1.10.0
+  user: root                                       # <-- see permission trap below
+  command:
+    - "--persistence.file=/data/pushgateway.store"
+    - "--persistence.interval=1m"
+  volumes:
+    - pushgateway_data:/data
+```
+
+**The permission trap (second bug, surfaced only after enabling persistence):**
+After adding the volume, the store file still never appeared and metrics still vanished on restart. The logs revealed why:
+```
+level=error msg="error persisting metrics" err="open /data/pushgateway.store.in_progress.3605873923: permission denied"
+```
+The `prom/pushgateway` image runs as the unprivileged `nobody` user (UID 65534), but a fresh named volume is created **root-owned** — so the process cannot write the store file. Adding `user: root` to the service resolves it.
+
+**Validation that the fix actually works (don't trust config alone):**
+```bash
+docker compose up -d pushgateway
+docker compose --profile monitoring run --rm nannyml_monitor   # push
+sleep 65                                                       # wait > persistence.interval
+docker compose exec pushgateway ls -la /data/                  # store file should now exist
+docker compose restart pushgateway && sleep 4
+curl -s http://localhost:9091/metrics | grep '^nannyml_estimated_auc'   # should SURVIVE
+```
+The metric surviving a deliberate restart is the only proof the persistence actually took — the `permission denied` failure mode passes config validation but silently loses data.
+
+**Rule:** Any Prometheus Pushgateway holding batch-job metrics MUST have `--persistence.file` on a writable volume, and you MUST verify writability (file present after `persistence.interval`, value survives a restart). A Pushgateway without persistence is a single reboot away from blank dashboards.

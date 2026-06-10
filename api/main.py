@@ -7,6 +7,7 @@ from __future__ import annotations
 import json
 import os
 import time
+import uuid
 from contextlib import asynccontextmanager
 
 import pandas as pd
@@ -40,6 +41,10 @@ DECISION_COUNT = Counter(
     "prediction_decision_total", "Decision counts", ["decision"]
 )
 ERROR_COUNT = Counter("api_errors_total", "API errors", ["error_type"])
+FEATURE_MISSING_RATE = Histogram(
+    "feature_missing_rate", "Fraction of null features per request (0–1)",
+    buckets=[0.0, 0.1, 0.2, 0.3, 0.5, 0.7, 0.9, 1.0],
+)
 
 _start_time = time.monotonic()
 
@@ -58,6 +63,7 @@ def _get_engine():
                     CREATE TABLE IF NOT EXISTS predictions (
                         id SERIAL PRIMARY KEY,
                         ts TIMESTAMPTZ DEFAULT now(),
+                        trace_id TEXT,
                         features JSONB,
                         default_probability FLOAT,
                         credit_score INT,
@@ -67,8 +73,49 @@ def _get_engine():
                         latency_ms FLOAT
                     )
                 """))
+                # Migration for tables created before trace_id existed.
+                conn.execute(text(
+                    "ALTER TABLE predictions ADD COLUMN IF NOT EXISTS trace_id TEXT"
+                ))
+                conn.execute(text(
+                    "CREATE INDEX IF NOT EXISTS idx_predictions_trace_id "
+                    "ON predictions (trace_id)"
+                ))
+                conn.execute(text("""
+                    CREATE TABLE IF NOT EXISTS model_deployment_events (
+                        id            SERIAL PRIMARY KEY,
+                        ts            TIMESTAMPTZ DEFAULT now(),
+                        event_type    TEXT NOT NULL,
+                        model_name    TEXT NOT NULL,
+                        alias         TEXT NOT NULL,
+                        from_version  TEXT,
+                        to_version    TEXT,
+                        triggered_by  TEXT DEFAULT 'api',
+                        reason        TEXT
+                    )
+                """))
                 conn.commit()
     return _db_engine
+
+
+def _log_deployment_event(event_type: str, alias: str, from_version: str | None,
+                           to_version: str, triggered_by: str = "api", reason: str | None = None) -> None:
+    try:
+        engine = _get_engine()
+        if engine is None:
+            return
+        with engine.connect() as conn:
+            conn.execute(text("""
+                INSERT INTO model_deployment_events
+                    (event_type, model_name, alias, from_version, to_version, triggered_by, reason)
+                VALUES
+                    (:event_type, 'credit_score_model', :alias, :from_version,
+                     :to_version, :triggered_by, :reason)
+            """), {"event_type": event_type, "alias": alias, "from_version": from_version,
+                   "to_version": to_version, "triggered_by": triggered_by, "reason": reason})
+            conn.commit()
+    except Exception as exc:
+        print(f"[deployment_events] write failed: {exc}")
 
 
 def _audit_log(features: dict, result: dict) -> None:
@@ -79,12 +126,13 @@ def _audit_log(features: dict, result: dict) -> None:
         with engine.connect() as conn:
             conn.execute(text("""
                 INSERT INTO predictions
-                    (features, default_probability, credit_score, risk_band,
+                    (trace_id, features, default_probability, credit_score, risk_band,
                      decision, model_version, latency_ms)
                 VALUES
-                    (:features, :default_probability, :credit_score, :risk_band,
+                    (:trace_id, :features, :default_probability, :credit_score, :risk_band,
                      :decision, :model_version, :latency_ms)
             """), {
+                "trace_id": result.get("trace_id"),
                 "features": json.dumps(features),
                 "default_probability": result["default_probability"],
                 "credit_score": result["credit_score"],
@@ -187,7 +235,11 @@ def predict(
 
     t0 = time.monotonic()
     try:
+        trace_id = str(uuid.uuid4())
         features = payload.model_dump(exclude_none=False)
+        # Observe feature completeness
+        missing_frac = sum(1 for v in features.values() if v is None) / max(len(features), 1)
+        FEATURE_MISSING_RATE.observe(missing_frac)
         df = pd.DataFrame([features])
 
         # Single pass: KNN runs once regardless of model type
@@ -205,6 +257,8 @@ def predict(
             latency_ms=latency_ms,
             scorecard_score=scorecard_score,
             scorecard_breakdown=sc_breakdown,
+            model_alias=loader.active_alias,
+            trace_id=trace_id,
         )
 
         # Observability
@@ -214,7 +268,7 @@ def predict(
         DECISION_COUNT.labels(decision=result["decision"]).inc()
 
         _audit_log(features, {**result, "model_version": loader.version, "latency_ms": latency_ms,
-                               "scorecard_score": scorecard_score})
+                               "scorecard_score": scorecard_score, "trace_id": trace_id})
         return response
 
     except HTTPException:

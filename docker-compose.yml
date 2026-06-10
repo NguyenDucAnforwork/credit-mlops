@@ -66,8 +66,10 @@ services:
       - "8501:8501"
     environment:
       API_URL: http://api:8000   # resolved via Docker internal network
+      TEST_DATA_PATH: /data/processed/test_data.csv   # Mode A: load real rows by label+index
     volumes:
       - ./ui:/app   # bind mount: edit ui/ locally, changes visible immediately
+      - ./data:/data:ro   # read-only access to test_data.csv for Mode A
     depends_on:
       api:
         condition: service_healthy
@@ -94,6 +96,43 @@ services:
     ports:
       - "9093:9093"
 
+  # ── Prometheus Pushgateway — receives NannyML batch-job metrics ───────────
+  pushgateway:
+    image: prom/pushgateway:v1.10.0
+    ports:
+      - "9091:9091"
+    # Persist pushed metrics to disk — without this, batch-job metrics (NannyML)
+    # are held in memory only and vanish on every container restart (e.g. after a reboot).
+    # user: root is required because the image runs as 'nobody' (UID 65534) and cannot
+    # write to the root-owned named volume otherwise (permission denied on the store file).
+    user: root
+    command:
+      - "--persistence.file=/data/pushgateway.store"
+      - "--persistence.interval=1m"
+    volumes:
+      - pushgateway_data:/data
+    restart: unless-stopped
+
+  # ── NannyML monitor — run on demand: docker compose --profile monitoring run --rm nannyml_monitor
+  nannyml_monitor:
+    build:
+      context: .
+      dockerfile: monitoring/Dockerfile.monitor
+    profiles: ["monitoring"]
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-credituser}:${POSTGRES_PASSWORD:-creditpass}@postgres:5432/${POSTGRES_DB:-creditdb}
+      PUSHGATEWAY_URL: http://pushgateway:9091
+    env_file: .env
+    volumes:
+      - ./reports:/app/reports       # persist HTML + JSON reports to host
+      - ./monitoring:/app/monitoring  # persist nannyml_reference.csv cache to host
+    depends_on:
+      postgres:
+        condition: service_healthy
+      pushgateway:
+        condition: service_started
+    restart: "no"
+
   # ── Grafana ───────────────────────────────────────────────────────────────
   grafana:
     image: grafana/grafana:11.3.0
@@ -114,3 +153,4 @@ volumes:
   postgres_data:
   prometheus_data:
   grafana_data:
+  pushgateway_data:

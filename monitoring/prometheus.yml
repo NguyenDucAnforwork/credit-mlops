@@ -15,3 +15,10 @@ scrape_configs:
     static_configs:
       - targets: ["api:8000"]
     metrics_path: /metrics
+
+  # Pushgateway — receives batch-job metrics from NannyML monitor runs.
+  # honor_labels=true preserves the job="nannyml_monitor" label pushed by the script.
+  - job_name: "pushgateway"
+    honor_labels: true
+    static_configs:
+      - targets: ["pushgateway:9091"]

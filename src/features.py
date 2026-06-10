@@ -211,6 +211,35 @@ class FeaturePipeline:
 
     @staticmethod
     def load(path: Path = ARTIFACTS_DIR / "feature_pipeline.joblib") -> "FeaturePipeline":
+        """Load the artifact portably, regardless of caller cwd / sys.path.
+
+        The pipeline classes are pickled under the bare module name ``features``
+        (and historically could be ``__main__``). This loader guarantees the
+        unpickling context: it ensures ``src/`` is importable and registers
+        module aliases so artifacts referencing ``features``, ``src.features``,
+        or ``__main__`` all resolve to this module.
+        """
+        import sys
+        import importlib
+
+        src_dir = str(Path(__file__).resolve().parent)
+        if src_dir not in sys.path:
+            sys.path.insert(0, src_dir)
+        this_mod = importlib.import_module("features")
+        # Bare/package module names: setdefault fills them if absent.
+        sys.modules.setdefault("features", this_mod)
+        sys.modules.setdefault("src.features", this_mod)
+        # Legacy artifacts pickled from a script reference __main__.<Class>.
+        # __main__ always exists, so a module alias is a no-op; instead copy
+        # this module's pipeline classes onto the live __main__ where missing.
+        main_mod = sys.modules.get("__main__")
+        if main_mod is not None:
+            for name in dir(this_mod):
+                obj = getattr(this_mod, name)
+                if (isinstance(obj, type)
+                        and getattr(obj, "__module__", "") == "features"
+                        and not hasattr(main_mod, name)):
+                    setattr(main_mod, name, obj)
         return joblib.load(path)
 
 

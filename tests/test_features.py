@@ -4,9 +4,11 @@ import pandas as pd
 import pytest
 
 
-def test_pipeline_output_shape(feature_pipeline, sample_train_df, sample_test_df):
-    X_train = sample_train_df.drop(columns=["label"])
-    X_test = sample_test_df.drop(columns=["label"])
+def test_pipeline_output_shape(feature_pipeline, sample_train_df, sample_test_small):
+    # Small slices: KNNImputer.transform is O(n_test x n_train); row count is
+    # irrelevant to the shape assertion, so 100 rows keeps this fast.
+    X_train = sample_train_df.drop(columns=["label"]).head(100)
+    X_test = sample_test_small.drop(columns=["label"])
     X_tr = feature_pipeline.transform(X_train)
     X_te = feature_pipeline.transform(X_test)
     assert X_tr.shape[1] == 22
@@ -15,14 +17,14 @@ def test_pipeline_output_shape(feature_pipeline, sample_train_df, sample_test_df
     assert X_te.shape[0] == len(X_test)
 
 
-def test_no_nan_after_transform(feature_pipeline, sample_test_df):
-    X = sample_test_df.drop(columns=["label"])
+def test_no_nan_after_transform(feature_pipeline, sample_test_small):
+    X = sample_test_small.drop(columns=["label"])
     X_t = feature_pipeline.transform(X)
     assert not np.isnan(X_t).any(), "Transform output must have no NaNs"
 
 
-def test_transform_is_deterministic(feature_pipeline, sample_test_df):
-    X = sample_test_df.drop(columns=["label"]).head(100)
+def test_transform_is_deterministic(feature_pipeline, sample_test_small):
+    X = sample_test_small.drop(columns=["label"])
     X_t1 = feature_pipeline.transform(X)
     X_t2 = feature_pipeline.transform(X)
     np.testing.assert_array_equal(X_t1, X_t2)
