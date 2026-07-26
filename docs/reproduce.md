@@ -1,6 +1,6 @@
 # Reproduce
 
-Last updated: 2026-07-26 16:16:20 Asia/Bangkok
+Last updated: 2026-07-26 16:26:10 Asia/Bangkok
 
 All heavy work runs on the VM. Do not install project dependencies, run tests, train models, Docker, Terraform, or `gcloud` locally.
 
@@ -155,6 +155,15 @@ scripts/remote/fetch_artifacts.sh
 ```
 
 The joblib artifact remains on the VM under `artifacts/models/`; only JSON/stdout evidence is copied back.
+
+Property Intelligence UI helper and syntax checks:
+
+```bash
+scripts/remote/sync_to_vm.sh
+scripts/remote/run.sh 'uv run pytest tests/test_ui_property_workflow.py -q && uv run python -m py_compile ui/streamlit_app.py ui/property_workflow.py'
+scripts/remote/run.sh 'uv run pytest -q'
+scripts/remote/fetch_artifacts.sh
+```
 
 Delayed-label AVM monitoring:
 

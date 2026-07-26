@@ -1,6 +1,6 @@
 # Remote Environment
 
-Last updated: 2026-07-26 16:16:20 Asia/Bangkok
+Last updated: 2026-07-26 16:26:10 Asia/Bangkok
 
 ## SSH
 
@@ -28,7 +28,7 @@ Last updated: 2026-07-26 16:16:20 Asia/Bangkok
 - Docker client: 29.1.3
 - Docker server access: blocked for user `ducan`
 - Docker Compose: `docker compose` unavailable
-- Latest measured Python suite: 135 tests passed in 11.15 seconds on the VM after AVM artifact packaging.
+- Latest measured Python suite: 139 tests passed in 11.06 seconds on the VM after Property Intelligence UI work.
 - Latest measured local VM HTTP benchmark: AVM p95 140.84 ms and lending p95 24.21 ms with 0% errors at 1,000 requests/concurrency 10.
 - Latest startup warm-up benchmark: property index startup 4.85 seconds, first comparable request after startup 10.99 ms.
 - Latest AVM artifact evidence: 2.37 MB remote-only joblib, load 87.13 ms, single prediction 21.32 ms, same-seed MdAPE delta 0.0 percentage points.

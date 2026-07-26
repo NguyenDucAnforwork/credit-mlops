@@ -16,6 +16,14 @@ import math
 import requests
 import streamlit as st
 
+from property_workflow import (
+    PROPERTY_SCENARIOS,
+    conservative_ltv,
+    lending_payload,
+    property_payload,
+    scenario_by_name,
+)
+
 API_URL = os.getenv("API_URL", "http://localhost:8000")
 # Mode A reads this CSV directly (mounted read-only into the container at /data).
 # Falls back to the repo-relative path for local `streamlit run`.
@@ -66,6 +74,12 @@ def row_to_payload(row):
 
 # ── Sidebar: model/source selector ───────────────────────────────────────────
 with st.sidebar:
+    app_mode = st.selectbox(
+        "Workspace",
+        ["Property Intelligence & Lending", "Credit Scoring"],
+        index=0,
+    )
+    st.divider()
     st.header("Model Settings")
     model_option = st.selectbox(
         "Model alias",
@@ -92,6 +106,146 @@ with st.sidebar:
     st.caption(f"API: `{API_URL}`")
 
 st.caption(f"API: `{API_URL}` · model: `{model_option}` · source: `{source_option}`")
+
+
+def _money(value: float) -> str:
+    if value == float("inf"):
+        return "unbounded"
+    if abs(value) >= 1_000_000_000:
+        return f"{value / 1_000_000_000:,.2f}B VND"
+    return f"{value / 1_000_000:,.1f}M VND"
+
+
+def _render_property_workspace() -> None:
+    st.header("Property Intelligence & Lending")
+    st.caption("Listing-based experimental AVM. Source data has no coordinates, so map markers are city reference points only.")
+
+    left, right = st.columns([1, 1], gap="large")
+    with left:
+        scenario_name = st.selectbox("Scenario", [scenario.name for scenario in PROPERTY_SCENARIOS])
+        scenario = scenario_by_name(scenario_name)
+        st.caption(scenario.description)
+
+        st.markdown("#### Location")
+        province = st.selectbox(
+            "Province",
+            ["Hà Nội", "Hồ Chí Minh"],
+            index=0 if scenario.province == "Hà Nội" else 1,
+        )
+        district = st.text_input("District", value=scenario.district)
+        import pandas as pd
+
+        map_frame = pd.DataFrame([{"lat": scenario.map_latitude, "lon": scenario.map_longitude}])
+        st.map(map_frame, latitude="lat", longitude="lon", zoom=11, use_container_width=True)
+
+        st.markdown("#### Property")
+        property_type = st.selectbox(
+            "Property type",
+            ["apartment", "house", "land", "villa", "other"],
+            index=["apartment", "house", "land", "villa", "other"].index(scenario.property_type)
+            if scenario.property_type in ["apartment", "house", "land", "villa", "other"]
+            else 4,
+        )
+        area_m2 = st.number_input("Area", min_value=10.0, max_value=1_000.0, value=scenario.area_m2, step=5.0)
+        published_at = st.text_input("Listing timestamp", value=scenario.published_at)
+
+        st.markdown("#### Credit & LTV")
+        credit_decision = st.selectbox(
+            "Credit decision",
+            ["approve", "manual_review", "reject"],
+            index=["approve", "manual_review", "reject"].index(scenario.credit_decision),
+        )
+        loan_amount_vnd = st.number_input(
+            "Requested loan amount",
+            min_value=0,
+            max_value=100_000_000_000,
+            value=int(scenario.loan_amount_vnd),
+            step=100_000_000,
+            format="%d",
+        )
+        submitted_property = st.button("Estimate property and decide LTV", type="primary", use_container_width=True)
+
+    with right:
+        st.subheader("Property Decision")
+        if not submitted_property:
+            st.info("Choose a scenario or edit inputs, then run the property-lending decision.")
+            return
+
+        avm_request = property_payload(
+            published_at=published_at,
+            province=province,
+            district=district,
+            property_type=property_type,
+            area_m2=area_m2,
+        )
+        try:
+            avm_response = requests.post(f"{API_URL}/v1/avm/predict", json=avm_request, timeout=30)
+            avm_response.raise_for_status()
+            avm = avm_response.json()
+            ltv_request = lending_payload(
+                credit_decision=credit_decision,
+                loan_amount_vnd=loan_amount_vnd,
+                lower_value_vnd=avm["lower_value_vnd"],
+                confidence=avm["confidence"],
+                ood=avm["confidence"] == "low",
+            )
+            lending_response = requests.post(f"{API_URL}/v1/lending/decision", json=ltv_request, timeout=30)
+            lending_response.raise_for_status()
+            lending = lending_response.json()
+        except requests.exceptions.ConnectionError:
+            st.error(f"Cannot reach API at `{API_URL}`.")
+            return
+        except Exception as exc:
+            st.error(f"API error: {exc}")
+            return
+
+        decision_color = {
+            "approve": "#1a7a4a",
+            "manual_review": "#b45309",
+            "reject": "#b91c1c",
+        }.get(lending["decision"], "#374151")
+        st.markdown(
+            f"""<div style="background:{decision_color};color:white;padding:16px 24px;border-radius:8px;
+            font-size:1.25rem;font-weight:700;text-align:center;margin-bottom:16px">
+            {lending["decision"].replace("_", " ").upper()}</div>""",
+            unsafe_allow_html=True,
+        )
+
+        m1, m2, m3 = st.columns(3)
+        m1.metric("Estimate", _money(avm["estimated_value_vnd"]))
+        m2.metric("Lower interval", _money(avm["lower_value_vnd"]))
+        m3.metric("Conservative LTV", f"{conservative_ltv(loan_amount_vnd, avm['lower_value_vnd']):.1%}")
+
+        st.markdown("#### Interval")
+        st.progress(min(float(avm["interval_width_ratio"]), 1.0))
+        st.caption(
+            f"Upper interval `{_money(avm['upper_value_vnd'])}` · "
+            f"confidence `{avm['confidence']}` · width ratio `{avm['interval_width_ratio']:.1%}`"
+        )
+
+        st.markdown("#### Factors")
+        for factor in avm["top_factors"]:
+            st.write(f"- {factor}")
+
+        st.markdown("#### Comparables")
+        if avm["comparables"]:
+            st.dataframe(avm["comparables"], use_container_width=True, hide_index=True)
+        else:
+            st.warning("No comparable support returned for this request.")
+
+        st.markdown("#### Policy Reasons")
+        for reason in lending["reasons"]:
+            st.write(f"- {reason}")
+        st.caption(
+            f"Model `{avm['model_version']}` · feature version `{avm['feature_version']}` · "
+            f"trace `{avm['trace_id'][:8]}`"
+        )
+        st.info(avm["disclaimer"])
+
+
+if app_mode == "Property Intelligence & Lending":
+    _render_property_workspace()
+    st.stop()
 
 # ── Input-mode toggle ─────────────────────────────────────────────────────────
 mode = st.radio(

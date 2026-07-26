@@ -1,6 +1,6 @@
 # Summary
 
-Last updated: 2026-07-26 16:16:20 Asia/Bangkok
+Last updated: 2026-07-26 16:26:10 Asia/Bangkok
 
 Status: Phase 1 data contracts complete with blockers for GIS/GCP/Docker.
 
@@ -14,7 +14,7 @@ The project is being converted from a credit scoring MLOps demo into a Property 
 - GCP access: blocked by `ACCESS_TOKEN_SCOPE_INSUFFICIENT`.
 - Remote workspace: created as rsync-backed after VM Git clone failed on local SSH alias `github-nguyenducan`.
 - Baseline tests: 76 passed in 7.42 seconds on the VM.
-- Current tests: 135 passed in 11.15 seconds on the VM after AVM artifact packaging.
+- Current tests: 139 passed in 11.06 seconds on the VM after Property Intelligence UI work.
 - Baseline data split: version `cac9de3c`, 16,000 train rows, 4,000 test rows.
 - ETL fixture: 1,000 inserts, 100 duplicates, identical rerun 0 inserts.
 - HF dataset metadata: revision `a9a66ffa985edcf76b4be59ae2c6f5b1db889c38`, 5 Parquet shards, last modified `2026-04-08T06:51:21.000Z`.
@@ -34,10 +34,11 @@ The project is being converted from a credit scoring MLOps demo into a Property 
 - Warm uvicorn HTTP load: AVM p95 140.84 ms and lending p95 24.21 ms with 0% errors at 1,000 requests/concurrency 10; Docker and Cloud Run p95 remain unmeasured.
 - API startup warm-up: first comparable request after startup is 10.99 ms after moving the 4.85s index load into lifespan startup.
 - Artifact-backed API uvicorn load: AVM p95 136.63 ms and lending p95 15.53 ms with 0% valid-request errors at 1,000 requests/concurrency 10.
-- Engineering test-count criterion: 135 passing tests meets the >=125 numeric floor.
+- Streamlit UI: property-lending workspace added with map reference input, property attributes, estimate/interval/comparables/factors, credit/LTV decision inputs, disclaimer, and three required scenarios.
+- Engineering test-count criterion: 139 passing tests meets the >=125 numeric floor.
 - Docker smoke: blocked because `ducan` cannot access Docker socket and `docker compose` is unavailable.
 - Deployment URL: not deployed.
 
 ## Next Step
 
-Commit and push AVM artifact packaging, then continue with UI/portfolio or CI while Docker, GCP, and coordinate-backed GIS remain blocked.
+Commit and push Property Intelligence UI, then continue with CI/reproduction smoke while Docker, GCP, and coordinate-backed GIS remain blocked.

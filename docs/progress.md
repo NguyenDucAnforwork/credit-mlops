@@ -1,6 +1,6 @@
 # Progress
 
-Last updated: 2026-07-26 16:16:20 Asia/Bangkok
+Last updated: 2026-07-26 16:26:10 Asia/Bangkok
 
 ## Phase Checklist
 
@@ -11,7 +11,7 @@ Last updated: 2026-07-26 16:16:20 Asia/Bangkok
 - Phase 4 APIs: scaffold endpoints implemented; local-on-VM uvicorn AVM/lending p95 criteria measured for fallback and artifact-backed service paths
 - Phase 5 MLOps and monitoring: AVM promotion gate dry-run, synthetic drift, and delayed-label monitoring implemented
 - Phase 6 Docker and GCP: cloud access blocked by VM OAuth scopes; local Docker baseline pending
-- Phase 7 UI, CI, portfolio: not started
+- Phase 7 UI, CI, portfolio: Property Intelligence UI started; CI/portfolio packaging pending
 
 ## Evidence
 
@@ -84,7 +84,10 @@ Last updated: 2026-07-26 16:16:20 Asia/Bangkok
 - Artifact training/evaluation runtime: 26.40 seconds; script runtime including same-seed reproducibility rerun: 55 seconds; same-seed MdAPE delta 0.0 percentage points.
 - Artifact-backed uvicorn HTTP benchmark: AVM p95 136.63 ms with 0% errors; lending p95 15.53 ms with 0% errors; startup latency 4,855.76 ms; first comparable request after startup 11.07 ms.
 - Focused artifact/API tests passed on the VM: 27 passed in 3.06 seconds; final full suite passed with 135 tests in 11.15 seconds; wrapper runtime 13 seconds.
+- Streamlit Property Intelligence workspace added: map reference input, property attributes, estimate/interval/comparables/factors display, credit decision + requested-loan input, LTV policy decision, disclaimer, and scenarios for Hà Nội apartment, Hồ Chí Minh City house, and low-support manual review.
+- UI helper tests passed on the VM: 4 passed in 0.04 seconds; `ui/streamlit_app.py` and `ui/property_workflow.py` compiled successfully.
+- Final full suite after UI work passed on the VM: 139 passed in 11.06 seconds; wrapper runtime 13 seconds.
 
 ## Next
 
-Commit and push AVM artifact packaging, then continue with UI/portfolio or CI while Docker, GCP, and coordinate-backed GIS remain blocked.
+Commit and push Property Intelligence UI, then continue with CI/reproduction smoke while Docker, GCP, and coordinate-backed GIS remain blocked.

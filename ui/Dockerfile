@@ -7,7 +7,7 @@ COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
 # Only two runtime deps — install directly into system Python
 RUN uv pip install --system --no-cache streamlit==1.45.1 requests==2.34.2 matplotlib
 
-COPY ui/streamlit_app.py .
+COPY ui/streamlit_app.py ui/property_workflow.py ./
 
 EXPOSE 8501
 

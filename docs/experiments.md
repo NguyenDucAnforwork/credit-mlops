@@ -434,3 +434,21 @@
 - Decision: keep the artifact as experimental and remote-only; do not mutate an MLflow alias or commit the binary.
 - Lesson learned: the artifact boundary should be evidence-driven and lightweight; model binaries stay on the VM while JSON reports carry the auditable metrics.
 - Next experiment: build the UI/portfolio surface or CI smoke path while Docker/GCP and coordinate-backed GIS remain blocked.
+
+## EXP-0025: Property Intelligence Streamlit Workspace
+
+- Timestamp in Asia/Bangkok: 2026-07-26 16:26:10
+- Hypothesis: The existing Streamlit UI can add the required property-lending demo workflow without changing API contracts or requiring Docker/GCP runtime.
+- Local Git commit or working-tree identifier: `e79a0f4` plus uncommitted UI source/tests/docs.
+- Dataset snapshot ID and checksums: UI calls the API; no dataset is read by the UI path. Property API evidence still references gold revision `a9a66ffa985edcf76b4be59ae2c6f5b1db889c38`.
+- Exact remote command: `scripts/remote/run.sh 'uv run pytest tests/test_ui_property_workflow.py -q && uv run python -m py_compile ui/streamlit_app.py ui/property_workflow.py'`.
+- Configuration and seed: three deterministic UI scenarios for Hà Nội apartment, Hồ Chí Minh City house, and low-support manual review; LTV payload uses AVM lower interval value.
+- VM hardware/environment: Ubuntu 24.04.4 LTS, 4 vCPU AMD EPYC 7B12, 15 GiB RAM, no GPU.
+- Runtime: UI helper tests 0.04 seconds; final full suite 139 tests in 11.06 seconds.
+- Peak RAM when available: not measured.
+- Metrics: 4 UI helper tests passed; Streamlit app and helper module compiled successfully; full suite increased from 135 to 139 tests.
+- Baseline comparison: prior UI was credit-only. The new workspace covers map reference input, property attributes, estimate and interval, comparables, factors, credit inputs, LTV decision, disclaimer, and all three required demo scenarios.
+- Interpretation: Phase 7 UI requirement is partially met at source/test level. A live Streamlit smoke remains tied to Docker/service runtime and is not claimed.
+- Decision: keep UI helpers separate from Streamlit runtime code for testability; Dockerfile now copies both UI modules.
+- Lesson learned: UI contract checks can be covered with pure helpers while VM Docker remains blocked.
+- Next experiment: implement CI/reproduction smoke commands or portfolio documentation while Docker/GCP and coordinate-backed GIS remain blocked.

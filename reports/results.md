@@ -554,3 +554,21 @@ Full Hugging Face ingestion, row counts, checksums, ETL runtime, and peak RAM ar
 | Evidence | `docs/evidence/avm_hgb_quantile_artifact_20260726.json`; `docs/evidence/property_api_http_artifact_benchmark_20260726.json` |
 | Final verification after report | 135 tests passed in 11.15 seconds; wrapper runtime 13 seconds |
 | Criterion status | artifact size, same-seed reproducibility, train runtime, and local VM artifact-backed API p95 pass; interval width, spatial holdout, Docker, and Cloud Run remain incomplete |
+
+### Property Intelligence UI
+
+| Field | Value |
+|-------|-------|
+| UI surface | Streamlit workspace selector with Property Intelligence & Lending mode |
+| Location input | province/district plus city reference map marker; exact source coordinates remain unavailable |
+| Property inputs | published timestamp, property type, area |
+| AVM display | estimate, lower/upper interval, confidence, interval width |
+| Comparable display | API comparables table and support metadata |
+| Factor display | API top factors list |
+| Credit/LTV inputs | credit decision and requested loan amount |
+| LTV policy | calls `/v1/lending/decision` using AVM lower interval value |
+| Required scenarios | Hà Nội apartment, Hồ Chí Minh City house, low-support manual review |
+| UI focused verification | 4 helper tests passed in 0.04 seconds; Streamlit files compiled |
+| Evidence | `docs/evidence/phase7_property_ui_pytest_20260726.txt` |
+| Final verification after report | 139 tests passed in 11.06 seconds; wrapper runtime 13 seconds |
+| Criterion status | UI source/test requirement partially met; live Streamlit/Docker smoke remains blocked by Docker runtime access |
