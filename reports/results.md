@@ -389,3 +389,19 @@ Full Hugging Face ingestion, row counts, checksums, ETL runtime, and peak RAM ar
 | Evidence | `docs/evidence/property_comparables_fallback_benchmark_20260726.json` |
 | Verification before benchmark | 2 comparable tests passed in 0.65 seconds; 112 total tests passed in 8.13 seconds |
 | Final verification after docs/evidence | 112 tests passed in 8.12 seconds; wrapper runtime 10 seconds |
+
+### Property API Scaffold Smoke
+
+| Field | Value |
+|-------|-------|
+| Endpoints | `POST /v1/avm/predict`, `GET /v1/comparables`, `POST /v1/lending/decision` |
+| Execution | VM FastAPI TestClient with `PROPERTY_GOLD_PATH` pointing to real gold parquet |
+| `/v1/comparables` | status 200, 10 comparables, 2,624.48 ms cold index-build latency |
+| `/v1/avm/predict` | status 200, estimated value 4.95B VND, lower 4.245B VND, upper 5.02B VND, interval-width ratio 15.66%, high confidence, 13.13 ms after index build |
+| `/v1/lending/decision` | status 200, conservative LTV 0.75, decision `approve`, 2.63 ms |
+| Boundary tests | exact conservative LTV 0.75 approves; 0.7501 manual review; 0.85 manual review; 0.8501 rejects |
+| Runtime | 6 seconds |
+| Evidence | `docs/evidence/property_api_smoke_20260726.json` |
+| Verification before smoke | 14 focused API tests passed in 1.98 seconds; 118 total tests passed in 8.16 seconds |
+| Final verification after docs/evidence | 118 tests passed in 8.16 seconds; wrapper runtime 10 seconds |
+| Load criterion status | not measured; Docker/service runtime remains blocked |

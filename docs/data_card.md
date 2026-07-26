@@ -1,6 +1,6 @@
 # Data Card
 
-Last updated: 2026-07-26 15:20:05 Asia/Bangkok
+Last updated: 2026-07-26 15:27:05 Asia/Bangkok
 
 ## Primary Dataset
 
@@ -30,6 +30,7 @@ Last updated: 2026-07-26 15:20:05 Asia/Bangkok
 - Blocker contract check: coordinate source columns present fails because the actual source schema lacks `latitude` and `longitude`
 - Current AVM uncertainty evidence uses only non-GIS listing attributes; direct quantile intervals remain too wide for a promoted confidence policy.
 - Comparable fallback evidence uses administrative fields and listing age only; it cannot provide distance, radius, H3, or nearest-neighbor spatial support until coordinates are enriched.
+- Property API smoke reads the VM gold parquet through `PROPERTY_GOLD_PATH`; the full dataset remains VM-only.
 
 ## Fixture Data
 

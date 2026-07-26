@@ -23,7 +23,17 @@ load_dotenv()
 
 from decision import make_decision
 from model_loader import get_loader
-from schemas import HealthResponse, PredictRequest, PredictResponse
+from property_service import make_comparable_query, make_lending_decision, predict_avm, _get_comparable_index
+from schemas import (
+    AvmPredictResponse,
+    ComparableResponse,
+    HealthResponse,
+    LendingDecisionRequest,
+    LendingDecisionResponse,
+    PredictRequest,
+    PredictResponse,
+    PropertyRequest,
+)
 
 # ── Prometheus metrics ────────────────────────────────────────────────────────
 REQUEST_COUNT = Counter(
@@ -283,3 +293,58 @@ def predict(
 def metrics():
     REQUEST_COUNT.labels(endpoint="/metrics", status="200").inc()
     return PlainTextResponse(generate_latest(), media_type=CONTENT_TYPE_LATEST)
+
+
+@app.post("/v1/avm/predict", response_model=AvmPredictResponse)
+def avm_predict(payload: PropertyRequest):
+    t0 = time.monotonic()
+    trace_id = str(uuid.uuid4())
+    try:
+        response = predict_avm(payload, trace_id=trace_id, latency_ms=0.0)
+        response["latency_ms"] = round((time.monotonic() - t0) * 1000, 2)
+        REQUEST_COUNT.labels(endpoint="/v1/avm/predict", status="200").inc()
+        return response
+    except FileNotFoundError as exc:
+        ERROR_COUNT.labels(error_type="property_data_not_loaded").inc()
+        REQUEST_COUNT.labels(endpoint="/v1/avm/predict", status="503").inc()
+        raise HTTPException(status_code=503, detail=str(exc))
+
+
+@app.get("/v1/comparables", response_model=ComparableResponse)
+def comparables(
+    published_at: str,
+    province: str,
+    district: str,
+    property_type: str,
+    area_m2: float = Query(..., gt=0),
+    listing_id: str | None = None,
+):
+    try:
+        payload = PropertyRequest(
+            listing_id=listing_id,
+            published_at=published_at,
+            province=province,
+            district=district,
+            property_type=property_type,
+            area_m2=area_m2,
+        )
+        result = _get_comparable_index().query(make_comparable_query(payload))
+        REQUEST_COUNT.labels(endpoint="/v1/comparables", status="200").inc()
+        return result
+    except FileNotFoundError as exc:
+        ERROR_COUNT.labels(error_type="property_data_not_loaded").inc()
+        REQUEST_COUNT.labels(endpoint="/v1/comparables", status="503").inc()
+        raise HTTPException(status_code=503, detail=str(exc))
+
+
+@app.post("/v1/lending/decision", response_model=LendingDecisionResponse)
+def lending_decision(payload: LendingDecisionRequest):
+    result = make_lending_decision(
+        credit_decision=payload.credit_decision,
+        loan_amount_vnd=payload.loan_amount_vnd,
+        lower_value_vnd=payload.lower_value_vnd,
+        confidence=payload.confidence,
+        ood=payload.ood,
+    )
+    REQUEST_COUNT.labels(endpoint="/v1/lending/decision", status="200").inc()
+    return result

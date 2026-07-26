@@ -289,3 +289,21 @@
 - Decision: keep fallback with explicit warnings; do not mark Phase 2 GIS/PostGIS comparable criteria complete.
 - Lesson learned: district/property-type support can be fast and leakage-safe in memory, but benchmark labels must prevent it from being mistaken for spatial evidence.
 - Next experiment: integrate fallback comparables into AVM/API response shape or continue API decision boundaries while PostGIS remains blocked.
+
+## EXP-0017: Property API Scaffold Smoke
+
+- Timestamp in Asia/Bangkok: 2026-07-26 15:27:02
+- Hypothesis: The new Phase 4 API surface can return complete AVM, comparable, and lending decision response shapes on the VM using the non-GIS comparable fallback.
+- Local Git commit or working-tree identifier: `d9371ed` plus uncommitted API schemas/endpoints/tests/docs.
+- Dataset snapshot ID and checksums: gold layer from revision `a9a66ffa985edcf76b4be59ae2c6f5b1db889c38`; raw SHA256 manifest in `reports/generated/hf_vietnam_real_estates_snapshot_manifest_20260726.json`.
+- Exact remote command: `scripts/remote/run.sh 'uv run python scripts/property_api_smoke.py'`.
+- Configuration and seed: FastAPI `TestClient`; `PROPERTY_GOLD_PATH` set to VM gold parquet; smoke payload for Hà Nội/Cầu Giấy apartment at 55 m2; lending boundary payload with conservative LTV 0.75.
+- VM hardware/environment: Ubuntu 24.04.4 LTS, 4 vCPU AMD EPYC 7B12, 15 GiB RAM, no GPU.
+- Runtime: smoke script 6 seconds; focused API tests passed in 1.98 seconds; full suite passed with 118 tests in 8.16 seconds before smoke.
+- Peak RAM when available: not measured.
+- Metrics: `/v1/comparables` status 200 with 10 comparables and cold index-build latency 2,624.48 ms; `/v1/avm/predict` status 200 with 4.95B VND estimate, 4.245B lower value, 5.02B upper value, 15.66% interval-width ratio, high confidence, and 13.13 ms latency after index build; `/v1/lending/decision` status 200 with conservative LTV 0.75 and decision `approve` in 2.63 ms.
+- Baseline comparison: previous API surface only had `/health`, `/predict`, and `/metrics`; new endpoint tests increase the suite from 112 to 118 passing tests.
+- Interpretation: response contracts and lending boundaries are in place, but this is not the final online performance benchmark because Docker/service runtime remains blocked and the AVM is an experimental comparable fallback.
+- Decision: keep API scaffold; do not mark local-on-VM API p95 or lending API p95 criteria complete until warm service load tests run.
+- Lesson learned: index construction must be warmed or moved to startup before load testing; cold comparable endpoint latency is dominated by parquet/index load.
+- Next experiment: add warm API load benchmark once service execution path is available, or implement model/artifact loading for the promoted AVM path.

@@ -1,6 +1,6 @@
 # Decisions
 
-Last updated: 2026-07-26 15:20:05 Asia/Bangkok
+Last updated: 2026-07-26 15:27:05 Asia/Bangkok
 
 ## ADR-0001: Local Source of Truth, VM Runtime Executor
 
@@ -31,3 +31,9 @@ Last updated: 2026-07-26 15:20:05 Asia/Bangkok
 - Decision: implement district/property-type comparable fallback for support metadata and API scaffolding, with `distance_status=not_available_missing_coordinates`.
 - Rationale: the real source schema lacks coordinates, so radius, distance, H3, and PostGIS evidence cannot be produced truthfully yet.
 - Consequence: fallback p95 latency can be reported separately, but Phase 2 PostGIS comparable criteria remain incomplete until legitimate coordinates and PostGIS are available.
+
+## ADR-0006: Property API Scaffold Uses Experimental Fallback
+
+- Decision: expose `/v1/avm/predict`, `/v1/comparables`, and `/v1/lending/decision` using the non-GIS comparable fallback and explicit experimental warnings.
+- Rationale: API consumers and tests need stable response contracts before Docker/GCP/service benchmarking is unblocked.
+- Consequence: endpoint shape and lending policy boundaries are testable now, but API p95 done criteria require warm service load tests and a promoted AVM artifact later.

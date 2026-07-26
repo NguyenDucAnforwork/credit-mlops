@@ -1,6 +1,6 @@
 # Reproduce
 
-Last updated: 2026-07-26 15:20:05 Asia/Bangkok
+Last updated: 2026-07-26 15:27:05 Asia/Bangkok
 
 All heavy work runs on the VM. Do not install project dependencies, run tests, train models, Docker, Terraform, or `gcloud` locally.
 
@@ -100,6 +100,14 @@ Non-GIS comparable fallback benchmark:
 ```bash
 make remote-sync
 scripts/remote/run.sh 'uv run python scripts/property_comparables_benchmark.py'
+scripts/remote/fetch_artifacts.sh
+```
+
+Property API scaffold smoke:
+
+```bash
+make remote-sync
+scripts/remote/run.sh 'uv run python scripts/property_api_smoke.py'
 scripts/remote/fetch_artifacts.sh
 ```
 

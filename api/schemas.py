@@ -157,3 +157,56 @@ class HealthResponse(BaseModel):
     status: Literal["ok", "degraded"]
     model_version: str
     uptime_s: float
+
+
+class PropertyRequest(BaseModel):
+    listing_id: str | None = None
+    published_at: str = Field(default="2025-12-31T00:00:00Z")
+    province: str
+    district: str
+    property_type: str
+    area_m2: float = Field(..., gt=0)
+
+
+class ComparableResponse(BaseModel):
+    query: dict[str, Any]
+    count: int
+    max_results: int
+    area_tolerance: float
+    support_level: Literal["high", "medium", "low"]
+    match_tier_counts: dict[str, int]
+    distance_status: str
+    warnings: list[str]
+    comparables: list[dict[str, Any]]
+
+
+class AvmPredictResponse(BaseModel):
+    estimated_value_vnd: float
+    estimated_price_per_m2: float
+    lower_value_vnd: float
+    upper_value_vnd: float
+    confidence: Literal["high", "medium", "low"]
+    interval_width_ratio: float
+    top_factors: list[str]
+    comparables: list[dict[str, Any]]
+    model_version: str
+    feature_version: str
+    data_snapshot_id: str
+    trace_id: str
+    latency_ms: float
+    disclaimer: str
+    warnings: list[str]
+
+
+class LendingDecisionRequest(BaseModel):
+    credit_decision: Literal["approve", "manual_review", "reject"]
+    loan_amount_vnd: float = Field(..., ge=0)
+    lower_value_vnd: float = Field(..., ge=0)
+    confidence: Literal["high", "medium", "low"]
+    ood: bool = False
+
+
+class LendingDecisionResponse(BaseModel):
+    decision: Literal["approve", "manual_review", "reject"]
+    conservative_ltv: float
+    reasons: list[str]

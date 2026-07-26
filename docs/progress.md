@@ -1,6 +1,6 @@
 # Progress
 
-Last updated: 2026-07-26 15:20:05 Asia/Bangkok
+Last updated: 2026-07-26 15:27:05 Asia/Bangkok
 
 ## Phase Checklist
 
@@ -8,7 +8,7 @@ Last updated: 2026-07-26 15:20:05 Asia/Bangkok
 - Phase 1 ETL: raw snapshot, silver/gold ETL, and data contracts complete with coordinate blocker documented
 - Phase 2 PostGIS and GIS: PostGIS/GIS blocked by missing coordinates; non-GIS comparable fallback measured
 - Phase 3 AVM: non-GIS median/tabular baselines and three interval calibrations measured
-- Phase 4 APIs: not started
+- Phase 4 APIs: scaffold endpoints implemented and smoked with fallback AVM/comparables; load criteria not measured
 - Phase 5 MLOps and monitoring: not started
 - Phase 6 Docker and GCP: cloud access blocked by VM OAuth scopes; local Docker baseline pending
 - Phase 7 UI, CI, portfolio: not started
@@ -59,7 +59,11 @@ Last updated: 2026-07-26 15:20:05 Asia/Bangkok
 - Non-GIS comparable fallback benchmark: 1,000 December queries; median latency 8.65 ms; p95 14.88 ms; max 18.64 ms; 0% valid-request errors; 10 comparables for every sampled query; distance status `not_available_missing_coordinates`.
 - Focused comparable tests plus full suite before benchmark passed on the VM: 2 comparable tests in 0.65 seconds and 112 total tests in 8.13 seconds.
 - Final full suite after comparable docs/evidence passed on the VM: 112 passed in 8.12 seconds; wrapper runtime 10 seconds.
+- API scaffold: added `POST /v1/avm/predict`, `GET /v1/comparables`, and `POST /v1/lending/decision` while preserving `/health`, `/predict`, and `/metrics`.
+- API tests: 14 focused API tests passed in 1.98 seconds; full suite passed with 118 tests in 8.16 seconds before smoke.
+- Real-data API smoke via FastAPI TestClient on the VM: `/v1/comparables` 200 with 10 comparables and 2,624.48 ms cold index latency; `/v1/avm/predict` 200 with 4.95B VND estimate and 13.13 ms latency after index build; `/v1/lending/decision` 200 with conservative LTV 0.75 approved in 2.63 ms.
+- Final full suite after API docs/evidence passed on the VM: 118 passed in 8.16 seconds; wrapper runtime 10 seconds.
 
 ## Next
 
-Run final verification for the comparable fallback milestone, commit and push it, then integrate fallback comparables into API response shapes while coordinate enrichment remains unresolved.
+Run final verification for the API scaffold milestone, commit and push it, then continue with service/load benchmarking or AVM artifact lifecycle work while Docker and GCP remain blocked.

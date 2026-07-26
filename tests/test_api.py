@@ -106,3 +106,114 @@ def test_metrics_incremented_after_predict(client, valid_predict_payload):
     client.post("/predict", json=valid_predict_payload)
     resp = client.get("/metrics")
     assert "api_requests_total" in resp.text
+
+
+def test_avm_predict_returns_required_property_fields(client, monkeypatch):
+    import property_service
+
+    class FakeIndex:
+        def query(self, query):
+            return _fake_comparable_result(query)
+
+    monkeypatch.setattr(property_service, "_get_comparable_index", lambda: FakeIndex())
+    resp = client.post(
+        "/v1/avm/predict",
+        json={
+            "published_at": "2025-12-15T00:00:00Z",
+            "province": "Hà Nội",
+            "district": "Cầu Giấy",
+            "property_type": "apartment",
+            "area_m2": 50,
+        },
+    )
+
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["estimated_value_vnd"] > 0
+    assert data["lower_value_vnd"] <= data["estimated_value_vnd"] <= data["upper_value_vnd"]
+    assert data["confidence"] in ["high", "medium", "low"]
+    assert data["comparables"][0]["distance_status"] == "not_available_missing_coordinates"
+    assert data["trace_id"]
+
+
+def test_comparables_endpoint_returns_support_metadata(client, monkeypatch):
+    import main as main_mod
+
+    class FakeIndex:
+        def query(self, query):
+            return _fake_comparable_result(query)
+
+    monkeypatch.setattr(main_mod, "_get_comparable_index", lambda: FakeIndex())
+    resp = client.get(
+        "/v1/comparables",
+        params={
+            "published_at": "2025-12-15T00:00:00Z",
+            "province": "Hà Nội",
+            "district": "Cầu Giấy",
+            "property_type": "apartment",
+            "area_m2": 50,
+        },
+    )
+
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["count"] == 3
+    assert data["support_level"] == "medium"
+    assert data["distance_status"] == "not_available_missing_coordinates"
+
+
+@pytest.mark.parametrize(
+    "loan_amount,expected",
+    [
+        (75.0, "approve"),
+        (75.01, "manual_review"),
+        (85.0, "manual_review"),
+        (85.01, "reject"),
+    ],
+)
+def test_lending_decision_ltv_boundaries(client, loan_amount, expected):
+    resp = client.post(
+        "/v1/lending/decision",
+        json={
+            "credit_decision": "approve",
+            "loan_amount_vnd": loan_amount,
+            "lower_value_vnd": 100.0,
+            "confidence": "high",
+        },
+    )
+
+    assert resp.status_code == 200
+    assert resp.json()["decision"] == expected
+
+
+def _fake_comparable_result(query):
+    comparables = [
+        {
+            "listing_id": f"cmp-{idx}",
+            "province": query.province,
+            "district": query.district,
+            "ward": "Dịch Vọng",
+            "property_type": query.property_type,
+            "price_vnd": price_per_m2 * query.area_m2,
+            "area_m2": query.area_m2,
+            "price_per_m2": price_per_m2,
+            "published_at": "2025-11-01T00:00:00+00:00",
+            "match_tier": "province+district+property_type",
+            "area_ratio": 1.0,
+            "recency_days": 30.0,
+            "distance_m": None,
+            "distance_status": "not_available_missing_coordinates",
+        }
+        for idx, price_per_m2 in enumerate([40_000_000, 42_000_000, 44_000_000], start=1)
+    ]
+    return {
+        "query": query.__dict__,
+        "count": len(comparables),
+        "max_results": 10,
+        "area_tolerance": 0.25,
+        "support_level": "medium",
+        "match_tier_counts": {"province+district+property_type": 3},
+        "distance_status": "not_available_missing_coordinates",
+        "warnings": ["source dataset lacks latitude/longitude; comparable distance and radius fallback unavailable"],
+        "comparables": comparables,
+    }
