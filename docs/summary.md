@@ -53,6 +53,7 @@ The project is being converted from a credit scoring MLOps demo into a Property 
 - Monitoring container dependency audit: blocked by NannyML transitive LightGBM vulnerability until a compatible NannyML release or monitoring image redesign is available.
 - Deployment URL: not deployed; no resources were created by the plan phase.
 - Production image status: the planned Artifact Registry repository was created by a targeted Terraform apply with exactly 1 resource added; API and job images are pushed and Terraform now references their immutable digests. Full deployment remains unapplied.
+- MLflow secret readiness: Terraform now wires URI, username, and password through Secret Manager references; values remain unexposed and secret versions await manual VM entry.
 
 ## Next Step
 

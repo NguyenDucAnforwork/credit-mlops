@@ -111,6 +111,12 @@ Last updated: 2026-07-27 00:05:00 Asia/Bangkok
 - Evidence: revised target plan was exactly 1 to add; apply completed with 1 added, 0 changed, 0 destroyed; state lists only the repository resource; image pushes and final digest plan passed.
 - Rationale: the APIs were already enabled and verified by cloud smoke; broad dependency expansion would have created 13 additional Terraform service resources.
 - Consequence: the registry exists and immutable images are available, but all remaining resources still require a separately approved full apply.
+
+## ADR-0025: Inject MLflow Credentials Through Secret Manager
+
+- Decision: declare separate URI, username, and password Secret Manager containers and inject them into Cloud Run through `latest` secret references.
+- Rationale: Terraform source and image configuration must not contain credential values; the existing project-level secret accessor binding is sufficient and is unchanged.
+- Consequence: secret versions must be added interactively on the VM before a meaningful final Terraform plan or runtime deployment. Empty or missing versions are not a safe runtime configuration.
 - Consequence: Terraform source now validates on the VM; deployment remains blocked until project scopes/IAM, Docker build/push, and cost-sensitive apply approval are available.
 
 ## ADR-0016: Keep Secrets Out Of Docker Images

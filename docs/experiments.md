@@ -745,6 +745,15 @@
 - Decision: stop after the final plan. No full apply, Cloud Run deployment, Scheduler execution, or secret creation ran.
 - Evidence: `docs/evidence/phase6_artifact_registry_target_plan_20260727.txt`, `docs/evidence/phase6_artifact_registry_target_apply_20260727.txt`, `docs/evidence/phase6_artifact_registry_details_20260727.txt`, and `docs/evidence/phase6_terraform_final_plan_20260727.txt`.
 
+## EXP-0044: MLflow Secret Wiring Readiness
+
+- Timestamp in Asia/Bangkok: 2026-07-27
+- Local inspection: `.env` presence and variable names only; values were not read or printed.
+- Configuration change: Terraform now declares Secret Manager containers `credit-mlops-demo-mlflow-tracking-uri`, `credit-mlops-demo-mlflow-tracking-username`, and `credit-mlops-demo-mlflow-tracking-password`, and injects all three as `latest` secret references into the Cloud Run API.
+- Security constraint: no secret versions, values, IAM changes, Terraform apply, or Terraform plan were executed.
+- Expected value format: MLflow tracking URI for the URI secret; the exact DagsHub username and password for the credential secrets, entered interactively on the VM.
+- Decision: wait for manual confirmation that secret versions exist before rerunning Terraform plan.
+
 ## EXP-0042: Immutable Production Image Build And Registry Push Blocker
 
 - Timestamp in Asia/Bangkok: 2026-07-27 00:46:00

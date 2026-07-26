@@ -84,6 +84,30 @@ resource "google_secret_manager_secret" "mlflow_tracking_uri" {
   depends_on = [google_project_service.required]
 }
 
+resource "google_secret_manager_secret" "mlflow_tracking_username" {
+  project   = var.project_id
+  secret_id = "${local.name_prefix}-mlflow-tracking-username"
+  labels    = local.labels
+
+  replication {
+    auto {}
+  }
+
+  depends_on = [google_project_service.required]
+}
+
+resource "google_secret_manager_secret" "mlflow_tracking_password" {
+  project   = var.project_id
+  secret_id = "${local.name_prefix}-mlflow-tracking-password"
+  labels    = local.labels
+
+  replication {
+    auto {}
+  }
+
+  depends_on = [google_project_service.required]
+}
+
 resource "google_service_account" "run" {
   project      = var.project_id
   account_id   = "credit-mlops-run-${var.environment}"
@@ -155,6 +179,26 @@ resource "google_cloud_run_v2_service" "api" {
         value_source {
           secret_key_ref {
             secret  = google_secret_manager_secret.mlflow_tracking_uri.secret_id
+            version = "latest"
+          }
+        }
+      }
+
+      env {
+        name = "MLFLOW_TRACKING_USERNAME"
+        value_source {
+          secret_key_ref {
+            secret  = google_secret_manager_secret.mlflow_tracking_username.secret_id
+            version = "latest"
+          }
+        }
+      }
+
+      env {
+        name = "MLFLOW_TRACKING_PASSWORD"
+        value_source {
+          secret_key_ref {
+            secret  = google_secret_manager_secret.mlflow_tracking_password.secret_id
             version = "latest"
           }
         }

@@ -8,7 +8,7 @@ Current scope:
 - Artifact Registry repository for images.
 - GCS bucket for property snapshots.
 - BigQuery dataset for silver/gold tables.
-- Secret Manager placeholder for the MLflow tracking URI.
+- Secret Manager containers for the MLflow tracking URI, username, and password. Secret versions must be added through an approved VM-only interactive flow; values are never stored in Terraform.
 - Cloud Run service for FastAPI.
 - Cloud Run Job for ETL.
 - Cloud Scheduler job to trigger ETL.

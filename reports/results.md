@@ -829,6 +829,16 @@ Full Hugging Face ingestion, row counts, checksums, ETL runtime, and peak RAM ar
 | Remaining blockers | Secret value population, apply-time IAM/cost approval, full apply, Cloud Run/API smoke, Scheduler execution, and rollback evidence |
 | Criterion status | Repository and image push gates pass; final plan recorded; stopped before full apply |
 
+### MLflow Secret Wiring Readiness
+
+| Field | Value |
+|-------|-------|
+| Terraform resources | Three Secret Manager containers: URI, username, password |
+| Cloud Run consumer | API service only; all three are injected through `latest` secret references |
+| Secret values | Not read, printed, created, or committed |
+| Plan/apply | Not run for this change |
+| Remaining gate | Add secret versions through the approved interactive VM flow, then rerun Terraform plan |
+
 ### Immutable Production Image Build And Push Blocker
 
 | Field | Value |

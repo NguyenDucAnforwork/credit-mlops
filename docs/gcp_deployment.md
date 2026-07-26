@@ -26,8 +26,8 @@ The 2026-07-27 remote Terraform phase used Terraform 1.9.8 and Google provider 6
 - Immutable production API and job images are now pushed to Artifact Registry and referenced by their immutable digests in Terraform.
 - The plan has not been applied, so there is no Cloud Run URL, ETL execution, API smoke, scheduler execution, or rollback evidence.
 - The deployer can perform the read-only smoke, but apply-time IAM for every planned resource and cost approval still need confirmation.
-- MLflow tracking URI and runtime secret values are not provisioned; no secret was created or committed.
-- Secret Manager values were not created or populated. The final digest-based Terraform plan passed with 29 resources to add, 0 to change, and 0 to destroy.
+- Terraform now declares three MLflow Secret Manager containers: tracking URI, username, and password. No secret values were read, created, or committed.
+- Secret versions must be added interactively on the VM after the containers exist. No Terraform apply was run for this change.
 - Do not create downloaded long-lived service-account keys.
 
 ## Cost
