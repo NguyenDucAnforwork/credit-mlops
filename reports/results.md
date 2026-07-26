@@ -251,3 +251,16 @@ Full Hugging Face ingestion, row counts, checksums, ETL runtime, and peak RAM ar
 | Layer disk use | 407M silver, 287M gold, 52M quarantine |
 | Evidence | `docs/evidence/hf_etl_summary_20260726.json`, `docs/evidence/hf_etl_profile_20260726.json` |
 | Full suite after ETL | 99 passed in 7.38 seconds; wrapper runtime 9 seconds |
+
+### HF Data Contracts
+
+| Field | Value |
+|-------|-------|
+| Contract status | `pass_with_blockers` |
+| Core checks | 9 passed |
+| Blocker checks | 1 failed: `coordinate_source_columns_present` |
+| MVP row threshold | pass, 638,123 gold rows >= 500,000 |
+| Coordinate evidence | source schema lacks `latitude` and `longitude`; `coordinate_status=missing_source_columns` |
+| Contract runtime | 16 seconds |
+| Evidence | `docs/evidence/hf_contract_report_20260726.json` |
+| Full suite after contracts | 102 passed in 7.98 seconds; wrapper runtime 10 seconds |

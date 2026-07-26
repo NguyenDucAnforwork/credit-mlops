@@ -1,11 +1,11 @@
 # Progress
 
-Last updated: 2026-07-26 14:41:00 Asia/Bangkok
+Last updated: 2026-07-26 14:47:20 Asia/Bangkok
 
 ## Phase Checklist
 
 - Phase 0 audit and remote baseline: partially complete; tests pass, Docker smoke blocked
-- Phase 1 ETL: raw snapshot and first full silver/gold ETL complete; GIS coordinates absent in source
+- Phase 1 ETL: raw snapshot, silver/gold ETL, and data contracts complete with coordinate blocker documented
 - Phase 2 PostGIS and GIS: not started
 - Phase 3 AVM: not started
 - Phase 4 APIs: not started
@@ -40,7 +40,9 @@ Last updated: 2026-07-26 14:41:00 Asia/Bangkok
 - ETL runtime: 48 seconds; disk: 407M silver, 287M gold, 52M quarantine.
 - Coordinate source columns `latitude` and `longitude` are absent from the actual dataset schema; records are marked `coordinate_status=missing_source_columns`.
 - Full suite after HF ETL passed on the VM: 99 passed in 7.38 seconds; wrapper runtime 9 seconds.
+- Data contract validation status: `pass_with_blockers`; 9 core checks passed; coordinate-source check failed as blocker.
+- Full suite after data contracts passed on the VM: 102 passed in 7.98 seconds; wrapper runtime 10 seconds.
 
 ## Next
 
-Commit and push the verified HF ETL milestone, then continue toward coordinate enrichment strategy, data contracts, and model-ready feature definitions.
+Commit and push the verified data-contract milestone, then continue with a coordinate enrichment decision and non-GIS AVM baseline experiments that do not fabricate coordinates.

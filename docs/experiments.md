@@ -163,3 +163,21 @@
 - Decision: keep ETL and document coordinate blocker honestly.
 - Lesson learned: verify real schema before assuming coordinates from dataset descriptions.
 - Next experiment: data contracts and coordinate enrichment decision; do not fabricate latitude/longitude.
+
+## EXP-0010: HF Layer Data Contracts
+
+- Timestamp in Asia/Bangkok: 2026-07-26 14:47:13
+- Hypothesis: The full HF silver/gold/quarantine outputs satisfy core data contracts and expose coordinate availability as a measured blocker.
+- Local Git commit or working-tree identifier: `71d2c7c` plus uncommitted data-contract source/tests/docs.
+- Dataset snapshot ID and checksums: revision `a9a66ffa985edcf76b4be59ae2c6f5b1db889c38`; raw SHA256 manifest in `reports/generated/hf_vietnam_real_estates_snapshot_manifest_20260726.json`.
+- Exact remote command: `scripts/remote/run.sh 'uv run python scripts/property_validate.py'`.
+- Configuration and seed: validation threshold `min_gold_rows=500000`; no random seed.
+- VM hardware/environment: Ubuntu 24.04.4 LTS, 4 vCPU AMD EPYC 7B12, 15 GiB RAM, no GPU.
+- Runtime: contract validation 16 seconds; final pytest 7.98 seconds with 10-second wrapper runtime.
+- Peak RAM when available: not measured.
+- Metrics: status `pass_with_blockers`; 9 core checks passed; 1 blocker check failed for missing `latitude`/`longitude`; 638,123 gold MVP rows; 102 tests passed.
+- Baseline comparison: previous HF ETL had 99 passing tests; contracts add 3 passing tests for 102 total.
+- Interpretation: ETL output is model-usable for non-GIS tabular baselines and satisfies the >=500,000 MVP row criterion, but GIS/PostGIS/H3 requirements cannot be truthfully completed from this source alone.
+- Decision: keep validation and treat coordinate enrichment as an explicit architecture decision.
+- Lesson learned: a `pass_with_blockers` state is more honest than either failing all ETL or pretending GIS fields exist.
+- Next experiment: document coordinate enrichment decision and start non-GIS AVM baselines.

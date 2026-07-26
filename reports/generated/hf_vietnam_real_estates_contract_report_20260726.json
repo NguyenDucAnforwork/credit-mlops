@@ -1,0 +1,144 @@
+{
+  "checks": [
+    {
+      "expected": [
+        "area_m2",
+        "coordinate_status",
+        "description",
+        "district",
+        "listing_id",
+        "price_vnd",
+        "property_type",
+        "province",
+        "published_at",
+        "snapshot_id",
+        "source_shard",
+        "street",
+        "title",
+        "ward"
+      ],
+      "name": "silver_required_columns",
+      "observed": {
+        "missing": []
+      },
+      "severity": "error",
+      "status": "pass"
+    },
+    {
+      "expected": [
+        "area_m2",
+        "city_key",
+        "coordinate_status",
+        "description",
+        "district",
+        "district_key",
+        "listing_id",
+        "price_per_m2",
+        "price_vnd",
+        "property_type",
+        "province",
+        "published_at",
+        "published_month",
+        "published_quarter",
+        "published_year",
+        "snapshot_id",
+        "source_shard",
+        "street",
+        "title",
+        "ward"
+      ],
+      "name": "gold_required_columns",
+      "observed": {
+        "missing": []
+      },
+      "severity": "error",
+      "status": "pass"
+    },
+    {
+      "expected": true,
+      "name": "silver_listing_id_unique",
+      "observed": true,
+      "severity": "error",
+      "status": "pass"
+    },
+    {
+      "expected": true,
+      "name": "gold_mvp_city_filter",
+      "observed": true,
+      "severity": "error",
+      "status": "pass"
+    },
+    {
+      "expected": ">=500000",
+      "name": "gold_min_rows",
+      "observed": 638123,
+      "severity": "error",
+      "status": "pass"
+    },
+    {
+      "expected": true,
+      "name": "silver_positive_price",
+      "observed": true,
+      "severity": "error",
+      "status": "pass"
+    },
+    {
+      "expected": true,
+      "name": "silver_positive_area",
+      "observed": true,
+      "severity": "error",
+      "status": "pass"
+    },
+    {
+      "expected": true,
+      "name": "gold_positive_price_per_m2",
+      "observed": true,
+      "severity": "error",
+      "status": "pass"
+    },
+    {
+      "expected": true,
+      "name": "quarantine_has_reason",
+      "observed": true,
+      "severity": "error",
+      "status": "pass"
+    },
+    {
+      "expected": [
+        "latitude",
+        "longitude"
+      ],
+      "name": "coordinate_source_columns_present",
+      "observed": "missing_source_columns",
+      "severity": "blocker",
+      "status": "fail"
+    }
+  ],
+  "metrics": {
+    "gold_rows": 638123,
+    "mvp_city_counts": {
+      "Hà Nội": 311266,
+      "Hồ Chí Minh": 326857
+    },
+    "price_per_m2_max": 739375000000.0,
+    "price_per_m2_median": 133333333.33333333,
+    "price_per_m2_min": 77.41111111111111,
+    "property_type_counts": {
+      "apartment": 133458,
+      "house": 414940,
+      "land": 84935,
+      "shophouse": 4790
+    },
+    "quarantine_reason_counts": {
+      "duplicate_listing_id": 8,
+      "invalid_area": 1,
+      "invalid_price": 78418,
+      "invalid_published_at": 1267,
+      "missing_district": 26476
+    },
+    "quarantine_rows": 106170,
+    "silver_rows": 893830
+  },
+  "snapshot_id": "a9a66ffa985edcf76b4be59ae2c6f5b1db889c38",
+  "status": "pass_with_blockers"
+}

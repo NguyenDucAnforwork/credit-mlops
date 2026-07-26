@@ -1,6 +1,6 @@
 # Data Card
 
-Last updated: 2026-07-26 14:41:00 Asia/Bangkok
+Last updated: 2026-07-26 14:47:20 Asia/Bangkok
 
 ## Primary Dataset
 
@@ -25,6 +25,9 @@ Last updated: 2026-07-26 14:41:00 Asia/Bangkok
 - Quarantine rows: 106,170
 - Duplicate rows: 8
 - Coordinate status: `missing_source_columns`
+- Data contract status: `pass_with_blockers`
+- Core contract checks: required columns, unique listing IDs, MVP city filter, >=500,000 gold rows, positive price/area/price_per_m2, quarantine reasons all pass
+- Blocker contract check: coordinate source columns present fails because the actual source schema lacks `latitude` and `longitude`
 
 ## Fixture Data
 

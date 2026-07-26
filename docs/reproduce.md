@@ -1,6 +1,6 @@
 # Reproduce
 
-Last updated: 2026-07-26 14:41:00 Asia/Bangkok
+Last updated: 2026-07-26 14:47:20 Asia/Bangkok
 
 All heavy work runs on the VM. Do not install project dependencies, run tests, train models, Docker, Terraform, or `gcloud` locally.
 
@@ -44,6 +44,14 @@ Full HF silver/gold ETL on VM:
 ```bash
 make remote-sync
 scripts/remote/run.sh 'uv run python scripts/property_etl.py'
+scripts/remote/fetch_artifacts.sh
+```
+
+HF layer contract validation:
+
+```bash
+make remote-sync
+scripts/remote/run.sh 'uv run python scripts/property_validate.py'
 scripts/remote/fetch_artifacts.sh
 ```
 

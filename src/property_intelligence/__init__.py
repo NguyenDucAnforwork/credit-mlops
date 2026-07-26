@@ -25,6 +25,12 @@ from property_intelligence.hf_etl import (
     run_hf_silver_gold_etl,
     write_hf_etl_summary,
 )
+from property_intelligence.contracts import (
+    ContractCheck,
+    ContractReport,
+    validate_hf_layers,
+    write_contract_report,
+)
 
 __all__ = [
     "build_gold",
@@ -46,4 +52,8 @@ __all__ = [
     "normalize_hf_frame",
     "run_hf_silver_gold_etl",
     "write_hf_etl_summary",
+    "ContractCheck",
+    "ContractReport",
+    "validate_hf_layers",
+    "write_contract_report",
 ]
