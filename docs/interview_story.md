@@ -1,6 +1,6 @@
 # Interview Story
 
-Last updated: 2026-07-26 14:51:45 Asia/Bangkok
+Last updated: 2026-07-26 14:56:20 Asia/Bangkok
 
 ## Current 90-Second Story
 
@@ -16,6 +16,7 @@ I started with an existing credit scoring MLOps project and rebuilt its executio
 - Normalized 1,000,000 raw listings into 893,830 silver rows and 638,123 Hà Nội/Hồ Chí Minh gold rows in 48 seconds on the VM, while documenting missing coordinate columns as a real data limitation.
 - Added data contracts with 102 VM-verified tests and a `pass_with_blockers` report: 9 core data checks pass, and coordinate availability is explicitly blocked.
 - Established a non-GIS AVM baseline on 108,336 December listings: district+property-type median price/m2 achieved 22.85% MdAPE versus 47.97% for global median.
+- Improved the AVM baseline with HGB on log(price/m2): December MdAPE 19.16% and RMSLE 0.3850, a 16.14% relative MdAPE gain over the strongest simple baseline.
 - Not ready: AVM metrics are not measured yet.
 - Not ready: cloud deployment metrics are not measured yet.
 

@@ -1,8 +1,8 @@
 # AVM Model Card
 
-Last updated: 2026-07-26 14:51:45 Asia/Bangkok
+Last updated: 2026-07-26 14:56:20 Asia/Bangkok
 
-Status: simple non-GIS baseline measured; production AVM not trained.
+Status: non-GIS tabular baseline measured; production AVM not promoted.
 
 ## Intended Use
 
@@ -10,14 +10,14 @@ Estimate listing-based residential market value and price per square meter for l
 
 ## Current Metrics
 
-- Temporal MdAPE: 22.85% for district+property-type median price/m2 baseline on December 2025 test
-- Temporal RMSLE: 0.4426 for district+property-type median price/m2 baseline on December 2025 test
+- Temporal MdAPE: 19.16% for HGB log(price/m2) baseline on December 2025 test
+- Temporal RMSLE: 0.3850 for HGB log(price/m2) baseline on December 2025 test
 - Spatial MdAPE: not measured
 - Spatial RMSLE: not measured
 - 80% interval coverage: not measured
 - Median interval-width ratio: not measured
 - Artifact size: not measured
-- Training runtime: not measured
+- Training runtime: 9 seconds for HGB baseline train/evaluation on VM
 - Baseline runtime: 2 seconds on VM
 
 ## Known Limitations

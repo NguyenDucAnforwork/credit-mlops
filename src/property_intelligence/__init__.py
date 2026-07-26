@@ -35,6 +35,8 @@ from property_intelligence.avm import (
     AvmMetrics,
     compute_avm_metrics,
     evaluate_price_per_m2_baselines,
+    evaluate_tabular_hgb_avm,
+    make_tabular_hgb_pipeline,
     temporal_split,
     write_avm_report,
 )
@@ -66,6 +68,8 @@ __all__ = [
     "AvmMetrics",
     "compute_avm_metrics",
     "evaluate_price_per_m2_baselines",
+    "evaluate_tabular_hgb_avm",
+    "make_tabular_hgb_pipeline",
     "temporal_split",
     "write_avm_report",
 ]

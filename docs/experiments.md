@@ -199,3 +199,21 @@
 - Decision: keep as AVM Experiment 1 baseline.
 - Lesson learned: property type materially improves listing-based value estimation, but the error distribution remains wide for high-value listings.
 - Next experiment: train non-GIS tabular model and compare against this strongest simple baseline.
+
+## EXP-0012: Non-GIS Tabular HGB AVM
+
+- Timestamp in Asia/Bangkok: 2026-07-26 14:56:14
+- Hypothesis: A non-GIS tabular gradient boosting model on log(price/m2) improves temporal MdAPE and RMSLE over the strongest simple median baseline without using fabricated coordinates.
+- Local Git commit or working-tree identifier: `7ab6d5c` plus uncommitted tabular AVM source/tests/docs.
+- Dataset snapshot ID and checksums: gold layer from revision `a9a66ffa985edcf76b4be59ae2c6f5b1db889c38`; raw SHA256 manifest in `reports/generated/hf_vietnam_real_estates_snapshot_manifest_20260726.json`.
+- Exact remote command: `scripts/remote/run.sh 'uv run python scripts/property_avm_tabular.py'`.
+- Configuration and seed: HistGradientBoostingRegressor, `random_state=42`, target `log(price_per_m2)`, deterministic temporal split June-October / November / December 2025.
+- VM hardware/environment: Ubuntu 24.04.4 LTS, 4 vCPU AMD EPYC 7B12, 15 GiB RAM, no GPU.
+- Runtime: training/evaluation script 9 seconds; final pytest 7.69 seconds with 9-second wrapper runtime.
+- Peak RAM when available: not measured.
+- Metrics: train 429,682 rows; validation 100,105 rows; test 108,336 rows. Test MdAPE 19.16%, RMSLE 0.3850, MAE 18.66B VND, median absolute error 1.58B VND, R2 0.313, within 10% 27.67%, within 20% 51.79%.
+- Baseline comparison: strongest simple baseline test MdAPE 22.85% and RMSLE 0.4426; tabular HGB improves MdAPE by 16.14% relative and improves RMSLE by 13.02% relative, but MAE is slightly worse than 18.52B VND.
+- Interpretation: non-GIS tabular modeling meets temporal MdAPE and RMSLE targets, but high-value outliers still hurt MAE and spatial/GIS criteria remain blocked by missing coordinates.
+- Decision: keep as AVM Experiment 2 and current best temporal model.
+- Lesson learned: optimizing log(price/m2) improves relative error and RMSLE, while absolute VND error still needs tail handling.
+- Next experiment: calibrated uncertainty intervals and cohort metrics for the current best non-GIS model.

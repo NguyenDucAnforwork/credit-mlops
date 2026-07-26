@@ -284,3 +284,25 @@ Full Hugging Face ingestion, row counts, checksums, ETL runtime, and peak RAM ar
 | Runtime | 2 seconds |
 | Evidence | `docs/evidence/avm_baseline_metrics_20260726.json` |
 | Full suite after baseline | 105 passed in 7.57 seconds; wrapper runtime 9 seconds |
+
+### AVM Experiment 2: Non-GIS Tabular HGB
+
+| Field | Value |
+|-------|-------|
+| Model | `hist_gradient_boosting_log_price_per_m2` |
+| Target | `log(price_per_m2)` |
+| Split | June-October 2025 train, November 2025 validation, December 2025 test |
+| Train rows | 429,682 |
+| Validation rows | 100,105 |
+| Test rows | 108,336 |
+| Test MdAPE | 19.16% |
+| Test RMSLE | 0.3850 |
+| Test MAE | 18.66B VND |
+| Test median absolute error | 1.58B VND |
+| Test R2 | 0.313 |
+| Within 10% | 27.67% |
+| Within 20% | 51.79% |
+| Relative MdAPE improvement over strongest simple baseline | 16.14% |
+| Runtime | 9 seconds |
+| Evidence | `docs/evidence/avm_tabular_hgb_metrics_20260726.json` |
+| Full suite after tabular AVM | 107 passed in 7.69 seconds; wrapper runtime 9 seconds |

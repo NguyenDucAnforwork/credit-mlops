@@ -1,6 +1,6 @@
 # Lessons Learned
 
-Last updated: 2026-07-26 14:51:45 Asia/Bangkok
+Last updated: 2026-07-26 14:56:20 Asia/Bangkok
 
 - Verify GCP from the VM before planning Terraform or Cloud Run work. The current VM account is present, but OAuth scopes are insufficient for Cloud Resource Manager and Service Usage.
 - Keep remote orchestration scripts allowlisted and sentinel-guarded so source synchronization cannot delete unrelated VM data.
@@ -15,3 +15,4 @@ Last updated: 2026-07-26 14:51:45 Asia/Bangkok
 - The real HF schema has no latitude/longitude columns. GIS features must come from a legitimate enrichment source; do not infer exact coordinates from text fields.
 - Data validation can pass core ETL gates while still surfacing a blocker. `pass_with_blockers` is useful when non-GIS work can continue but GIS work cannot.
 - District and property-type medians are a strong listing AVM baseline: December test MdAPE improved from 47.97% global median to 22.85% with district+property type.
+- HGB on log(price/m2) improved relative error and RMSLE but not MAE. Future AVM work should include tail/outlier handling and interval calibration, not just average relative error.

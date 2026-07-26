@@ -6,7 +6,34 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+from sklearn.compose import ColumnTransformer
+from sklearn.ensemble import HistGradientBoostingRegressor
+from sklearn.impute import SimpleImputer
 from sklearn.metrics import mean_absolute_error, mean_squared_log_error, r2_score
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import OrdinalEncoder
+
+
+NUMERIC_FEATURES = [
+    "area_m2",
+    "floor_count",
+    "frontage_width",
+    "house_depth",
+    "road_width",
+    "bedroom_count",
+    "bathroom_count",
+    "published_month",
+    "published_quarter",
+]
+
+CATEGORICAL_FEATURES = [
+    "province",
+    "district",
+    "ward",
+    "property_type",
+    "house_direction",
+    "balcony_direction",
+]
 
 
 @dataclass(frozen=True)
@@ -67,6 +94,70 @@ def evaluate_price_per_m2_baselines(gold: pd.DataFrame) -> dict:
         "metrics": [metric.__dict__ for metric in metrics],
         "best_test_by_mdape": _best_metric(metrics, "test", "mdape").__dict__,
     }
+
+
+def evaluate_tabular_hgb_avm(gold: pd.DataFrame, random_state: int = 42) -> dict:
+    clean = _clean_gold(gold)
+    splits = temporal_split(clean)
+    train = splits["train"]
+    model = make_tabular_hgb_pipeline(random_state=random_state)
+    model.fit(train[NUMERIC_FEATURES + CATEGORICAL_FEATURES], np.log(train["price_per_m2"]))
+    metrics: list[AvmMetrics] = []
+    for split_name in ("validation", "test"):
+        frame = splits[split_name]
+        predicted_log_ppm = model.predict(frame[NUMERIC_FEATURES + CATEGORICAL_FEATURES])
+        predicted_price = np.exp(predicted_log_ppm) * frame["area_m2"].to_numpy(dtype=float)
+        metrics.append(compute_avm_metrics("hist_gradient_boosting_log_price_per_m2", split_name, frame["price_vnd"], predicted_price))
+    return {
+        "model": "hist_gradient_boosting_log_price_per_m2",
+        "target": "log(price_per_m2)",
+        "features": {"numeric": NUMERIC_FEATURES, "categorical": CATEGORICAL_FEATURES},
+        "random_state": random_state,
+        "split_rows": {name: len(frame) for name, frame in splits.items()},
+        "metrics": [metric.__dict__ for metric in metrics],
+        "best_test_by_mdape": _best_metric(metrics, "test", "mdape").__dict__,
+    }
+
+
+def make_tabular_hgb_pipeline(random_state: int = 42) -> Pipeline:
+    preprocessor = ColumnTransformer(
+        transformers=[
+            ("num", SimpleImputer(strategy="median"), NUMERIC_FEATURES),
+            (
+                "cat",
+                Pipeline(
+                    steps=[
+                        ("imputer", SimpleImputer(strategy="constant", fill_value="missing")),
+                        (
+                            "encoder",
+                            OrdinalEncoder(
+                                handle_unknown="use_encoded_value",
+                                unknown_value=-1,
+                                encoded_missing_value=-1,
+                            ),
+                        ),
+                    ]
+                ),
+                CATEGORICAL_FEATURES,
+            ),
+        ],
+        verbose_feature_names_out=False,
+    )
+    return Pipeline(
+        steps=[
+            ("preprocess", preprocessor),
+            (
+                "model",
+                HistGradientBoostingRegressor(
+                    learning_rate=0.06,
+                    max_iter=220,
+                    max_leaf_nodes=31,
+                    l2_regularization=0.05,
+                    random_state=random_state,
+                ),
+            ),
+        ]
+    )
 
 
 class GlobalMedianPricePerM2:
@@ -131,6 +222,22 @@ def write_avm_report(report: dict, output_path: Path) -> Path:
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(json.dumps(report, indent=2, sort_keys=True), encoding="utf-8")
     return output_path
+
+
+def _clean_gold(gold: pd.DataFrame) -> pd.DataFrame:
+    clean = gold.loc[
+        (gold["price_vnd"] > 0)
+        & (gold["area_m2"] > 0)
+        & gold["price_per_m2"].notna()
+        & gold["published_at"].notna()
+    ].copy()
+    for column in NUMERIC_FEATURES:
+        if column not in clean.columns:
+            clean[column] = np.nan
+    for column in CATEGORICAL_FEATURES:
+        if column not in clean.columns:
+            clean[column] = "missing"
+    return clean
 
 
 def _best_metric(metrics: list[AvmMetrics], split_name: str, field: str) -> AvmMetrics:
