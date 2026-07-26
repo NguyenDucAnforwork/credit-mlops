@@ -23,6 +23,7 @@ Measured on 2026-07-26 from branch `feat/onemount-property-intelligence`.
 | Monitoring | Synthetic drift triggers 4 alerts; delayed-label fallback replay MdAPE 16.73% on 2,000 labels |
 | UI | Streamlit Property Intelligence workspace with three required demo scenarios and LTV decision flow |
 | Terraform | GCP source scaffold validates on VM with Terraform 1.9.8 and Google provider 6.50.0; no plan/apply run |
+| Docker packaging | `.dockerignore` excludes secrets/raw data/model directories; Dockerfiles no longer copy `.env`; Docker build still blocked |
 | Tests/quality | 139 tests pass under coverage in 15.91 seconds; scoped coverage 81%; Ruff, warnings-enabled full suite, and mypy type smoke pass |
 | Security audit | After dependency remediation, `pip-audit` passes with 0 known vulnerabilities |
 
@@ -75,6 +76,7 @@ Current measured targets:
 - `make remote-vulnerability-smoke`: dependency audit on VM; evidence capture completed in 41 seconds and found 0 known vulnerabilities after remediation.
 - `make remote-type-smoke`: pinned mypy on new property intelligence modules, API code, and selected property scripts; 19 source files checked with 0 issues in a 1-second wrapper runtime.
 - `make remote-terraform-validate`: GCP Terraform scaffold fmt/init/validate on VM; completed in 2 seconds with `terraform_validate_exit=0`.
+- Docker context guard: VM source check passed in 0 seconds, but Docker daemon access still fails with permission denied.
 
 Docker and cloud targets are intentionally blocked until VM Docker permissions and GCP OAuth scopes are fixed:
 

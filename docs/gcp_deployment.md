@@ -1,6 +1,6 @@
 # GCP Deployment
 
-Last updated: 2026-07-26 21:39:59 Asia/Bangkok
+Last updated: 2026-07-26 21:46:09 Asia/Bangkok
 
 ## Target
 
@@ -30,3 +30,5 @@ Not measured. No GCP resources were created by this phase.
 ## Docker Prerequisite
 
 Docker-based deployment preparation is also blocked on the VM because user `ducan` cannot access `/var/run/docker.sock`, and `docker compose` is not available.
+
+Source hardening completed on 2026-07-26: `.dockerignore` excludes `.env`, generated data layers, remote model directories, Terraform state/plans, and generated evidence/report paths. API and monitoring Dockerfiles no longer copy `.env`. The VM source guard passed, but Docker build/runtime evidence remains blocked by socket permissions.

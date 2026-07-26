@@ -1,6 +1,6 @@
 # Results Summary
 
-Last updated: 2026-07-26 21:39:59 Asia/Bangkok
+Last updated: 2026-07-26 21:46:09 Asia/Bangkok
 
 All models trained on the same dataset: 16,000 train / 4,000 test (stratified 80/20 split, SHA256: `cac9de3c`). Default rate: 18.2%.
 
@@ -629,6 +629,19 @@ Full Hugging Face ingestion, row counts, checksums, ETL runtime, and peak RAM ar
 | Result | `terraform_validate_exit=0`; `fmt`, `init -backend=false`, and `validate` passed |
 | Evidence | `docs/evidence/phase6_terraform_validate_20260726.txt`, `docs/evidence/phase6_terraform_validate_runtime_20260726.txt`, `infra/terraform/.terraform.lock.hcl` |
 | Criterion status | Terraform source validation passes; no plan/apply/deployment claimed |
+
+### Docker Context Guard
+
+| Field | Value |
+|-------|-------|
+| Command | VM source guard captured in evidence |
+| Execution location | VM `lfm`, workspace `/home/ducan/credit-mlops-codex` |
+| Source changes | added `.dockerignore`; removed `COPY .env` from API and monitoring Dockerfiles |
+| Runtime | 0 seconds |
+| Result | `docker_context_guard_exit=0`; `.env`, `data/raw`, and `artifacts/models` exclusions verified; no `COPY .env` remains |
+| Docker status | Docker client 29.1.3 present, daemon access still permission denied on `/var/run/docker.sock` |
+| Evidence | `docs/evidence/phase6_docker_context_guard_20260726.txt`, `docs/evidence/phase6_docker_context_guard_runtime_20260726.txt` |
+| Criterion status | source packaging guard passes; Docker build/runtime remains blocked |
 
 ### Scoped Remote Coverage
 

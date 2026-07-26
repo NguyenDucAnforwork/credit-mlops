@@ -1,0 +1,13 @@
+.env
+data/raw
+artifacts/models
+uid=1002(ducan) gid=1003(ducan) groups=1003(ducan),4(adm),20(dialout),24(cdrom),25(floppy),29(audio),30(dip),44(video),46(plugdev),101(lxd),105(netdev),1000(ubuntu),1001(google-sudoers)
+Client:
+ Version:           29.1.3
+ API version:       1.52
+ Go version:        go1.24.4
+ Git commit:        29.1.3-0ubuntu3~24.04.2
+ Built:             Wed Apr 29 16:41:06 2026
+ OS/Arch:           linux/amd64
+ Context:           default
+permission denied while trying to connect to the docker API at unix:///var/run/docker.sock

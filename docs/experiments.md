@@ -614,3 +614,21 @@
 - Decision: keep the Terraform scaffold and validation target; do not run plan/apply until VM GCP OAuth/IAM and Docker image prerequisites are fixed.
 - Lesson learned: Terraform validation can advance cloud architecture evidence without mutating cloud state, but it must be labeled separately from deployment.
 - Next experiment: Docker build/push and live GCP plan/apply remain blocked by VM Docker socket/Compose access and GCP OAuth/IAM.
+
+## EXP-0035: Docker Context Secret/Data Guard
+
+- Timestamp in Asia/Bangkok: 2026-07-26 21:46:09
+- Hypothesis: Docker packaging can be hardened at source level by excluding secrets/generated artifacts and removing baked `.env` copies, even while Docker build/runtime remains blocked.
+- Local Git commit or working-tree identifier: `75379fa` plus uncommitted `.dockerignore`, Dockerfile hardening, evidence, and docs.
+- Dataset snapshot ID and checksums: not applicable; Docker context guard does not read datasets.
+- Exact remote command: source guard command captured in `docs/evidence/phase6_docker_context_guard_20260726.txt`.
+- Configuration and seed: `.dockerignore` excludes `.env`, generated data layers, remote model directories, Terraform state/plans, generated evidence/report paths, and secrets; API and monitoring Dockerfiles no longer copy `.env`.
+- VM hardware/environment: Ubuntu 24.04.4 LTS, 4 vCPU AMD EPYC 7B12, 15 GiB RAM, no GPU.
+- Runtime: 0 seconds.
+- Peak RAM when available: not measured.
+- Metrics: `docker_context_guard_exit=0`; `.env`, `data/raw`, and `artifacts/models` exclusions verified; recursive Dockerfile check found no `COPY .env`; Docker client 29.1.3 still fails daemon access with permission denied.
+- Baseline comparison: prior Dockerfile source copied `.env`, and no `.dockerignore` existed.
+- Interpretation: Docker source safety is improved, but this is not Docker build evidence because daemon access remains blocked.
+- Decision: keep the Docker context guard and do not run Docker build/up until VM socket/Compose access is fixed.
+- Lesson learned: remove secret-copy hazards before container runtime is available; source hardening and build evidence are separate milestones.
+- Next experiment: Docker build and Compose smoke require Docker socket access and a Compose command on the VM.

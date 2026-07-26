@@ -1,6 +1,6 @@
 # Progress
 
-Last updated: 2026-07-26 21:39:59 Asia/Bangkok
+Last updated: 2026-07-26 21:46:09 Asia/Bangkok
 
 ## Phase Checklist
 
@@ -10,7 +10,7 @@ Last updated: 2026-07-26 21:39:59 Asia/Bangkok
 - Phase 3 AVM: non-GIS median/tabular baselines, three interval calibrations, and remote-only HGB quantile artifact packaging measured
 - Phase 4 APIs: scaffold endpoints implemented; local-on-VM uvicorn AVM/lending p95 criteria measured for fallback and artifact-backed service paths
 - Phase 5 MLOps and monitoring: AVM promotion gate dry-run, synthetic drift, and delayed-label monitoring implemented
-- Phase 6 Docker and GCP: Terraform source scaffold validates on VM; Docker runtime and live cloud deployment blocked by VM permissions/scopes
+- Phase 6 Docker and GCP: Terraform source scaffold validates on VM; Docker context guard added; Docker runtime and live cloud deployment blocked by VM permissions/scopes
 - Phase 7 UI, CI, portfolio: Property Intelligence UI, non-Docker remote smoke reproduction, Ruff smoke, scoped coverage measurement, type-check smoke, vulnerability audit/remediation, TestClient warning remediation, and portfolio README/reproduction packaging implemented
 
 ## Evidence
@@ -108,6 +108,7 @@ Last updated: 2026-07-26 21:39:59 Asia/Bangkok
 - Type-check smoke added: `make remote-type-smoke` runs pinned `mypy==1.18.2` on `src/property_intelligence`, `api`, and selected property scripts; after typing-only fixes, it passed with 0 issues across 19 source files and 1-second wrapper runtime. Final source verification also passed Ruff and 139 warnings-enabled tests in 11.16 seconds; wrapper runtime 13 seconds.
 - GCP Terraform scaffold added under `infra/terraform`: required APIs, Artifact Registry, GCS, BigQuery, Secret Manager placeholder, Cloud Run service, Cloud Run ETL job, Scheduler, IAM service accounts, and optional disabled-by-default Cloud SQL/PostGIS scaffold.
 - `make remote-terraform-validate` installed/reused user-level Terraform 1.9.8 on the VM, initialized Google provider 6.50.0 with backend disabled, passed `terraform fmt -check -recursive`, passed `terraform validate`, and completed in 2 seconds. No `terraform plan`, `terraform apply`, `gcloud`, Docker build, image push, or cloud deployment was run.
+- Docker context guard added: `.dockerignore` excludes `.env`, generated data layers, remote model directories, Terraform state/plans, and generated evidence/report paths; API and monitoring Dockerfiles no longer copy `.env`. Remote guard check passed in 0 seconds while confirming Docker daemon access still fails with permission denied.
 
 ## Next
 

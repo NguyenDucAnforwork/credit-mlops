@@ -24,7 +24,6 @@ COPY src/ ./src/
 COPY api/ ./api/
 COPY artifacts/ ./artifacts/
 COPY data/processed/ ./data/processed/
-COPY .env .
 
 WORKDIR /app/api
 

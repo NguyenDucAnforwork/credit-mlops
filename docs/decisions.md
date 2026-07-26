@@ -1,6 +1,6 @@
 # Decisions
 
-Last updated: 2026-07-26 21:39:59 Asia/Bangkok
+Last updated: 2026-07-26 21:46:09 Asia/Bangkok
 
 ## ADR-0001: Local Source of Truth, VM Runtime Executor
 
@@ -91,3 +91,9 @@ Last updated: 2026-07-26 21:39:59 Asia/Bangkok
 - Decision: add `infra/terraform` and `make remote-terraform-validate`, using backend-disabled init and validation only.
 - Rationale: GCP IAM/OAuth and Docker image prerequisites are blocked, but source architecture can still be checked safely without creating or changing resources.
 - Consequence: Terraform source now validates on the VM; deployment remains blocked until project scopes/IAM, Docker build/push, and cost-sensitive apply approval are available.
+
+## ADR-0016: Keep Secrets Out Of Docker Images
+
+- Decision: add `.dockerignore` and remove `COPY .env` from Dockerfiles.
+- Rationale: environment files and generated data/model artifacts must not be baked into images by default; runtime configuration should come from Compose env files, Cloud Run environment, or Secret Manager.
+- Consequence: Docker source guard passes, but build/runtime validation remains blocked by VM Docker permissions.

@@ -16,7 +16,6 @@ COPY data/processed/ ./data/processed/
 COPY artifacts/ ./artifacts/
 COPY monitoring/ ./monitoring/
 COPY reports/   ./reports/
-COPY .env .
 
 ENV PYTHONPATH=/app/src:/app/api
 ENV PYTHONUNBUFFERED=1

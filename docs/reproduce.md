@@ -1,6 +1,6 @@
 # Reproduce
 
-Last updated: 2026-07-26 21:39:59 Asia/Bangkok
+Last updated: 2026-07-26 21:46:09 Asia/Bangkok
 
 All heavy work runs on the VM. Do not install project dependencies, run tests, train models, Docker, Terraform, or `gcloud` locally.
 
@@ -226,3 +226,5 @@ It runs on the VM, uses Terraform 1.9.8 with backend disabled, initializes Googl
 Cloud reproduction is blocked until the VM service account has sufficient OAuth scopes/IAM for project `driven-reef-452414-b5`.
 
 Docker reproduction is blocked until user `ducan` can access `/var/run/docker.sock` and a Compose command is available on the VM.
+
+Docker source packaging guard evidence is available under `docs/evidence/phase6_docker_context_guard_20260726.txt`; it does not replace a Docker build.
