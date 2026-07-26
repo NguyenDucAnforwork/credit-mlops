@@ -1,13 +1,13 @@
 # Progress
 
-Last updated: 2026-07-26 14:56:20 Asia/Bangkok
+Last updated: 2026-07-26 15:00:15 Asia/Bangkok
 
 ## Phase Checklist
 
 - Phase 0 audit and remote baseline: partially complete; tests pass, Docker smoke blocked
 - Phase 1 ETL: raw snapshot, silver/gold ETL, and data contracts complete with coordinate blocker documented
 - Phase 2 PostGIS and GIS: not started
-- Phase 3 AVM: non-GIS median and tabular baselines measured
+- Phase 3 AVM: non-GIS median/tabular baselines and first interval calibration measured
 - Phase 4 APIs: not started
 - Phase 5 MLOps and monitoring: not started
 - Phase 6 Docker and GCP: cloud access blocked by VM OAuth scopes; local Docker baseline pending
@@ -48,7 +48,9 @@ Last updated: 2026-07-26 14:56:20 Asia/Bangkok
 - Non-GIS tabular HGB baseline: December test MdAPE 19.16%, RMSLE 0.3850, MAE 18.66B VND, R2 0.313, within 20% = 51.79%.
 - Relative MdAPE improvement over strongest simple baseline: 16.14%.
 - Full suite after tabular AVM passed on the VM: 107 passed in 7.69 seconds; wrapper runtime 9 seconds.
+- First interval calibration: empirical 80% interval coverage 79.61%, median interval width ratio 83.79%, p90 width ratio 83.79%; coverage passes but width fails the <=50% target.
+- Full suite after interval calibration passed on the VM: 108 passed in 7.73 seconds; wrapper runtime 10 seconds.
 
 ## Next
 
-Commit and push the verified tabular AVM milestone, then continue with uncertainty calibration and cohort metrics while coordinate enrichment remains unresolved.
+Commit and push the verified interval calibration experiment, then retry uncertainty width reduction and add cohort metrics while coordinate enrichment remains unresolved.

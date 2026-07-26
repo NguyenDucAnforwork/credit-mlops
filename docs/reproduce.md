@@ -1,6 +1,6 @@
 # Reproduce
 
-Last updated: 2026-07-26 14:56:20 Asia/Bangkok
+Last updated: 2026-07-26 15:00:15 Asia/Bangkok
 
 All heavy work runs on the VM. Do not install project dependencies, run tests, train models, Docker, Terraform, or `gcloud` locally.
 
@@ -68,6 +68,14 @@ Non-GIS tabular AVM:
 ```bash
 make remote-sync
 scripts/remote/run.sh 'uv run python scripts/property_avm_tabular.py'
+scripts/remote/fetch_artifacts.sh
+```
+
+Non-GIS AVM interval calibration:
+
+```bash
+make remote-sync
+scripts/remote/run.sh 'uv run python scripts/property_avm_intervals.py'
 scripts/remote/fetch_artifacts.sh
 ```
 

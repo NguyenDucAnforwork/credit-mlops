@@ -1,6 +1,6 @@
 # AVM Model Card
 
-Last updated: 2026-07-26 14:56:20 Asia/Bangkok
+Last updated: 2026-07-26 15:00:15 Asia/Bangkok
 
 Status: non-GIS tabular baseline measured; production AVM not promoted.
 
@@ -14,8 +14,8 @@ Estimate listing-based residential market value and price per square meter for l
 - Temporal RMSLE: 0.3850 for HGB log(price/m2) baseline on December 2025 test
 - Spatial MdAPE: not measured
 - Spatial RMSLE: not measured
-- 80% interval coverage: not measured
-- Median interval-width ratio: not measured
+- 80% interval coverage: 79.61% for validation-residual interval on December 2025 test
+- Median interval-width ratio: 83.79%, above the <=50% target
 - Artifact size: not measured
 - Training runtime: 9 seconds for HGB baseline train/evaluation on VM
 - Baseline runtime: 2 seconds on VM
@@ -26,3 +26,4 @@ Estimate listing-based residential market value and price per square meter for l
 - Listing prices are asking prices, not verified transaction prices.
 - Low-support and OOD behavior is not implemented yet.
 - Source latitude/longitude columns are absent, so GIS features and spatial holdout are not implemented yet.
+- Current residual intervals are calibrated but too wide and mark 100% of test cases as low confidence under the current width policy.

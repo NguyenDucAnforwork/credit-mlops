@@ -119,6 +119,55 @@ def evaluate_tabular_hgb_avm(gold: pd.DataFrame, random_state: int = 42) -> dict
     }
 
 
+def evaluate_tabular_hgb_intervals(gold: pd.DataFrame, random_state: int = 42) -> dict:
+    clean = _clean_gold(gold)
+    splits = temporal_split(clean)
+    train = splits["train"]
+    validation = splits["validation"]
+    test = splits["test"]
+    model = make_tabular_hgb_pipeline(random_state=random_state)
+    feature_columns = NUMERIC_FEATURES + CATEGORICAL_FEATURES
+    model.fit(train[feature_columns], np.log(train["price_per_m2"]))
+
+    validation_pred_log_ppm = model.predict(validation[feature_columns])
+    validation_residuals = np.log(validation["price_per_m2"].to_numpy(dtype=float)) - validation_pred_log_ppm
+    lower_residual = float(np.quantile(validation_residuals, 0.10))
+    upper_residual = float(np.quantile(validation_residuals, 0.90))
+
+    test_pred_log_ppm = model.predict(test[feature_columns])
+    point = np.exp(test_pred_log_ppm) * test["area_m2"].to_numpy(dtype=float)
+    lower = np.exp(test_pred_log_ppm + lower_residual) * test["area_m2"].to_numpy(dtype=float)
+    upper = np.exp(test_pred_log_ppm + upper_residual) * test["area_m2"].to_numpy(dtype=float)
+    actual = test["price_vnd"].to_numpy(dtype=float)
+    coverage = np.mean((actual >= lower) & (actual <= upper))
+    width_ratio = (upper - lower) / point
+    interval_width_ratio_median = float(np.median(width_ratio))
+    interval_width_ratio_p90 = float(np.quantile(width_ratio, 0.90))
+    confidence = np.where(width_ratio <= 0.5, "high", np.where(width_ratio <= 0.8, "medium", "low"))
+    return {
+        "model": "hist_gradient_boosting_log_price_per_m2",
+        "interval": "validation_log_residual_q10_q90",
+        "target_coverage": 0.80,
+        "random_state": random_state,
+        "split_rows": {name: len(frame) for name, frame in splits.items()},
+        "residual_quantiles": {"q10": lower_residual, "q90": upper_residual},
+        "point_metrics": compute_avm_metrics(
+            "hist_gradient_boosting_log_price_per_m2",
+            "test",
+            test["price_vnd"],
+            point,
+        ).__dict__,
+        "interval_metrics": {
+            "coverage": float(coverage),
+            "median_interval_width_ratio": interval_width_ratio_median,
+            "p90_interval_width_ratio": interval_width_ratio_p90,
+            "high_confidence_share": float(np.mean(confidence == "high")),
+            "medium_confidence_share": float(np.mean(confidence == "medium")),
+            "low_confidence_share": float(np.mean(confidence == "low")),
+        },
+    }
+
+
 def make_tabular_hgb_pipeline(random_state: int = 42) -> Pipeline:
     preprocessor = ColumnTransformer(
         transformers=[

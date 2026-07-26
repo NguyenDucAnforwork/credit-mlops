@@ -217,3 +217,21 @@
 - Decision: keep as AVM Experiment 2 and current best temporal model.
 - Lesson learned: optimizing log(price/m2) improves relative error and RMSLE, while absolute VND error still needs tail handling.
 - Next experiment: calibrated uncertainty intervals and cohort metrics for the current best non-GIS model.
+
+## EXP-0013: Validation Residual 80% Intervals
+
+- Timestamp in Asia/Bangkok: 2026-07-26 15:00:11
+- Hypothesis: Central 80% intervals calibrated from November validation log residuals provide acceptable December empirical coverage for the current non-GIS HGB AVM.
+- Local Git commit or working-tree identifier: `851ebf8` plus uncommitted interval calibration source/tests/docs.
+- Dataset snapshot ID and checksums: gold layer from revision `a9a66ffa985edcf76b4be59ae2c6f5b1db889c38`; raw SHA256 manifest in `reports/generated/hf_vietnam_real_estates_snapshot_manifest_20260726.json`.
+- Exact remote command: `scripts/remote/run.sh 'uv run python scripts/property_avm_intervals.py'`.
+- Configuration and seed: HistGradientBoostingRegressor `random_state=42`; residual quantiles q10=-0.3807, q90=0.4196 from validation split.
+- VM hardware/environment: Ubuntu 24.04.4 LTS, 4 vCPU AMD EPYC 7B12, 15 GiB RAM, no GPU.
+- Runtime: interval script 9 seconds; final pytest 7.73 seconds with 10-second wrapper runtime.
+- Peak RAM when available: not measured.
+- Metrics: test coverage 79.61%; median interval-width ratio 83.79%; p90 interval-width ratio 83.79%; low-confidence share 100%; point MdAPE 19.16%; RMSLE 0.3850.
+- Baseline comparison: no prior interval baseline; coverage target 75%-85% passes, width target <=50% fails.
+- Interpretation: validation residual intervals are calibrated but too wide for a usable confidence policy.
+- Decision: retry/tune; keep as failed-width uncertainty experiment.
+- Lesson learned: global residual intervals are blunt and produce uniformly low confidence; cohort- or quantile-model intervals are needed.
+- Next experiment: reduce interval width through cohort calibration or quantile models while maintaining coverage.

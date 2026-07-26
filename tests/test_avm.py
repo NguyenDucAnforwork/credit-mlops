@@ -6,6 +6,7 @@ import pandas as pd
 from property_intelligence.avm import (
     compute_avm_metrics,
     evaluate_price_per_m2_baselines,
+    evaluate_tabular_hgb_intervals,
     evaluate_tabular_hgb_avm,
     make_tabular_hgb_pipeline,
     temporal_split,
@@ -177,6 +178,16 @@ def test_tabular_hgb_pipeline_can_fit_and_evaluate_small_frame():
     assert report["random_state"] == 7
     assert len(report["metrics"]) == 2
     assert report["best_test_by_mdape"]["split_name"] == "test"
+
+
+def test_tabular_hgb_intervals_reports_coverage_and_width():
+    report = evaluate_tabular_hgb_intervals(_gold_frame(), random_state=7)
+
+    assert report["interval"] == "validation_log_residual_q10_q90"
+    assert report["target_coverage"] == 0.80
+    assert 0.0 <= report["interval_metrics"]["coverage"] <= 1.0
+    assert report["interval_metrics"]["median_interval_width_ratio"] >= 0.0
+    assert report["point_metrics"]["split_name"] == "test"
 
 
 def test_make_tabular_hgb_pipeline_has_preprocess_and_model_steps():

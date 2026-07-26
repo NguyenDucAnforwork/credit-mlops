@@ -306,3 +306,20 @@ Full Hugging Face ingestion, row counts, checksums, ETL runtime, and peak RAM ar
 | Runtime | 9 seconds |
 | Evidence | `docs/evidence/avm_tabular_hgb_metrics_20260726.json` |
 | Full suite after tabular AVM | 107 passed in 7.69 seconds; wrapper runtime 9 seconds |
+
+### AVM Experiment 3: Residual Intervals
+
+| Field | Value |
+|-------|-------|
+| Interval method | validation log-residual q10/q90 |
+| Target coverage | 80% |
+| Empirical test coverage | 79.61% |
+| Median interval-width ratio | 83.79% |
+| p90 interval-width ratio | 83.79% |
+| High-confidence share | 0% |
+| Low-confidence share | 100% |
+| Coverage decision | pass |
+| Width decision | fail, target <=50% |
+| Runtime | 9 seconds |
+| Evidence | `docs/evidence/avm_tabular_hgb_intervals_20260726.json` |
+| Full suite after intervals | 108 passed in 7.73 seconds; wrapper runtime 10 seconds |
