@@ -14,10 +14,12 @@ The project is being converted from a credit scoring MLOps demo into a Property 
 - GCP access: blocked by `ACCESS_TOKEN_SCOPE_INSUFFICIENT`.
 - Remote workspace: created as rsync-backed after VM Git clone failed on local SSH alias `github-nguyenducan`.
 - Baseline tests: 76 passed in 7.42 seconds on the VM.
+- Current tests: 86 passed in 12.79 seconds on the VM after Phase 1 ETL foundation.
 - Baseline data split: version `cac9de3c`, 16,000 train rows, 4,000 test rows.
+- ETL fixture: 1,000 inserts, 100 duplicates, identical rerun 0 inserts.
 - Docker smoke: blocked because `ducan` cannot access Docker socket and `docker compose` is unavailable.
 - Deployment URL: not deployed.
 
 ## Next Step
 
-Commit and push the verified Phase 0 orchestration/test baseline. Docker/API smoke and GCP deployment remain blocked by VM access configuration.
+Commit and push the verified Phase 1 ETL foundation, then continue with remote-only HF source metadata and smoke ingestion.

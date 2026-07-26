@@ -12,6 +12,13 @@ make remote-sync
 make remote-verify
 ```
 
+Phase 1 ETL fixture verification:
+
+```bash
+make remote-sync
+scripts/remote/run.sh 'uv run pytest tests/test_property_etl.py -q'
+```
+
 Additional targets required by the contract:
 
 ```bash

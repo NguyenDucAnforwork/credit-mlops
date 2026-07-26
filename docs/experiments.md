@@ -73,3 +73,21 @@
 - Decision: retry after user/admin updates VM Docker access; do not use sudo silently.
 - Lesson learned: Docker client presence is insufficient evidence; check socket access and Compose separately.
 - Next experiment: continue source-only/non-Docker implementation, or rerun Docker smoke after access is fixed.
+
+## EXP-0005: Fixture-Backed ETL Foundation
+
+- Timestamp in Asia/Bangkok: 2026-07-26 14:15:00
+- Hypothesis: A deterministic local-source ETL module can validate bronze/silver/gold and incremental semantics on the VM without downloading the full real-estate dataset.
+- Local Git commit or working-tree identifier: `cd27f63` plus uncommitted Phase 1 ETL source and tests.
+- Dataset snapshot ID and checksums: fixture data generated in tests; no external dataset snapshot; no checksums.
+- Exact remote command: `scripts/remote/run.sh 'uv run pytest tests/test_property_etl.py -q'` and `scripts/remote/run.sh 'uv run pytest -q'`.
+- Configuration and seed: deterministic fixture records; no random seed used.
+- VM hardware/environment: Ubuntu 24.04.4 LTS, 4 vCPU AMD EPYC 7B12, 15 GiB RAM, no GPU.
+- Runtime: focused ETL tests 0.27 seconds; final captured full suite 12.79 seconds with 15-second wrapper runtime.
+- Peak RAM when available: not measured.
+- Metrics: 10 focused ETL tests passed; full suite 86 passed; incremental fixture first run inserted 1,000 and detected 100 duplicates; identical rerun inserted 0.
+- Baseline comparison: previous pushed baseline had 76 tests passing; Phase 1 adds 10 passing tests.
+- Interpretation: the ingestion foundation now covers adapter checkpointing, immutable bronze snapshots, silver normalization/quarantine/deduplication, gold derived features, and incremental duplicate behavior.
+- Decision: keep.
+- Lesson learned: new production packages should be added to `pyproject.toml` so standalone remote evidence scripts do not need `PYTHONPATH`.
+- Next experiment: implement HF Parquet source metadata/checksum capture and small remote smoke ingestion without storing full data locally.

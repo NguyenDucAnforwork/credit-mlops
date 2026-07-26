@@ -1,0 +1,6 @@
+{
+  "first_run_duplicates": 100,
+  "first_run_inserts": 1000,
+  "second_identical_run_duplicates": 1100,
+  "second_identical_run_inserts": 0
+}

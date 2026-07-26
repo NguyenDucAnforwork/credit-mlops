@@ -14,5 +14,6 @@ rsync -az --prune-empty-dirs \
   --include='reports/generated/*.md' \
   --include='reports/figures/*.png' \
   --include='docs/evidence/*.txt' \
+  --include='docs/evidence/*.json' \
   --exclude='*' \
   "$SSH_HOST:$REMOTE_WORKSPACE/" ./

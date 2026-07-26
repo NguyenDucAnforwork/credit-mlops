@@ -5,7 +5,7 @@ Last updated: 2026-07-26 14:05:41 Asia/Bangkok
 ## Phase Checklist
 
 - Phase 0 audit and remote baseline: partially complete; tests pass, Docker smoke blocked
-- Phase 1 ETL: not started
+- Phase 1 ETL: fixture-backed foundation complete; full HF ingestion not started
 - Phase 2 PostGIS and GIS: not started
 - Phase 3 AVM: not started
 - Phase 4 APIs: not started
@@ -26,7 +26,10 @@ Last updated: 2026-07-26 14:05:41 Asia/Bangkok
 - Baseline data prep on the VM produced data version `cac9de3c`, 16,000 train rows, and 4,000 test rows.
 - Original tests passed on the VM: 76 passed in 7.42 seconds; wrapper runtime 9 seconds.
 - Docker smoke is blocked: `ducan` is not in the `docker` group and `docker compose` is unavailable.
+- Phase 1 ETL foundation tests passed on the VM: 10 passed in 0.27 seconds.
+- Full suite after Phase 1 foundation passed on the VM: 86 passed in 12.79 seconds; wrapper runtime 15 seconds.
+- Incremental fixture evidence: first run inserted exactly 1,000 rows and found exactly 100 duplicates; identical rerun inserted 0 rows.
 
 ## Next
 
-Commit and push the verified Phase 0 orchestration/test baseline, then continue with non-Docker source work while Docker access remains blocked.
+Commit and push the verified Phase 1 ETL foundation, then continue toward HF snapshot ingestion, schema normalization, and data contracts.

@@ -178,3 +178,18 @@ Measured on VM `lfm` in `/home/ducan/credit-mlops-codex`.
 | GCP access from VM | blocked: `ACCESS_TOKEN_SCOPE_INSUFFICIENT` | `docs/remote_environment.md` |
 
 Docker/API smoke tests were not run because Docker access requires an approved VM permission/configuration change.
+
+---
+
+## Phase 1 ETL Foundation, 2026-07-26
+
+Measured on VM `lfm` in `/home/ducan/credit-mlops-codex`.
+
+| Check | Result | Evidence |
+|-------|--------|----------|
+| Fixture ETL tests | 10 passed in 0.27 seconds | remote pytest output |
+| Full suite after ETL foundation | 86 passed in 12.79 seconds; wrapper runtime 15 seconds | `docs/evidence/phase1_etl_pytest_20260726.txt` |
+| Incremental fixture first run | exactly 1,000 inserts and exactly 100 duplicates | `docs/evidence/phase1_incremental_fixture_20260726.json` |
+| Incremental fixture identical rerun | 0 inserts | `docs/evidence/phase1_incremental_fixture_20260726.json` |
+
+Full Hugging Face ingestion, row counts, checksums, ETL runtime, and peak RAM are not measured yet.
