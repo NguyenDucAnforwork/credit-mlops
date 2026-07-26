@@ -11,7 +11,9 @@ Last updated: 2026-07-26 14:05:41 Asia/Bangkok
 - License: CC BY-NC 4.0
 - Current local status: not downloaded
 - Current VM status: not downloaded in this phase
-- Source revision: not measured
+- Source revision: `a9a66ffa985edcf76b4be59ae2c6f5b1db889c38`
+- Last modified: `2026-04-08T06:51:21.000Z`
+- Parquet shards: 5 (`shard_0000.parquet` through `shard_0004.parquet`)
 - Checksums: not measured
 - Row counts: not measured
 

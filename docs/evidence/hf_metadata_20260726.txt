@@ -1,0 +1,16 @@
+{
+  "captured_at": "2026-07-26T07:21:47.313692+00:00",
+  "dataset_id": "vduydong/vietnam-real-estates",
+  "downloads": 15,
+  "last_modified": "2026-04-08T06:51:21.000Z",
+  "likes": 0,
+  "parquet_file_count": 5,
+  "parquet_files": [
+    "shard_0000.parquet",
+    "shard_0001.parquet",
+    "shard_0002.parquet",
+    "shard_0003.parquet",
+    "shard_0004.parquet"
+  ],
+  "revision": "a9a66ffa985edcf76b4be59ae2c6f5b1db889c38"
+}

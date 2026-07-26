@@ -193,3 +193,14 @@ Measured on VM `lfm` in `/home/ducan/credit-mlops-codex`.
 | Incremental fixture identical rerun | 0 inserts | `docs/evidence/phase1_incremental_fixture_20260726.json` |
 
 Full Hugging Face ingestion, row counts, checksums, ETL runtime, and peak RAM are not measured yet.
+
+### HF Metadata
+
+| Field | Value |
+|-------|-------|
+| Dataset | `vduydong/vietnam-real-estates` |
+| Revision | `a9a66ffa985edcf76b4be59ae2c6f5b1db889c38` |
+| Last modified | `2026-04-08T06:51:21.000Z` |
+| Parquet shard count | 5 |
+| Metadata evidence | `reports/generated/hf_vietnam_real_estates_metadata_20260726.json` |
+| Full suite after metadata module | 89 passed in 7.36 seconds; wrapper runtime 9 seconds |

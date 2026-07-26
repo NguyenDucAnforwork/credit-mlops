@@ -9,3 +9,4 @@ Last updated: 2026-07-26 14:05:41 Asia/Bangkok
 - Docker readiness requires both socket access and Compose availability. The VM has Docker client 29.1.3, but `ducan` cannot access `/var/run/docker.sock` and `docker compose` is unavailable.
 - Keep fixture ETL evidence separate from full dataset claims. The current Phase 1 evidence proves incremental semantics, not full Hugging Face row counts or runtime.
 - Add new production packages to `pyproject.toml`; after adding `src/property_intelligence`, standalone VM imports work without `PYTHONPATH`.
+- Capture Hugging Face dataset revision metadata before downloading shards; row counts and checksums should always point back to a stable revision.

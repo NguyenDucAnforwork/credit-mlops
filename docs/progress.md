@@ -5,7 +5,7 @@ Last updated: 2026-07-26 14:05:41 Asia/Bangkok
 ## Phase Checklist
 
 - Phase 0 audit and remote baseline: partially complete; tests pass, Docker smoke blocked
-- Phase 1 ETL: fixture-backed foundation complete; full HF ingestion not started
+- Phase 1 ETL: fixture-backed foundation and HF metadata capture complete; full HF ingestion not started
 - Phase 2 PostGIS and GIS: not started
 - Phase 3 AVM: not started
 - Phase 4 APIs: not started
@@ -29,6 +29,8 @@ Last updated: 2026-07-26 14:05:41 Asia/Bangkok
 - Phase 1 ETL foundation tests passed on the VM: 10 passed in 0.27 seconds.
 - Full suite after Phase 1 foundation passed on the VM: 86 passed in 12.79 seconds; wrapper runtime 15 seconds.
 - Incremental fixture evidence: first run inserted exactly 1,000 rows and found exactly 100 duplicates; identical rerun inserted 0 rows.
+- Hugging Face metadata captured on the VM for `vduydong/vietnam-real-estates`: revision `a9a66ffa985edcf76b4be59ae2c6f5b1db889c38`, 5 Parquet shards, last modified `2026-04-08T06:51:21.000Z`.
+- Full suite after HF metadata source module passed on the VM: 89 passed in 7.36 seconds; wrapper runtime 9 seconds.
 
 ## Next
 

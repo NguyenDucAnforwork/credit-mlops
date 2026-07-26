@@ -10,6 +10,7 @@ I started with an existing credit scoring MLOps project and rebuilt its executio
 
 - Built a remote execution baseline where 76 original tests pass on the GCP VM in 7.42 seconds after VM-only dependency sync and data prep.
 - Added a fixture-backed property ETL foundation that raised the VM-verified suite to 86 passing tests and proved 1,000-insert/100-duplicate incremental behavior.
+- Captured reproducible Hugging Face source metadata from the VM: revision `a9a66ffa985edcf76b4be59ae2c6f5b1db889c38` across 5 Parquet shards.
 - Not ready: AVM metrics are not measured yet.
 - Not ready: cloud deployment metrics are not measured yet.
 

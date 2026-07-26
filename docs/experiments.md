@@ -91,3 +91,21 @@
 - Decision: keep.
 - Lesson learned: new production packages should be added to `pyproject.toml` so standalone remote evidence scripts do not need `PYTHONPATH`.
 - Next experiment: implement HF Parquet source metadata/checksum capture and small remote smoke ingestion without storing full data locally.
+
+## EXP-0006: Hugging Face Dataset Metadata Capture
+
+- Timestamp in Asia/Bangkok: 2026-07-26 14:21:46
+- Hypothesis: The VM can capture reproducible Hugging Face dataset metadata without downloading the full Parquet shards.
+- Local Git commit or working-tree identifier: `135b732` plus uncommitted HF metadata source module and docs.
+- Dataset snapshot ID and checksums: revision `a9a66ffa985edcf76b4be59ae2c6f5b1db889c38`; shard checksums not measured yet.
+- Exact remote command: `scripts/remote/run.sh 'curl -L --fail --silent --show-error https://huggingface.co/api/datasets/vduydong/vietnam-real-estates ...'`.
+- Configuration and seed: Hugging Face API metadata only; no random seed.
+- VM hardware/environment: Ubuntu 24.04.4 LTS, 4 vCPU AMD EPYC 7B12, 15 GiB RAM, no GPU.
+- Runtime: metadata capture and full suite completed in under one minute; pytest reported 7.36 seconds with 9-second wrapper runtime.
+- Peak RAM when available: not measured.
+- Metrics: dataset ID `vduydong/vietnam-real-estates`; revision `a9a66ffa985edcf76b4be59ae2c6f5b1db889c38`; last modified `2026-04-08T06:51:21.000Z`; 5 Parquet shards; full suite 89 passed.
+- Baseline comparison: previous Phase 1 foundation had 86 passing tests; metadata source tests add 3 passing tests.
+- Interpretation: source revision tracking is reproducible from the VM and does not require local data storage.
+- Decision: keep.
+- Lesson learned: capture dataset revision before shard download so later row counts and checksums have a stable source identity.
+- Next experiment: remote shard checksum/row-count smoke and then full ingestion when disk/runtime constraints are confirmed.

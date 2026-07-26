@@ -19,6 +19,12 @@ make remote-sync
 scripts/remote/run.sh 'uv run pytest tests/test_property_etl.py -q'
 ```
 
+HF metadata capture is VM-only:
+
+```bash
+scripts/remote/run.sh 'uv run python -c "from property_intelligence.sources import fetch_hf_dataset_metadata; print(fetch_hf_dataset_metadata())"'
+```
+
 Additional targets required by the contract:
 
 ```bash
