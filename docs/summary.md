@@ -52,7 +52,7 @@ The project is being converted from a credit scoring MLOps demo into a Property 
 - Terraform deploy: remote init/plan passes with 30 to add, 0 to change, 0 to destroy; live apply is blocked by placeholder image tags, secret population, apply-time IAM, cost approval, and missing post-deploy evidence.
 - Monitoring container dependency audit: blocked by NannyML transitive LightGBM vulnerability until a compatible NannyML release or monitoring image redesign is available.
 - Deployment URL: not deployed; no resources were created by the plan phase.
-- Production image status: API and job images built on the VM with immutable tags and measured digests, but pushes are blocked by the missing planned Artifact Registry repository; no apply or out-of-band repository creation ran.
+- Production image status: the planned Artifact Registry repository was created by a targeted Terraform apply with exactly 1 resource added; API and job images are pushed and Terraform now references their immutable digests. Full deployment remains unapplied.
 
 ## Next Step
 

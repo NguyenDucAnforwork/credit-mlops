@@ -104,6 +104,13 @@ Last updated: 2026-07-27 00:05:00 Asia/Bangkok
 - Evidence: authenticated API and job pushes both exit 1 with `Repository "credit-mlops" not found`; the repository list is empty.
 - Rationale: out-of-band creation would bypass the requested Terraform-only resource gate and create a billable cloud resource before apply approval.
 - Consequence: image digests are measured locally on the VM, but are not registry-backed; Secret Manager verification and the final digest-based plan wait for the repository gate.
+
+## ADR-0024: Target Only Artifact Registry Repository
+
+- Decision: remove the broad API-service dependency from the repository resource, then apply only `google_artifact_registry_repository.images`.
+- Evidence: revised target plan was exactly 1 to add; apply completed with 1 added, 0 changed, 0 destroyed; state lists only the repository resource; image pushes and final digest plan passed.
+- Rationale: the APIs were already enabled and verified by cloud smoke; broad dependency expansion would have created 13 additional Terraform service resources.
+- Consequence: the registry exists and immutable images are available, but all remaining resources still require a separately approved full apply.
 - Consequence: Terraform source now validates on the VM; deployment remains blocked until project scopes/IAM, Docker build/push, and cost-sensitive apply approval are available.
 
 ## ADR-0016: Keep Secrets Out Of Docker Images

@@ -735,6 +735,16 @@
 - Decision: stop before `terraform apply`; require immutable image tags, approved secret population, apply-time IAM, cost approval, and post-deploy verification.
 - Evidence: `docs/evidence/phase6_gcp_readonly_smoke_20260726.txt`, `docs/evidence/phase6_terraform_init_plan_20260727.txt`, and their runtime files.
 
+## EXP-0043: Targeted Artifact Registry Apply And Digest Plan
+
+- Timestamp in Asia/Bangkok: 2026-07-27 01:06:09
+- Exact remote commands: targeted Terraform plan/apply for `google_artifact_registry_repository.images`; Docker pushes for the existing immutable API/job tags; repository/image detail queries; final `terraform init` and `terraform plan`.
+- Safety result: the initial target plan exposed 14 additions because the repository depended on the entire API-service `for_each`. The dependency was removed; the revised target plan contained exactly one repository addition.
+- Metrics: targeted apply `1 added, 0 changed, 0 destroyed`; repository `projects/driven-reef-452414-b5/locations/asia-southeast1/repositories/credit-mlops`; API and job pushes succeeded; final plan `29 to add, 0 to change, 0 to destroy`; no placeholder references remain.
+- Immutable images: API digest `sha256:b4e4dcd3afd7171a29b808afe45fc913d9c8b4a35d8e1b273f14dd725650f0d6`; job digest `sha256:d74322f93c6b0fb33176cfb3208835303a5d960e6edeaefd60cade902a2b03a1`.
+- Decision: stop after the final plan. No full apply, Cloud Run deployment, Scheduler execution, or secret creation ran.
+- Evidence: `docs/evidence/phase6_artifact_registry_target_plan_20260727.txt`, `docs/evidence/phase6_artifact_registry_target_apply_20260727.txt`, `docs/evidence/phase6_artifact_registry_details_20260727.txt`, and `docs/evidence/phase6_terraform_final_plan_20260727.txt`.
+
 ## EXP-0042: Immutable Production Image Build And Registry Push Blocker
 
 - Timestamp in Asia/Bangkok: 2026-07-27 00:46:00

@@ -1,0 +1,8 @@
+target=google_artifact_registry_repository.images
+terraform_plan=1_to_add_0_to_change_0_to_destroy
+apply_complete=Resources: 1 added, 0 changed, 0 destroyed.
+created_id=projects/driven-reef-452414-b5/locations/asia-southeast1/repositories/credit-mlops
+output_artifact_registry_repository=credit-mlops
+cloud_run_deployed=false
+scheduler_executed=false
+secrets_created=false

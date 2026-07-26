@@ -44,7 +44,7 @@ Last updated: 2026-07-27 00:05:00 Asia/Bangkok
 - Latest Dockerized API load: `make remote-compose-load-smoke` completed in 78 seconds; 1,000 AVM and 1,000 lending requests at concurrency 10 returned status 200 with 0% errors; AVM p95 283.01 ms; lending p95 33.93 ms.
 - Latest cloud smoke: `make remote-cloud-smoke` completed in 10 seconds with `gcp_readonly_smoke_exit=0`; deployer authentication, project describe, Artifact Registry, Cloud Run, and Scheduler read-only checks passed.
 - Latest Terraform plan: remote `terraform init` and `terraform plan` passed in 3 seconds with Terraform 1.9.8 and Google provider 6.50.0; plan is 30 to add, 0 to change, 0 to destroy. No apply ran.
-- Latest production image phase: API and job images built on the VM with immutable tags and digests; Docker auth succeeded, but both pushes stopped because Artifact Registry repository `credit-mlops` does not exist.
+- Latest targeted cloud phase: `google_artifact_registry_repository.images` was applied alone with 1 added/0 changed/0 destroyed; both immutable images pushed; final Terraform plan is 29 to add/0 change/0 destroy with digest references.
 - Latest measured local VM HTTP benchmark: AVM p95 140.84 ms and lending p95 24.21 ms with 0% errors at 1,000 requests/concurrency 10.
 - Latest startup warm-up benchmark: property index startup 4.85 seconds, first comparable request after startup 10.99 ms.
 - Latest AVM artifact evidence: 2.37 MB remote-only joblib, load 87.13 ms, single prediction 21.32 ms, same-seed MdAPE delta 0.0 percentage points.

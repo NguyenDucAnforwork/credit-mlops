@@ -815,6 +815,20 @@ Full Hugging Face ingestion, row counts, checksums, ETL runtime, and peak RAM ar
 | Evidence | `docs/evidence/phase6_gcp_readonly_smoke_20260726.txt`, `docs/evidence/phase6_terraform_init_plan_20260727.txt` |
 | Criterion status | Remote GCP prerequisite and Terraform plan gates pass; no apply was run |
 
+### Targeted Artifact Registry Apply And Immutable Image Push
+
+| Field | Value |
+|-------|-------|
+| Target | `google_artifact_registry_repository.images` |
+| Safety check | Initial target plan was 14 additions due to broad API-service dependency; after narrowing, target plan was exactly 1 addition |
+| Apply result | 1 Artifact Registry repository added, 0 changed, 0 destroyed |
+| Repository | `projects/driven-reef-452414-b5/locations/asia-southeast1/repositories/credit-mlops`; Docker Standard; Google-managed key; 1665.702MB measured |
+| API image | `asia-southeast1-docker.pkg.dev/driven-reef-452414-b5/credit-mlops/property-api:codex-20260727-5de2e58`; digest `sha256:b4e4dcd3afd7171a29b808afe45fc913d9c8b4a35d8e1b273f14dd725650f0d6` |
+| Job image | `asia-southeast1-docker.pkg.dev/driven-reef-452414-b5/credit-mlops/property-job:codex-20260727-5de2e58`; digest `sha256:d74322f93c6b0fb33176cfb3208835303a5d960e6edeaefd60cade902a2b03a1` |
+| Final plan | 29 to add, 0 to change, 0 to destroy; API/job references use immutable digests; no placeholders |
+| Remaining blockers | Secret value population, apply-time IAM/cost approval, full apply, Cloud Run/API smoke, Scheduler execution, and rollback evidence |
+| Criterion status | Repository and image push gates pass; final plan recorded; stopped before full apply |
+
 ### Immutable Production Image Build And Push Blocker
 
 | Field | Value |

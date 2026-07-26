@@ -1,0 +1,8 @@
+terraform_init_exit=0
+terraform_plan_exit=0
+api_image_reference=asia-southeast1-docker.pkg.dev/driven-reef-452414-b5/credit-mlops/property-api@sha256:b4e4dcd3afd7171a29b808afe45fc913d9c8b4a35d8e1b273f14dd725650f0d6
+job_image_reference=asia-southeast1-docker.pkg.dev/driven-reef-452414-b5/credit-mlops/property-job@sha256:d74322f93c6b0fb33176cfb3208835303a5d960e6edeaefd60cade902a2b03a1
+placeholder_references=none
+plan_summary=29 to add, 0 to change, 0 to destroy
+cloud_sql=disabled
+apply_run=false

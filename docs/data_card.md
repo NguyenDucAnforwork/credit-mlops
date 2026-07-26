@@ -2,7 +2,7 @@
 
 Infrastructure update 2026-07-27: GCP read-only smoke and Terraform plan passed remotely, but no cloud bucket, BigQuery dataset, or ETL job was created. Row counts and coordinate limitations remain VM-only evidence.
 
-Deployment update: the ETL production image builds on the VM, but it has not been pushed or run in GCP; data evidence remains VM-only.
+Deployment update: the ETL image is now pushed to Artifact Registry, but it has not been executed in Cloud Run; data evidence remains VM-only.
 
 Last updated: 2026-07-27 00:05:00 Asia/Bangkok
 

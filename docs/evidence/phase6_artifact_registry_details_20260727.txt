@@ -1,0 +1,11 @@
+terraform_state=google_artifact_registry_repository.images
+repository_name=projects/driven-reef-452414-b5/locations/asia-southeast1/repositories/credit-mlops
+repository_format=DOCKER
+repository_mode=STANDARD_REPOSITORY
+repository_encryption=Google-managed key
+repository_size=1665.702MB
+repository_description=Container images for the Property Intelligence demo
+api_image=asia-southeast1-docker.pkg.dev/driven-reef-452414-b5/credit-mlops/property-api:codex-20260727-5de2e58
+api_digest=sha256:b4e4dcd3afd7171a29b808afe45fc913d9c8b4a35d8e1b273f14dd725650f0d6
+job_image=asia-southeast1-docker.pkg.dev/driven-reef-452414-b5/credit-mlops/property-job:codex-20260727-5de2e58
+job_digest=sha256:d74322f93c6b0fb33176cfb3208835303a5d960e6edeaefd60cade902a2b03a1
