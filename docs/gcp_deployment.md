@@ -1,6 +1,6 @@
 # GCP Deployment
 
-Last updated: 2026-07-26 21:29:41 Asia/Bangkok
+Last updated: 2026-07-26 21:39:59 Asia/Bangkok
 
 ## Target
 
@@ -11,11 +11,13 @@ Last updated: 2026-07-26 21:29:41 Asia/Bangkok
 
 ## Current Status
 
-Not deployed.
+Not deployed. Terraform source exists and validates on the VM, but no plan/apply or resource creation has been run.
 
 VM-originating GCP checks found active account `582914829900-compute@developer.gserviceaccount.com`, but project describe and service listing are blocked by `ACCESS_TOKEN_SCOPE_INSUFFICIENT`.
 
-The 2026-07-26 AVM interval, comparable fallback, API scaffold, AVM promotion dry-run, monitoring, TestClient load, uvicorn HTTP load, startup warm-up, AVM artifact packaging, dependency remediation, `httpx2` TestClient warning remediation, and type-check smoke milestones did not execute Terraform, `gcloud`, Docker builds, MLflow alias mutation, or deployments. GCP state remains unchanged.
+The 2026-07-26 AVM interval, comparable fallback, API scaffold, AVM promotion dry-run, monitoring, TestClient load, uvicorn HTTP load, startup warm-up, AVM artifact packaging, dependency remediation, `httpx2` TestClient warning remediation, and type-check smoke milestones did not execute Terraform, `gcloud`, Docker builds, MLflow alias mutation, or deployments. GCP state remained unchanged during those milestones.
+
+The 2026-07-26 Terraform scaffold milestone added `infra/terraform` with project APIs, Artifact Registry, GCS, BigQuery, Secret Manager placeholder, Cloud Run service, Cloud Run ETL job, Scheduler, IAM service accounts, and optional disabled-by-default Cloud SQL/PostGIS resources. VM validation used Terraform 1.9.8 and Google provider 6.50.0 with `init -backend=false`; `terraform_validate_exit=0`, runtime 2 seconds. No `terraform plan`, `terraform apply`, `gcloud`, Docker build, image push, or cloud deployment was run.
 
 ## Required Fix
 

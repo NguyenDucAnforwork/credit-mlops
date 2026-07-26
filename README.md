@@ -22,6 +22,7 @@ Measured on 2026-07-26 from branch `feat/onemount-property-intelligence`.
 | Model artifact | VM-only HGB quantile joblib, 2.37 MB, load 87.13 ms, single prediction 21.32 ms |
 | Monitoring | Synthetic drift triggers 4 alerts; delayed-label fallback replay MdAPE 16.73% on 2,000 labels |
 | UI | Streamlit Property Intelligence workspace with three required demo scenarios and LTV decision flow |
+| Terraform | GCP source scaffold validates on VM with Terraform 1.9.8 and Google provider 6.50.0; no plan/apply run |
 | Tests/quality | 139 tests pass under coverage in 15.91 seconds; scoped coverage 81%; Ruff, warnings-enabled full suite, and mypy type smoke pass |
 | Security audit | After dependency remediation, `pip-audit` passes with 0 known vulnerabilities |
 
@@ -64,6 +65,7 @@ make remote-reproduce-smoke
 make remote-coverage-smoke
 make remote-vulnerability-smoke
 make remote-type-smoke
+make remote-terraform-validate
 ```
 
 Current measured targets:
@@ -72,6 +74,7 @@ Current measured targets:
 - `make remote-coverage-smoke`: full pytest under coverage on VM; 139 passed in 15.91 seconds, 81% scoped coverage, 19-second wrapper runtime.
 - `make remote-vulnerability-smoke`: dependency audit on VM; evidence capture completed in 41 seconds and found 0 known vulnerabilities after remediation.
 - `make remote-type-smoke`: pinned mypy on new property intelligence modules, API code, and selected property scripts; 19 source files checked with 0 issues in a 1-second wrapper runtime.
+- `make remote-terraform-validate`: GCP Terraform scaffold fmt/init/validate on VM; completed in 2 seconds with `terraform_validate_exit=0`.
 
 Docker and cloud targets are intentionally blocked until VM Docker permissions and GCP OAuth scopes are fixed:
 

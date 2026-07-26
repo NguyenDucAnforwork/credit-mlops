@@ -1,6 +1,6 @@
 REMOTE_RUN := scripts/remote/run.sh
 
-.PHONY: remote-doctor remote-bootstrap remote-sync remote-verify remote-etl-smoke remote-train-smoke remote-reproduce-smoke remote-coverage-smoke remote-vulnerability-smoke remote-type-smoke remote-reproduce-full remote-up remote-cloud-smoke remote-fetch
+.PHONY: remote-doctor remote-bootstrap remote-sync remote-verify remote-etl-smoke remote-train-smoke remote-reproduce-smoke remote-coverage-smoke remote-vulnerability-smoke remote-type-smoke remote-terraform-validate remote-reproduce-full remote-up remote-cloud-smoke remote-fetch
 
 remote-doctor:
 	bash scripts/remote/doctor.sh
@@ -31,6 +31,9 @@ remote-vulnerability-smoke:
 
 remote-type-smoke:
 	bash scripts/remote/type_smoke.sh
+
+remote-terraform-validate:
+	bash scripts/remote/terraform_validate.sh
 
 remote-reproduce-full: remote-sync
 	$(REMOTE_RUN) 'uv run pytest -q && docker compose build && docker compose up -d'

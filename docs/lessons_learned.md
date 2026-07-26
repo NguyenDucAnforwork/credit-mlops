@@ -1,6 +1,6 @@
 # Lessons Learned
 
-Last updated: 2026-07-26 21:29:41 Asia/Bangkok
+Last updated: 2026-07-26 21:39:59 Asia/Bangkok
 
 - Verify GCP from the VM before planning Terraform or Cloud Run work. The current VM account is present, but OAuth scopes are insufficient for Cloud Resource Manager and Service Usage.
 - Keep remote orchestration scripts allowlisted and sentinel-guarded so source synchronization cannot delete unrelated VM data.
@@ -36,3 +36,4 @@ Last updated: 2026-07-26 21:29:41 Asia/Bangkok
 - Resolver success is not equivalent to application compatibility. The vulnerability fix path requires moving MLflow and FastAPI/Starlette together, so tests and API smoke must follow any lockfile change.
 - Coordinated dependency remediation can clear security findings without changing product behavior, but warning output matters. The upgraded stack passes tests, coverage, API smoke, and `pip-audit`; the remaining FastAPI/Starlette TestClient warning was resolved by adding the framework-supported `httpx2` test dependency and rerunning the warnings-enabled suite.
 - Add scoped typing after behavior is stable. The first mypy probe found 14 issues in path narrowing, Pandas scalar conversion, and optional model state; fixing those made a 19-file type smoke pass without forcing a full-repo typing migration.
+- Terraform validation is useful cloud evidence only when its scope is explicit. Backend-disabled `init` plus `validate` proves source shape, not deployment, IAM, cost, image availability, or live service health.

@@ -1,6 +1,6 @@
 # Remote Reproduction Report
 
-Last updated: 2026-07-26 21:29:41 Asia/Bangkok
+Last updated: 2026-07-26 21:39:59 Asia/Bangkok
 
 This project is reproduced from the local repository by executing runtime work on VM `lfm` in `/home/ducan/credit-mlops-codex`. Do not install dependencies, run tests, train models, build Docker images, run databases, execute Terraform, or deploy GCP resources locally.
 
@@ -12,6 +12,7 @@ This project is reproduced from the local repository by executing runtime work o
 | `make remote-coverage-smoke` | pass; 139 tests in 15.91s, 81% scoped coverage, end-to-end 19s | `docs/evidence/phase7_coverage_report_20260726.txt` |
 | `make remote-vulnerability-smoke` | pass; `pip-audit` found 0 known vulnerabilities after dependency and TestClient warning remediation | `docs/evidence/phase7_pip_audit_report_20260726.txt` |
 | `make remote-type-smoke` | pass; mypy found 0 issues in 19 source files, end-to-end 1s | `docs/evidence/phase7_type_smoke_stdout_20260726.txt` |
+| `make remote-terraform-validate` | pass; Terraform fmt/init/validate, end-to-end 2s, no plan/apply | `docs/evidence/phase6_terraform_validate_20260726.txt` |
 | `make remote-reproduce-full` | blocked | VM Docker socket/Compose access |
 | `make remote-up` | blocked | VM Docker socket/Compose access |
 | `make remote-cloud-smoke` | blocked | VM GCP OAuth scope/IAM |
@@ -25,6 +26,7 @@ make remote-reproduce-smoke
 make remote-coverage-smoke
 make remote-vulnerability-smoke
 make remote-type-smoke
+make remote-terraform-validate
 ```
 
 The smoke and quality targets perform local changed-file path and secret-pattern scans, sync the source tree to the VM, run checks remotely, and fetch only small evidence artifacts back to `docs/evidence/` and `reports/generated/`.

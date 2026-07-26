@@ -596,3 +596,21 @@
 - Decision: keep `make remote-type-smoke` as a reusable VM evidence path.
 - Lesson learned: scoped type checks can expose real optional-state and scalar-conversion bugs without requiring a disruptive full-repo typing migration.
 - Next experiment: remaining blocked done criteria require Docker socket/Compose access, GCP OAuth/IAM fixes, or legitimate coordinate enrichment.
+
+## EXP-0034: GCP Terraform Source Validation
+
+- Timestamp in Asia/Bangkok: 2026-07-26 21:39:59
+- Hypothesis: A conservative GCP Terraform scaffold can cover the required managed-resource shape and validate on the VM without cloud mutation while IAM/OAuth and Docker image prerequisites remain blocked.
+- Local Git commit or working-tree identifier: `b3273ad` plus uncommitted Terraform scaffold, validation script, evidence, and docs.
+- Dataset snapshot ID and checksums: not applicable; Terraform validation does not read datasets.
+- Exact remote command: `make remote-terraform-validate`.
+- Configuration and seed: Terraform 1.9.8 installed/reused under the VM user path; Google provider 6.50.0; backend disabled; Cloud SQL/PostGIS scaffold present but `enable_cloud_sql=false` by default.
+- VM hardware/environment: Ubuntu 24.04.4 LTS, 4 vCPU AMD EPYC 7B12, 15 GiB RAM, no GPU.
+- Runtime: 2 seconds.
+- Peak RAM when available: not measured.
+- Metrics: `terraform_validate_exit=0`; `terraform fmt -check -recursive` passed; `terraform init -backend=false` passed; `terraform validate` passed.
+- Baseline comparison: no prior `infra/terraform` source or Terraform validation evidence existed.
+- Interpretation: GCP source scaffolding is now reproducible and syntactically valid, but it is not deployment evidence because no plan/apply, Docker image build/push, or live cloud smoke ran.
+- Decision: keep the Terraform scaffold and validation target; do not run plan/apply until VM GCP OAuth/IAM and Docker image prerequisites are fixed.
+- Lesson learned: Terraform validation can advance cloud architecture evidence without mutating cloud state, but it must be labeled separately from deployment.
+- Next experiment: Docker build/push and live GCP plan/apply remain blocked by VM Docker socket/Compose access and GCP OAuth/IAM.

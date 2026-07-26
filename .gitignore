@@ -41,6 +41,12 @@ postgres_data/
 mlruns/
 mlartifacts/
 
+# Terraform local state/plans
+.terraform/
+terraform.tfstate
+terraform.tfstate.*
+*.tfplan
+
 # Monitoring reports (generated at runtime)
 monitoring/reports/
 

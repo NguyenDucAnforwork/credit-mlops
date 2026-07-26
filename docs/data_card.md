@@ -1,6 +1,6 @@
 # Data Card
 
-Last updated: 2026-07-26 21:29:41 Asia/Bangkok
+Last updated: 2026-07-26 21:39:59 Asia/Bangkok
 
 ## Primary Dataset
 
@@ -34,6 +34,7 @@ Last updated: 2026-07-26 21:29:41 Asia/Bangkok
 - Property API smoke reads the VM gold parquet through `PROPERTY_GOLD_PATH`; the full dataset remains VM-only.
 - The 2026-07-26 `httpx2` TestClient remediation was dependency-only. It did not change source data, ETL outputs, row counts, checksums, data contracts, or the VM-only raw/silver/gold/quarantine artifacts.
 - The 2026-07-26 type-check smoke phase was source-typing and orchestration only. It did not change source data, ETL outputs, row counts, checksums, data contracts, or VM-only generated datasets.
+- The 2026-07-26 Terraform validation phase was infrastructure source only. It did not move data to GCS or BigQuery, run ETL jobs, or change local/VM dataset artifacts.
 
 ## Fixture Data
 

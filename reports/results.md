@@ -1,6 +1,6 @@
 # Results Summary
 
-Last updated: 2026-07-26 21:29:41 Asia/Bangkok
+Last updated: 2026-07-26 21:39:59 Asia/Bangkok
 
 All models trained on the same dataset: 16,000 train / 4,000 test (stratified 80/20 split, SHA256: `cac9de3c`). Default rate: 18.2%.
 
@@ -616,6 +616,19 @@ Full Hugging Face ingestion, row counts, checksums, ETL runtime, and peak RAM ar
 | Final source verification | Ruff passed; 139 warnings-enabled tests passed in 11.16 seconds; wrapper runtime 13 seconds |
 | Evidence | `docs/evidence/phase7_type_smoke_stdout_20260726.txt`, `docs/evidence/phase7_type_smoke_runtime_20260726.txt`, `docs/evidence/phase7_type_smoke_tests_20260726.txt`, `docs/evidence/phase7_type_smoke_tests_runtime_20260726.txt` |
 | Criterion status | scoped type-check evidence passes for the new production property/API surface |
+
+### GCP Terraform Source Validation
+
+| Field | Value |
+|-------|-------|
+| Command | `make remote-terraform-validate` |
+| Execution location | VM `lfm`, workspace `/home/ducan/credit-mlops-codex` |
+| Terraform/provider | Terraform 1.9.8, Google provider 6.50.0 |
+| Resource scope | required APIs, Artifact Registry, GCS, BigQuery, Secret Manager placeholder, Cloud Run service, Cloud Run ETL job, Scheduler, IAM service accounts, optional disabled Cloud SQL/PostGIS |
+| Runtime | 2 seconds |
+| Result | `terraform_validate_exit=0`; `fmt`, `init -backend=false`, and `validate` passed |
+| Evidence | `docs/evidence/phase6_terraform_validate_20260726.txt`, `docs/evidence/phase6_terraform_validate_runtime_20260726.txt`, `infra/terraform/.terraform.lock.hcl` |
+| Criterion status | Terraform source validation passes; no plan/apply/deployment claimed |
 
 ### Scoped Remote Coverage
 

@@ -1,8 +1,8 @@
 # Summary
 
-Last updated: 2026-07-26 21:29:41 Asia/Bangkok
+Last updated: 2026-07-26 21:39:59 Asia/Bangkok
 
-Status: Phase 7 non-cloud portfolio evidence is mostly complete, with remaining blockers for coordinate-backed GIS/PostGIS, Docker, and GCP deployment.
+Status: Phase 6/7 non-cloud portfolio evidence is mostly complete, with Terraform source validation added and remaining blockers for coordinate-backed GIS/PostGIS, Docker runtime, and live GCP deployment.
 
 The project is being converted from a credit scoring MLOps demo into a Property Intelligence & Lending MLOps Platform. The local repository remains the source of truth, and runtime work is executed on `lfm` in `/home/ducan/credit-mlops-codex`.
 
@@ -36,6 +36,7 @@ The project is being converted from a credit scoring MLOps demo into a Property 
 - Artifact-backed API uvicorn load: AVM p95 136.63 ms and lending p95 15.53 ms with 0% valid-request errors at 1,000 requests/concurrency 10.
 - Streamlit UI: property-lending workspace added with map reference input, property attributes, estimate/interval/comparables/factors, credit/LTV decision inputs, disclaimer, and three required scenarios.
 - Remote smoke reproduction: `make remote-reproduce-smoke` performs local secret/path scan, syncs to VM, compiles key modules, runs Ruff with 0 errors, runs 61 focused tests, and completes in 5 seconds while explicitly skipping Docker/GCP blockers.
+- Terraform validation: `make remote-terraform-validate` validates the GCP scaffold on the VM with Terraform 1.9.8 and Google provider 6.50.0; `terraform_validate_exit=0`, runtime 2 seconds, no plan/apply/deployment.
 - Type check smoke: `make remote-type-smoke` runs pinned `mypy==1.18.2` on `src/property_intelligence`, `api`, and selected property scripts; it found 0 issues in 19 source files and completed in 1 second. Final source verification also passed Ruff and 139 warnings-enabled tests in 11.16 seconds.
 - Coverage measurement after TestClient warning remediation: `make remote-coverage-smoke` passed 139 tests in 15.91 seconds on the VM; scoped coverage for `api/*`, `src/*`, and `scripts/property_*.py` is 81% total, with weakest measured modules `src/data_prep.py` 31%, `src/scorecard.py` 48%, and `api/model_loader.py` 49%.
 - Vulnerability audit: initial `pip-audit` found 59 known vulnerabilities across 11 packages; after coordinated dependency remediation and the `httpx2` test-client fix, `make remote-vulnerability-smoke` completes in 41 seconds with `pip_audit_exit=0` and 0 known vulnerabilities.
@@ -43,6 +44,7 @@ The project is being converted from a credit scoring MLOps demo into a Property 
 - Portfolio documentation: README and `reports/reproduce.md` now present the remote-first Property Intelligence platform, measured evidence, and explicit blockers instead of the older local-first credit-scoring flow.
 - Engineering test-count criterion: 139 passing tests meets the >=125 numeric floor.
 - Docker smoke: blocked because `ducan` cannot access Docker socket and `docker compose` is unavailable.
+- Terraform deploy: source validates, but live plan/apply is blocked by VM GCP OAuth scopes/IAM and image build/push prerequisites.
 - Deployment URL: not deployed.
 
 ## Next Step

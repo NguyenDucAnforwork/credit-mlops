@@ -1,6 +1,6 @@
 # AVM Model Card
 
-Last updated: 2026-07-26 21:29:41 Asia/Bangkok
+Last updated: 2026-07-26 21:39:59 Asia/Bangkok
 
 Status: non-GIS tabular baseline measured; production AVM not promoted.
 
@@ -32,6 +32,7 @@ Estimate listing-based residential market value and price per square meter for l
 - Baseline runtime: 2 seconds on VM
 - The 2026-07-26 `httpx2` TestClient remediation was dependency-only. It changed dev test compatibility, not AVM features, training data, model artifact bytes, promotion status, or measured AVM metrics.
 - The 2026-07-26 type-check smoke phase changed annotations/guards and orchestration only. It did not retrain, repack, promote, or mutate the AVM artifact.
+- The 2026-07-26 Terraform validation phase added deployment source only. It did not deploy, reload, promote, or change measured AVM behavior.
 
 ## Known Limitations
 

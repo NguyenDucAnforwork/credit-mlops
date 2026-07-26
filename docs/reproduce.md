@@ -1,6 +1,6 @@
 # Reproduce
 
-Last updated: 2026-07-26 21:29:41 Asia/Bangkok
+Last updated: 2026-07-26 21:39:59 Asia/Bangkok
 
 All heavy work runs on the VM. Do not install project dependencies, run tests, train models, Docker, Terraform, or `gcloud` locally.
 
@@ -183,6 +183,7 @@ make remote-reproduce-smoke
 make remote-coverage-smoke
 make remote-vulnerability-smoke
 make remote-type-smoke
+make remote-terraform-validate
 make remote-reproduce-full
 make remote-up
 make remote-cloud-smoke
@@ -213,6 +214,14 @@ make remote-type-smoke
 ```
 
 It completed in 1 second on the VM with `mypy==1.18.2` and found 0 issues in 19 source files. See `docs/evidence/phase7_type_smoke_stdout_20260726.txt`.
+
+The Terraform source validation target is reusable:
+
+```bash
+make remote-terraform-validate
+```
+
+It runs on the VM, uses Terraform 1.9.8 with backend disabled, initializes Google provider 6.50.0, passes `fmt` and `validate`, and completed in 2 seconds. See `docs/evidence/phase6_terraform_validate_20260726.txt`.
 
 Cloud reproduction is blocked until the VM service account has sufficient OAuth scopes/IAM for project `driven-reef-452414-b5`.
 

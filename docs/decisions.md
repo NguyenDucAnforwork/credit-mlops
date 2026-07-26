@@ -1,6 +1,6 @@
 # Decisions
 
-Last updated: 2026-07-26 21:29:41 Asia/Bangkok
+Last updated: 2026-07-26 21:39:59 Asia/Bangkok
 
 ## ADR-0001: Local Source of Truth, VM Runtime Executor
 
@@ -85,3 +85,9 @@ Last updated: 2026-07-26 21:29:41 Asia/Bangkok
 - Decision: add `make remote-type-smoke` with pinned `mypy==1.18.2` for `src/property_intelligence`, `api`, and selected property scripts.
 - Rationale: the contract requires type-check evidence for new production modules, while the legacy project has no existing full-repository type-check configuration.
 - Consequence: the scoped VM type smoke passes with 0 issues in 19 source files and can be broadened later without blocking the current non-Docker/non-cloud evidence path.
+
+## ADR-0015: Validate Terraform Source Without Cloud Mutation
+
+- Decision: add `infra/terraform` and `make remote-terraform-validate`, using backend-disabled init and validation only.
+- Rationale: GCP IAM/OAuth and Docker image prerequisites are blocked, but source architecture can still be checked safely without creating or changing resources.
+- Consequence: Terraform source now validates on the VM; deployment remains blocked until project scopes/IAM, Docker build/push, and cost-sensitive apply approval are available.
