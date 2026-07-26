@@ -1,6 +1,6 @@
 # Lessons Learned
 
-Last updated: 2026-07-26 20:42:23 Asia/Bangkok
+Last updated: 2026-07-26 20:45:07 Asia/Bangkok
 
 - Verify GCP from the VM before planning Terraform or Cloud Run work. The current VM account is present, but OAuth scopes are insufficient for Cloud Resource Manager and Service Usage.
 - Keep remote orchestration scripts allowlisted and sentinel-guarded so source synchronization cannot delete unrelated VM data.
@@ -33,3 +33,4 @@ Last updated: 2026-07-26 20:42:23 Asia/Bangkok
 - Treat coverage as a measured signal before making it a gate. The current scoped coverage is 81%, but legacy preprocessing/model-loading paths are below 50%, so a hard threshold would need either targeted tests or explicit exclusions.
 - Dependency security evidence should be captured even when it fails. The current `pip-audit` result found 59 vulnerabilities, so remediation needs its own compatibility-tested upgrade pass rather than silent package drift.
 - Rewrite public entrypoint docs when the operating model changes. A stale local-first README can be more harmful than missing docs because it encourages exactly the commands the remote-execution contract forbids.
+- Resolver success is not equivalent to application compatibility. The vulnerability fix path requires moving MLflow and FastAPI/Starlette together, so tests and API smoke must follow any lockfile change.

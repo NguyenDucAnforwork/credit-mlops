@@ -1,6 +1,6 @@
 # Progress
 
-Last updated: 2026-07-26 20:42:23 Asia/Bangkok
+Last updated: 2026-07-26 20:45:07 Asia/Bangkok
 
 ## Phase Checklist
 
@@ -96,7 +96,9 @@ Last updated: 2026-07-26 20:42:23 Asia/Bangkok
 - Vulnerability audit result: `pip_audit_exit=1`; 59 known vulnerabilities in 11 packages (`aiohttp`, `cryptography`, `gitpython`, `python-dotenv`, `starlette`, `nltk`, `pillow`, `pyasn1`, `streamlit`, `tornado`, `ujson`); local package `credit-mlops` was skipped because it is not on PyPI.
 - README rewritten as the current Property Intelligence & Lending MLOps portfolio entrypoint with measured evidence, remote reproduction commands, API surface, documentation map, and blocker table.
 - `reports/reproduce.md` replaced with a remote-first reproduction report pointing to the verified smoke, coverage, and vulnerability targets.
+- Dependency remediation probe 1 failed: pinning `cryptography==48.0.1` is unsatisfiable while `mlflow==3.12.0` requires `cryptography<47`.
+- Dependency remediation probe 2 succeeded as a dry-run only after allowing a broad upgrade set including `mlflow 3.14.0`, `fastapi 0.140.0`, `starlette 1.3.1`, `streamlit 1.54.0`, `pillow 12.3.0`, `nltk 3.10.0`, and related transitives.
 
 ## Next
 
-Commit and push portfolio packaging, then continue with dependency remediation planning while Docker, GCP, and coordinate-backed GIS remain blocked.
+Commit and push dependency remediation probe evidence, then run compatibility-tested dependency remediation on the VM while Docker, GCP, and coordinate-backed GIS remain blocked.

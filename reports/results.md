@@ -636,3 +636,14 @@ Full Hugging Face ingestion, row counts, checksums, ETL runtime, and peak RAM ar
 | Scope | remote-first project overview, evidence table, blocker table, remote reproduction commands, API surface, documentation map |
 | Baseline issue | prior docs described local/Docker-first credit-scoring reproduction and did not represent the active Property Intelligence contract |
 | Criterion status | portfolio entrypoint aligned with measured evidence; dependency remediation remains open |
+
+### Dependency Remediation Resolver Probe
+
+| Field | Value |
+|-------|-------|
+| Probe location | VM `/tmp` sandbox with copied `pyproject.toml` and `uv.lock` only |
+| Probe 1 | failed; `mlflow==3.12.0` requires `cryptography<47`, conflicting with audit fix `cryptography==48.0.1` |
+| Probe 2 | resolver dry-run passed with 172 packages |
+| Required broad upgrades | `mlflow 3.14.0`, `fastapi 0.140.0`, `starlette 1.3.1`, `streamlit 1.54.0`, `pillow 12.3.0`, `nltk 3.10.0`, plus transitives |
+| Evidence | `docs/evidence/phase7_dep_remediation_probe1_20260726.txt`, `docs/evidence/phase7_dep_remediation_probe2_20260726.txt` |
+| Criterion status | remediation path identified; no pins changed until VM compatibility tests run |

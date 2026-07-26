@@ -524,3 +524,21 @@
 - Decision: keep current README concise and evidence-led, with detailed evidence delegated to `docs/` and `reports/results.md`.
 - Lesson learned: portfolio docs must be rewritten when the project shape changes; stale quick-start instructions can become safety violations.
 - Next experiment: dependency remediation planning and compatibility-tested upgrades on the VM.
+
+## EXP-0030: Dependency Remediation Resolver Probe
+
+- Timestamp in Asia/Bangkok: 2026-07-26 20:45:07
+- Hypothesis: The failing vulnerability audit can be remediated by raising vulnerable package pins without destabilizing the dependency graph.
+- Local Git commit or working-tree identifier: `4def17c` plus uncommitted resolver probe evidence/docs.
+- Dataset snapshot ID and checksums: no dataset used.
+- Exact remote command: VM `/tmp` resolver sandbox with copied `pyproject.toml` and `uv.lock`; `uv lock --dry-run --upgrade` after proposed pin edits.
+- Configuration and seed: probe 1 pinned vulnerable direct/transitive fixes while keeping `mlflow==3.12.0`; probe 2 allowed `mlflow>=3.12.0`, `fastapi>=0.136.3`, `streamlit==1.54.0`, `starlette==1.3.1`, and fixed vulnerable transitives.
+- VM hardware/environment: Ubuntu 24.04.4 LTS, 4 vCPU AMD EPYC 7B12, 15 GiB RAM, no GPU.
+- Runtime: resolver probe 1 and probe 2 each completed in under 2 seconds.
+- Peak RAM when available: not measured.
+- Metrics: probe 1 failed because `mlflow==3.12.0` requires `cryptography>=43.0.0,<47` and the audit fix requires `cryptography==48.0.1`; probe 2 resolved 172 packages and would update MLflow to 3.14.0, FastAPI to 0.140.0, Starlette to 1.3.1, Streamlit to 1.54.0, and many transitives.
+- Baseline comparison: vulnerability audit found 59 known vulnerabilities across 11 packages.
+- Interpretation: vulnerability remediation is possible at resolver level but broad enough to require a full compatibility test cycle before changing committed pins and lockfile.
+- Decision: do not apply the broad dependency update in this probe commit.
+- Lesson learned: security remediation can be constrained by model lifecycle frameworks; resolver success is not enough evidence for production readiness.
+- Next experiment: apply the broad update in a controlled VM-backed source change, run `uv lock`, `uv sync --frozen --all-extras --dev`, Ruff, full tests, coverage, API smoke, and `pip-audit`.

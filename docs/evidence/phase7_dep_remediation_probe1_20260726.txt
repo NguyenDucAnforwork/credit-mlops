@@ -1,0 +1,8 @@
+Using CPython 3.12.3 interpreter at: /usr/bin/python3
+  × No solution found when resolving dependencies:
+  ╰─▶ Because mlflow==3.12.0 depends on cryptography>=43.0.0,<47 and your
+      project depends on cryptography==48.0.1, we can conclude that your
+      project and mlflow==3.12.0 are incompatible.
+      And because your project depends on mlflow==3.12.0 and your project
+      requires credit-mlops[dev], we can conclude that your project's
+      requirements are unsatisfiable.
