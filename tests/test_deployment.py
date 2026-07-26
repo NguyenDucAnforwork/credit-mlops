@@ -11,11 +11,9 @@ import sys
 import threading
 import time
 from pathlib import Path
-from typing import Generator
-from unittest.mock import MagicMock, patch, call
+from unittest.mock import MagicMock, patch
 
 import numpy as np
-import pytest
 
 sys.path.insert(0, str(Path(__file__).parent.parent / "api"))
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))

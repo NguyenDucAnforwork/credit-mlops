@@ -13,7 +13,6 @@ os.environ.setdefault("MLFLOW_TRACKING_PASSWORD", "test")
 os.environ.setdefault("DATABASE_URL", "")
 os.environ.setdefault("REDIS_URL", "")
 
-import numpy as np
 import pandas as pd
 import pytest
 

@@ -64,7 +64,7 @@ def promote(version: str, alias: str = "champion", promoted_by: str = "unknown")
         print("[promote] WARNING: no database connection — deployment event NOT logged")
         return
     _log_event(engine, "promote", alias, from_version, str(version), promoted_by)
-    print(f"[promote] deployment event logged")
+    print("[promote] deployment event logged")
 
 
 if __name__ == "__main__":

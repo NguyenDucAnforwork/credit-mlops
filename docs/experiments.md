@@ -462,9 +462,9 @@
 - Exact remote command: `make remote-reproduce-smoke`.
 - Configuration and seed: local secret/path scan, `scripts/remote/sync_to_vm.sh`, VM `py_compile` for key API/script/UI modules, focused pytest set for ETL/HF/contracts/comparables/AVM/lifecycle/monitoring/API/UI.
 - VM hardware/environment: Ubuntu 24.04.4 LTS, 4 vCPU AMD EPYC 7B12, 15 GiB RAM, no GPU.
-- Runtime: end-to-end smoke 8 seconds; focused pytest 61 tests in 4.86 seconds; final full suite 139 tests in 12.15 seconds.
+- Runtime: end-to-end smoke 5 seconds; focused pytest 61 tests in 3.24 seconds; final full suite 139 tests in 11.11 seconds.
 - Peak RAM when available: not measured.
-- Metrics: smoke exit 0; Docker explicitly skipped because VM Docker socket/Compose access remains blocked; GCP explicitly skipped because VM access token scope remains insufficient.
+- Metrics: smoke exit 0; Ruff lint 0 errors; Docker explicitly skipped because VM Docker socket/Compose access remains blocked; GCP explicitly skipped because VM access token scope remains insufficient.
 - Baseline comparison: prior `remote-reproduce-smoke` was an alias for full pytest only and did not record evidence or blocker status. The new target is a measured CI-style smoke path.
 - Interpretation: smoke CI path duration criterion passes for the non-Docker/non-cloud scope. Docker build, Terraform validation, vulnerability scan, coverage, and Cloud Run smoke remain incomplete.
 - Decision: keep this as the PR/portfolio smoke path until Docker/GCP permissions are fixed.

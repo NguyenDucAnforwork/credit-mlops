@@ -12,7 +12,7 @@ import numpy as np
 import pandas as pd
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.decomposition import PCA
-from sklearn.feature_selection import RFE, mutual_info_classif
+from sklearn.feature_selection import RFE
 from sklearn.impute import KNNImputer
 from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import Pipeline

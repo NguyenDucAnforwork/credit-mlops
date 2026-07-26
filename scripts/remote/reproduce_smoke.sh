@@ -40,6 +40,8 @@ fi
     scripts/property_api_http_benchmark.py \
     ui/streamlit_app.py \
     ui/property_workflow.py
+  echo '=== smoke: ruff lint ==='
+  uvx ruff check . --output-format=concise
   echo '=== smoke: focused contract tests ==='
   uv run pytest -q \
     tests/test_property_etl.py \

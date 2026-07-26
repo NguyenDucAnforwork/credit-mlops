@@ -48,7 +48,7 @@ def run_pipeline(skip_data_prep: bool = False, skip_feature_fit: bool = False) -
     # ── Step 2: Feature pipeline ──────────────────────────────────────────────
     if skip_feature_fit:
         fp = feat.FeaturePipeline.load()
-        print(f"[pipeline] skip feature fit, loaded from artifacts")
+        print("[pipeline] skip feature fit, loaded from artifacts")
     else:
         import pandas as pd
         processed = Path(__file__).parent.parent / "data" / "processed"

@@ -581,10 +581,11 @@ Full Hugging Face ingestion, row counts, checksums, ETL runtime, and peak RAM ar
 | Local precheck | secret/path scan over changed tracked and untracked files |
 | Remote sync | `scripts/remote/sync_to_vm.sh` |
 | Syntax check | `py_compile` for key API, property scripts, and UI modules |
-| Focused tests | 61 passed in 4.86 seconds |
-| End-to-end runtime | 8 seconds |
+| Ruff lint | 0 errors |
+| Focused tests | 61 passed in 3.24 seconds |
+| End-to-end runtime | 5 seconds |
 | Docker status | skipped, VM Docker socket/Compose access blocked |
 | GCP status | skipped, VM access token scope insufficient |
 | Evidence | `docs/evidence/remote_reproduce_smoke_20260726.txt` |
-| Final verification after report | 139 tests passed in 12.15 seconds; wrapper runtime 14 seconds |
+| Final verification after report | 139 tests passed in 11.11 seconds; wrapper runtime 13 seconds |
 | Criterion status | smoke path <=15 minutes passes for non-Docker/non-cloud scope; full CI coverage/lint/type/vulnerability/Docker/Terraform checks remain incomplete |

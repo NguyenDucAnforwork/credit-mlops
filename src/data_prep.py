@@ -3,11 +3,9 @@ Step 1 of training pipeline: load raw data, compute data_version hash,
 split into train/test/reference, log summary stats to MLflow.
 """
 import hashlib
-import os
 from pathlib import Path
 
 import mlflow
-import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
 

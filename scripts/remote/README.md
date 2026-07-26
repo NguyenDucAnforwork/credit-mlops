@@ -14,4 +14,4 @@ scripts/remote/reset_to_pushed_branch.sh
 
 Runtime data, model artifacts, databases, Terraform state, credentials, and caches stay on the VM. Only small redacted evidence under `reports/generated/`, `reports/figures/`, and `docs/evidence/` is copied back.
 
-`reproduce_smoke.sh` is the non-Docker PR/portfolio smoke path. It performs a local secret/path scan, syncs source, runs focused syntax and contract tests on the VM, records runtime evidence, and explicitly marks Docker/GCP checks skipped when those external blockers remain.
+`reproduce_smoke.sh` is the non-Docker PR/portfolio smoke path. It performs a local secret/path scan, syncs source, runs syntax checks, Ruff lint, and focused contract tests on the VM, records runtime evidence, and explicitly marks Docker/GCP checks skipped when those external blockers remain.

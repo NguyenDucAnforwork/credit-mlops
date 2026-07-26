@@ -1,7 +1,5 @@
 """Unit tests for the preprocessing pipeline."""
 import numpy as np
-import pandas as pd
-import pytest
 
 
 def test_pipeline_output_shape(feature_pipeline, sample_train_df, sample_test_small):

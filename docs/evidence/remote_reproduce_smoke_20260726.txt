@@ -1,7 +1,9 @@
 === smoke: imports and syntax ===
+=== smoke: ruff lint ===
+All checks passed!
 === smoke: focused contract tests ===
 .............................................................            [100%]
-61 passed in 4.86s
+61 passed in 3.24s
 === smoke: blockers intentionally skipped ===
 docker=skipped: VM docker socket/compose access blocked
 gcp=skipped: VM access token scope insufficient

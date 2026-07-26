@@ -1,7 +1,7 @@
 """Unit tests for evaluation metrics."""
 import numpy as np
 import pytest
-from evaluate import compute_all, gini, ks_stat, pr_auc, best_threshold
+from evaluate import compute_all, gini, ks_stat, pr_auc
 
 
 def _make_data(n=200, seed=0):

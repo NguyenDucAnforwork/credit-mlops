@@ -110,7 +110,7 @@ def train_logistic_regression(data_version: str) -> str:
         joblib.dump(scaler, scaler_path)
         mlflow.log_artifact(str(scaler_path), artifact_path="pipeline")
 
-        model_info = mlflow.sklearn.log_model(
+        mlflow.sklearn.log_model(
             model,
             name="model",
             registered_model_name="credit_score_model",
@@ -161,7 +161,7 @@ def train_xgboost(data_version: str) -> str:
     with mlflow.start_run(run_name="xgboost_challenger") as run:
         mlflow.log_params(params)
         _log_common(fp, data_version, metrics_train, metrics_test)
-        model_info = mlflow.xgboost.log_model(
+        mlflow.xgboost.log_model(
             model,
             name="model",
             registered_model_name="credit_score_model",
@@ -222,7 +222,7 @@ def train_scorecard(data_version: str) -> str:
         mlflow.log_artifact(str(fp_path), artifact_path="pipeline")
         mlflow.log_artifact(str(sc_path), artifact_path="scorecard")
 
-        model_info = mlflow.sklearn.log_model(
+        mlflow.sklearn.log_model(
             model,
             name="model",
             registered_model_name="credit_score_model",

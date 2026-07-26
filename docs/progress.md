@@ -87,9 +87,9 @@ Last updated: 2026-07-26 20:09:20 Asia/Bangkok
 - Streamlit Property Intelligence workspace added: map reference input, property attributes, estimate/interval/comparables/factors display, credit decision + requested-loan input, LTV policy decision, disclaimer, and scenarios for Hà Nội apartment, Hồ Chí Minh City house, and low-support manual review.
 - UI helper tests passed on the VM: 4 passed in 0.04 seconds; `ui/streamlit_app.py` and `ui/property_workflow.py` compiled successfully.
 - Final full suite after UI work passed on the VM: 139 passed in 11.06 seconds; wrapper runtime 13 seconds.
-- `make remote-reproduce-smoke` added as a reusable non-Docker smoke path. It ran local secret/path scans, synced to the VM, compiled key API/script/UI modules, ran 61 focused tests in 4.86 seconds, and completed in 8 seconds.
+- `make remote-reproduce-smoke` added as a reusable non-Docker smoke path. It ran local secret/path scans, synced to the VM, compiled key API/script/UI modules, ran Ruff with 0 errors, ran 61 focused tests in 3.24 seconds, and completed in 5 seconds.
 - Smoke reproduction explicitly reported Docker skipped because VM socket/Compose access is blocked and GCP skipped because VM access token scope is insufficient.
-- Final full suite after remote smoke work passed on the VM: 139 passed in 12.15 seconds; wrapper runtime 14 seconds.
+- Final full suite after remote smoke/Ruff work passed on the VM: 139 passed in 11.11 seconds; wrapper runtime 13 seconds.
 
 ## Next
 
