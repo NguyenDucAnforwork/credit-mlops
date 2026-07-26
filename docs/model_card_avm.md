@@ -1,6 +1,6 @@
 # AVM Model Card
 
-Last updated: 2026-07-26 15:27:05 Asia/Bangkok
+Last updated: 2026-07-26 15:33:55 Asia/Bangkok
 
 Status: non-GIS tabular baseline measured; production AVM not promoted.
 
@@ -20,6 +20,7 @@ Estimate listing-based residential market value and price per square meter for l
 - High-confidence share: 14.33%; medium-confidence share: 39.30%; low-confidence share: 46.37%
 - Comparable support: non-GIS fallback returns 10 leakage-safe comparables for each sampled December query with p95 14.88 ms; distance unavailable
 - API scaffold smoke: `/v1/avm/predict` returned 200 with high confidence and 13.13 ms latency after comparable index build
+- Promotion gate: dry-run decision `reject`; interval width, spatial holdout, major cohort regression, and warm API p95 evidence block promotion
 - Artifact size: not measured
 - Training runtime: 9 seconds for HGB baseline train/evaluation on VM
 - Baseline runtime: 2 seconds on VM
@@ -33,3 +34,4 @@ Estimate listing-based residential market value and price per square meter for l
 - Current quantile intervals are calibrated but too wide. They improve median width versus global residual and cohort residual intervals, but still fail the production width target.
 - Comparable fallback is administrative, not spatial; it must not be described as nearest-neighbor evidence.
 - API scaffold currently serves an experimental fallback estimate, not the trained HGB quantile model artifact.
+- No `property_avm@champion` alias is promoted yet.

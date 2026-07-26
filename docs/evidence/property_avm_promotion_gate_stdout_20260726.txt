@@ -1,0 +1,107 @@
+{
+  "alias_update_plan": {
+    "action": "no_op",
+    "failed_checks": [
+      "median_interval_width_ratio",
+      "spatial_holdout_regression",
+      "major_cohort_regression",
+      "warm_api_p95"
+    ],
+    "from_version": null,
+    "reason": "promotion_gate_rejected",
+    "target_alias": "champion",
+    "to_version": "hist_gradient_boosting_log_price_per_m2"
+  },
+  "gate": {
+    "candidate_version": "hist_gradient_boosting_log_price_per_m2",
+    "checks": [
+      {
+        "details": {
+          "baseline_mdape": 0.2285,
+          "candidate_mdape": 0.19161180559358712,
+          "relative_improvement": 0.16143629937161,
+          "threshold": 0.03
+        },
+        "name": "temporal_mdape_relative_improvement",
+        "passed": true,
+        "reason": "passed"
+      },
+      {
+        "details": {
+          "coverage": 0.7866821739772559,
+          "max": 0.85,
+          "min": 0.75
+        },
+        "name": "interval_coverage",
+        "passed": true,
+        "reason": "passed"
+      },
+      {
+        "details": {
+          "median_interval_width_ratio": 0.7698766284303298,
+          "threshold": 0.5
+        },
+        "name": "median_interval_width_ratio",
+        "passed": false,
+        "reason": "median_interval_width_ratio_failed"
+      },
+      {
+        "details": {
+          "evidence_present": false
+        },
+        "name": "spatial_holdout_regression",
+        "passed": false,
+        "reason": "missing_spatial_holdout_report"
+      },
+      {
+        "details": {
+          "evidence_present": false
+        },
+        "name": "major_cohort_regression",
+        "passed": false,
+        "reason": "missing_major_cohort_regression_report"
+      },
+      {
+        "details": {
+          "evidence_present": false
+        },
+        "name": "warm_api_p95",
+        "passed": false,
+        "reason": "missing_warm_api_load_report"
+      },
+      {
+        "details": {
+          "source": "remote_pytest_and_contract_evidence"
+        },
+        "name": "tests_and_data_checks",
+        "passed": true,
+        "reason": "passed"
+      }
+    ],
+    "decision": "reject",
+    "dry_run": true,
+    "evaluated_at": "2026-07-26T08:33:51.190251+00:00",
+    "failed_checks": [
+      "median_interval_width_ratio",
+      "spatial_holdout_regression",
+      "major_cohort_regression",
+      "warm_api_p95"
+    ],
+    "model_name": "property_avm",
+    "reasons": [
+      "median_interval_width_ratio_failed",
+      "missing_spatial_holdout_report",
+      "missing_major_cohort_regression_report",
+      "missing_warm_api_load_report"
+    ]
+  },
+  "registry_status": "dry_run_no_mlflow_mutation",
+  "rollback_plan": {
+    "action": "no_op",
+    "from_version": null,
+    "reason": "missing_alias_history",
+    "requested_reason": "dry-run rollback check before any promoted AVM alias exists",
+    "target_alias": "champion",
+    "to_version": "hist_gradient_boosting_log_price_per_m2"
+  }
+}

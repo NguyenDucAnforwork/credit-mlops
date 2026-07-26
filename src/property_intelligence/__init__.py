@@ -51,6 +51,14 @@ from property_intelligence.comparables import (
     benchmark_comparable_queries,
     comparable_queries_from_frame,
 )
+from property_intelligence.lifecycle import (
+    AvmAliasState,
+    AvmPromotionThresholds,
+    evaluate_avm_promotion,
+    plan_alias_update,
+    plan_rollback,
+    write_lifecycle_report,
+)
 
 __all__ = [
     "build_gold",
@@ -92,4 +100,10 @@ __all__ = [
     "NonGisComparableIndex",
     "benchmark_comparable_queries",
     "comparable_queries_from_frame",
+    "AvmAliasState",
+    "AvmPromotionThresholds",
+    "evaluate_avm_promotion",
+    "plan_alias_update",
+    "plan_rollback",
+    "write_lifecycle_report",
 ]

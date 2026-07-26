@@ -1,6 +1,6 @@
 # Decisions
 
-Last updated: 2026-07-26 15:27:05 Asia/Bangkok
+Last updated: 2026-07-26 15:33:55 Asia/Bangkok
 
 ## ADR-0001: Local Source of Truth, VM Runtime Executor
 
@@ -37,3 +37,9 @@ Last updated: 2026-07-26 15:27:05 Asia/Bangkok
 - Decision: expose `/v1/avm/predict`, `/v1/comparables`, and `/v1/lending/decision` using the non-GIS comparable fallback and explicit experimental warnings.
 - Rationale: API consumers and tests need stable response contracts before Docker/GCP/service benchmarking is unblocked.
 - Consequence: endpoint shape and lending policy boundaries are testable now, but API p95 done criteria require warm service load tests and a promoted AVM artifact later.
+
+## ADR-0007: AVM Promotion Starts As Dry-Run Gate
+
+- Decision: evaluate AVM promotion with an auditable dry-run gate and no MLflow alias mutation until all promotion evidence exists and passes.
+- Rationale: the current candidate passes temporal improvement and coverage but fails interval width and lacks spatial/cohort/API load evidence.
+- Consequence: model lifecycle work can progress with explicit rejection reasons while protecting any future `property_avm@champion` alias from premature promotion.

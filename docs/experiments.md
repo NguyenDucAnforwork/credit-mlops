@@ -307,3 +307,21 @@
 - Decision: keep API scaffold; do not mark local-on-VM API p95 or lending API p95 criteria complete until warm service load tests run.
 - Lesson learned: index construction must be warmed or moved to startup before load testing; cold comparable endpoint latency is dominated by parquet/index load.
 - Next experiment: add warm API load benchmark once service execution path is available, or implement model/artifact loading for the promoted AVM path.
+
+## EXP-0018: AVM Promotion Gate Dry-Run
+
+- Timestamp in Asia/Bangkok: 2026-07-26 15:33:51
+- Hypothesis: An auditable AVM lifecycle gate can prevent promotion when measured evidence fails the contract even if temporal MdAPE improved.
+- Local Git commit or working-tree identifier: `20bebb5` plus uncommitted lifecycle gate source/tests/docs.
+- Dataset snapshot ID and checksums: gold layer from revision `a9a66ffa985edcf76b4be59ae2c6f5b1db889c38`; raw SHA256 manifest in `reports/generated/hf_vietnam_real_estates_snapshot_manifest_20260726.json`.
+- Exact remote command: `scripts/remote/run.sh 'uv run python scripts/property_avm_promotion_gate.py'`.
+- Configuration and seed: dry-run gate using quantile AVM report as candidate, strongest simple median baseline report as baseline, no MLflow alias mutation.
+- VM hardware/environment: Ubuntu 24.04.4 LTS, 4 vCPU AMD EPYC 7B12, 15 GiB RAM, no GPU.
+- Runtime: promotion gate script 1 second; focused lifecycle tests passed in 0.65 seconds; full suite passed with 126 tests in 8.20 seconds before gate.
+- Peak RAM when available: not measured.
+- Metrics: promotion decision `reject`; temporal MdAPE relative improvement 16.14% passed; 80% interval coverage 78.67% passed; median interval-width ratio 76.99% failed the <=50% threshold; spatial holdout evidence missing; major cohort regression evidence missing; warm API p95 load evidence missing; alias update plan `no_op`; rollback plan `no_op` because no promoted AVM alias history exists.
+- Baseline comparison: previous lifecycle state had no AVM promotion gate and 118 passing tests; this adds dry-run gate logic and raises remote test count to 126, above the 125-test numeric floor.
+- Interpretation: lifecycle scaffolding now blocks bad promotion explicitly rather than relying on narrative docs.
+- Decision: keep dry-run gate; do not mutate MLflow aliases until all gate evidence exists and passes.
+- Lesson learned: a model can satisfy temporal MdAPE and calibration coverage while still being unpromotable because uncertainty width and spatial/API evidence are not ready.
+- Next experiment: add warm API load report or AVM registry artifact packaging when Docker/service execution is unblocked.

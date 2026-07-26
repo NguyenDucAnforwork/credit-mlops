@@ -1,6 +1,6 @@
 # Interview Story
 
-Last updated: 2026-07-26 15:27:05 Asia/Bangkok
+Last updated: 2026-07-26 15:33:55 Asia/Bangkok
 
 ## Current 90-Second Story
 
@@ -20,6 +20,7 @@ I started with an existing credit scoring MLOps project and rebuilt its executio
 - Calibrated 80% AVM intervals across residual, cohort residual, and direct quantile approaches; the best quantile run reached 78.67% coverage and 76.99% median width, so it was kept as evidence but rejected for production confidence because the width target is <=50%.
 - Added a leakage-safe non-GIS comparable fallback and benchmarked 1,000 December queries on the VM: p95 14.88 ms, 0% valid-request errors, and 10 comparables per query, with distance explicitly marked unavailable.
 - Added Phase 4 API scaffolding for AVM, comparables, and lending decisions; VM smoke returned 200 for all three endpoints and exact LTV boundary tests cover 0.75 and 0.85.
+- Added an AVM promotion dry-run gate that raised the suite to 126 passing tests and correctly rejected the current candidate despite 16.14% MdAPE improvement because interval width and spatial/API evidence are not ready.
 - Not ready: GIS/spatial AVM metrics are not measured yet because coordinates are absent.
 - Not ready: cloud deployment metrics are not measured yet.
 

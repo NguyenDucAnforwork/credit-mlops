@@ -405,3 +405,25 @@ Full Hugging Face ingestion, row counts, checksums, ETL runtime, and peak RAM ar
 | Verification before smoke | 14 focused API tests passed in 1.98 seconds; 118 total tests passed in 8.16 seconds |
 | Final verification after docs/evidence | 118 tests passed in 8.16 seconds; wrapper runtime 10 seconds |
 | Load criterion status | not measured; Docker/service runtime remains blocked |
+
+### AVM Promotion Gate Dry-Run
+
+| Field | Value |
+|-------|-------|
+| Model name | `property_avm` |
+| Candidate version | `hist_gradient_boosting_log_price_per_m2` |
+| Registry action | dry-run only, no MLflow mutation |
+| Gate decision | `reject` |
+| Temporal MdAPE improvement | pass, 16.14% relative improvement vs strongest simple baseline |
+| Interval coverage | pass, 78.67% within 75%-85% |
+| Median interval-width ratio | fail, 76.99% vs <=50% target |
+| Spatial holdout regression | fail, missing evidence |
+| Major cohort regression | fail, missing evidence |
+| Warm API p95 | fail, missing evidence |
+| Alias update plan | `no_op`, reason `promotion_gate_rejected` |
+| Rollback plan | `no_op`, reason `missing_alias_history` |
+| Runtime | 1 second |
+| Evidence | `docs/evidence/property_avm_promotion_gate_20260726.json` |
+| Verification before gate | 8 lifecycle tests passed in 0.65 seconds; 126 total tests passed in 8.20 seconds |
+| Final verification after docs/evidence | 126 tests passed in 8.27 seconds; wrapper runtime 10 seconds |
+| Test-count criterion | pass, >=125 total tests |
