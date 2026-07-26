@@ -139,3 +139,25 @@ tests/                       VM-verified unit/integration/contract tests
 - Do not report deployment URLs, costs, row counts, metrics, or test results unless they are measured and linked to evidence.
 - Treat non-GIS comparables as administrative fallback only; do not describe them as spatial nearest neighbors.
 - Treat current AVM and UI outputs as experimental portfolio evidence, not production lending advice.
+
+## Deployed architecture
+
+The demo uses Cloud Run for the authenticated API and ETL job, Cloud Scheduler for the daily `03:00 Asia/Bangkok` trigger, versioned Cloud Storage parquet snapshots, BigQuery property tables, immutable Artifact Registry images, and Secret Manager-backed MLflow configuration. Cloud SQL remains disabled.
+
+## Live deployment
+
+- API: `https://credit-mlops-demo-api-ocj3bsu27q-as.a.run.app`
+- Services: `credit-mlops-demo-api`, `credit-mlops-demo-etl`, `credit-mlops-demo-etl-daily`
+- Full redacted evidence: [`deployment_report.md`](deployment_report.md)
+
+## Validation commands
+
+Use `scripts/remote/run.sh` for Terraform, Cloud Run, Scheduler, and focused pytest validation. The exact measured commands are listed in `deployment_report.md`.
+
+## Redeployment workflow
+
+Build and push immutable API/job images on `lfm`, update Terraform digest variables, run a reviewed plan, apply only the affected Cloud Run resource, then repeat the API, ETL, and scheduler checks.
+
+## Known limitations
+
+The source dataset lacks coordinates, so GIS/radius comparables are unavailable. The deployed AVM is an experimental listing-based fallback and reports low confidence when comparable support is absent.

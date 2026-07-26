@@ -245,8 +245,8 @@ resource "google_cloud_run_v2_job" "etl" {
 
         resources {
           limits = {
-            cpu    = "1"
-            memory = "2Gi"
+            cpu    = "4"
+            memory = "16Gi"
           }
         }
       }

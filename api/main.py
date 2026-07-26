@@ -205,11 +205,7 @@ async def lifespan(app: FastAPI):
         _get_engine()
     except Exception as exc:
         print(f"[startup] DB init failed (non-fatal): {exc}")
-    try:
-        warm_info = warm_property_index()
-        print(f"[startup] property index warmed: {warm_info}")
-    except Exception as exc:
-        print(f"[startup] property index warm-up failed (non-fatal): {exc}")
+    print("[startup] property index warm-up deferred until first property request")
     try:
         warm_avm_info = warm_avm_artifact()
         print(f"[startup] AVM artifact warm-up: {warm_avm_info}")

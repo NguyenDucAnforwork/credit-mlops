@@ -6,6 +6,7 @@ from pathlib import Path
 from statistics import median
 
 import pandas as pd
+from google.cloud import storage
 
 from property_intelligence.avm import TabularHgbQuantileArtifact
 from property_intelligence.comparables import (
@@ -186,7 +187,19 @@ def _gold_path() -> Path:
     configured = os.getenv("PROPERTY_GOLD_PATH")
     if configured:
         return Path(configured)
-    return Path("data/gold") / DATA_SNAPSHOT_ID / "listings_gold.parquet"
+    local_path = Path("data/gold") / DATA_SNAPSHOT_ID / "listings_gold.parquet"
+    if local_path.exists():
+        return local_path
+    bucket_name = os.getenv("PROPERTY_DATA_BUCKET")
+    if not bucket_name:
+        return local_path
+    cached_path = Path("/tmp/property-data") / DATA_SNAPSHOT_ID / "listings_gold.parquet"
+    if not cached_path.exists():
+        cached_path.parent.mkdir(parents=True, exist_ok=True)
+        storage.Client().bucket(bucket_name).blob(
+            f"property/{DATA_SNAPSHOT_ID}/gold/listings.parquet"
+        ).download_to_filename(cached_path)
+    return cached_path
 
 
 @lru_cache(maxsize=1)
