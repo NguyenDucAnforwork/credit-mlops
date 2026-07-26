@@ -9,6 +9,7 @@ from property_intelligence.avm import (
     evaluate_tabular_hgb_cohort_intervals,
     evaluate_tabular_hgb_intervals,
     evaluate_tabular_hgb_avm,
+    evaluate_tabular_hgb_quantile_intervals,
     make_tabular_hgb_pipeline,
     temporal_split,
 )
@@ -205,6 +206,17 @@ def test_tabular_hgb_cohort_intervals_reports_fallback_usage():
     assert report["cohort_config"]["test_rows_using_global_fallback"] == 2
     assert 0.0 <= report["interval_metrics"]["coverage"] <= 1.0
     assert report["interval_metrics"]["median_interval_width_ratio"] >= 0.0
+
+
+def test_tabular_hgb_quantile_intervals_reports_validation_and_test_width():
+    report = evaluate_tabular_hgb_quantile_intervals(_gold_frame(), random_state=7)
+
+    assert report["interval"] == "hist_gradient_boosting_quantile_log_price_per_m2_q10_q90"
+    assert report["target_coverage"] == 0.80
+    assert 0.0 <= report["validation_interval_metrics"]["coverage"] <= 1.0
+    assert 0.0 <= report["interval_metrics"]["coverage"] <= 1.0
+    assert report["interval_metrics"]["median_interval_width_ratio"] >= 0.0
+    assert report["point_metrics"]["split_name"] == "test"
 
 
 def test_make_tabular_hgb_pipeline_has_preprocess_and_model_steps():

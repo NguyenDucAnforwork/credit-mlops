@@ -1,6 +1,6 @@
 # Interview Story
 
-Last updated: 2026-07-26 15:05:30 Asia/Bangkok
+Last updated: 2026-07-26 15:12:40 Asia/Bangkok
 
 ## Current 90-Second Story
 
@@ -17,7 +17,7 @@ I started with an existing credit scoring MLOps project and rebuilt its executio
 - Added data contracts with 102 VM-verified tests and a `pass_with_blockers` report: 9 core data checks pass, and coordinate availability is explicitly blocked.
 - Established a non-GIS AVM baseline on 108,336 December listings: district+property-type median price/m2 achieved 22.85% MdAPE versus 47.97% for global median.
 - Improved the AVM baseline with HGB on log(price/m2): December MdAPE 19.16% and RMSLE 0.3850, a 16.14% relative MdAPE gain over the strongest simple baseline.
-- Calibrated 80% AVM intervals with 79.61% global residual coverage, then tested province/property-type cohorts with 79.29% coverage and 82.32% median width; both were rejected for production confidence because the width target is <=50%.
+- Calibrated 80% AVM intervals across residual, cohort residual, and direct quantile approaches; the best quantile run reached 78.67% coverage and 76.99% median width, so it was kept as evidence but rejected for production confidence because the width target is <=50%.
 - Not ready: GIS/spatial AVM metrics are not measured yet because coordinates are absent.
 - Not ready: cloud deployment metrics are not measured yet.
 

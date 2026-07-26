@@ -253,3 +253,21 @@
 - Decision: keep as failed-width uncertainty experiment; do not promote confidence policy.
 - Lesson learned: segmenting residuals by province/property type can identify relatively tighter cohorts, but listing residual variance remains too large for narrow 80% bands.
 - Next experiment: try quantile HGB or conformalized quantile regression, while continuing to treat GIS features as blocked until coordinates are legitimately enriched.
+
+## EXP-0015: Direct Quantile HGB 80% Intervals
+
+- Timestamp in Asia/Bangkok: 2026-07-26 15:12:35
+- Hypothesis: Direct q10/q90 HGB models for log(price/m2) can reduce interval width versus residual calibration while preserving December empirical coverage.
+- Local Git commit or working-tree identifier: `f97cc34` plus uncommitted quantile interval source/tests/docs.
+- Dataset snapshot ID and checksums: gold layer from revision `a9a66ffa985edcf76b4be59ae2c6f5b1db889c38`; raw SHA256 manifest in `reports/generated/hf_vietnam_real_estates_snapshot_manifest_20260726.json`.
+- Exact remote command: `scripts/remote/run.sh 'uv run python scripts/property_avm_quantile_intervals.py'`.
+- Configuration and seed: three HistGradientBoostingRegressor pipelines with `random_state=42`: point squared-error model, q10 quantile model, q90 quantile model; target `log(price_per_m2)`.
+- VM hardware/environment: Ubuntu 24.04.4 LTS, 4 vCPU AMD EPYC 7B12, 15 GiB RAM, no GPU.
+- Runtime: quantile interval script 30 seconds; targeted AVM tests plus full suite passed before experiment, 8 AVM tests in 1.13 seconds and 110 total tests in 8.02 seconds.
+- Peak RAM when available: not measured.
+- Metrics: validation coverage 79.64%; validation median interval-width ratio 77.74%; test coverage 78.67%; test median interval-width ratio 76.99%; p90 interval-width ratio 134.16%; high-confidence share 14.33%; medium-confidence share 39.30%; low-confidence share 46.37%; point MdAPE 19.16%; RMSLE 0.3850.
+- Baseline comparison: global residual median width 83.79%; cohort residual median width 82.32%; direct quantile median width 76.99%. Coverage remains in target, but p90 width is worse than residual baselines and median width still exceeds the <=50% target.
+- Interpretation: direct quantile training materially improves confidence segmentation but does not satisfy production interval usability on this non-GIS listing feature set.
+- Decision: keep as best current uncertainty experiment by median width and confidence segmentation, but do not promote.
+- Lesson learned: direct quantile objectives are better than residual grouping for high/medium/low confidence separation, but missing location signal and listing noise still dominate interval width.
+- Next experiment: add richer non-GIS support/comparable features or conformalized quantile diagnostics; GIS remains blocked until coordinates are legitimately enriched.

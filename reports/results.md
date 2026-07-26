@@ -346,3 +346,24 @@ Full Hugging Face ingestion, row counts, checksums, ETL runtime, and peak RAM ar
 | Evidence | `docs/evidence/avm_tabular_hgb_cohort_intervals_20260726.json` |
 | Verification before experiment | 7 AVM tests passed in 0.90 seconds; 109 total tests passed in 7.81 seconds |
 | Final verification after docs/evidence | 109 tests passed in 9.44 seconds; wrapper runtime 12 seconds |
+
+### AVM Experiment 5: Direct Quantile Intervals
+
+| Field | Value |
+|-------|-------|
+| Interval method | HGB q10/q90 quantile models for log(price/m2) |
+| Target coverage | 80% |
+| Validation empirical coverage | 79.64% |
+| Validation median interval-width ratio | 77.74% |
+| Empirical test coverage | 78.67% |
+| Median interval-width ratio | 76.99% |
+| p90 interval-width ratio | 134.16% |
+| High-confidence share | 14.33% |
+| Medium-confidence share | 39.30% |
+| Low-confidence share | 46.37% |
+| Coverage decision | pass |
+| Width decision | fail, target <=50% |
+| Runtime | 30 seconds |
+| Evidence | `docs/evidence/avm_tabular_hgb_quantile_intervals_20260726.json` |
+| Verification before experiment | 8 AVM tests passed in 1.13 seconds; 110 total tests passed in 8.02 seconds |
+| Final verification after docs/evidence | 110 tests passed in 7.98 seconds; wrapper runtime 10 seconds |

@@ -1,6 +1,6 @@
 # Data Card
 
-Last updated: 2026-07-26 15:05:30 Asia/Bangkok
+Last updated: 2026-07-26 15:12:40 Asia/Bangkok
 
 ## Primary Dataset
 
@@ -28,7 +28,7 @@ Last updated: 2026-07-26 15:05:30 Asia/Bangkok
 - Data contract status: `pass_with_blockers`
 - Core contract checks: required columns, unique listing IDs, MVP city filter, >=500,000 gold rows, positive price/area/price_per_m2, quarantine reasons all pass
 - Blocker contract check: coordinate source columns present fails because the actual source schema lacks `latitude` and `longitude`
-- Current AVM uncertainty evidence uses only non-GIS listing attributes; residual intervals remain too wide for a promoted confidence policy.
+- Current AVM uncertainty evidence uses only non-GIS listing attributes; direct quantile intervals remain too wide for a promoted confidence policy.
 
 ## Fixture Data
 

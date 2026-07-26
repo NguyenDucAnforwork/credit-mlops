@@ -1,6 +1,6 @@
 # Lessons Learned
 
-Last updated: 2026-07-26 15:05:30 Asia/Bangkok
+Last updated: 2026-07-26 15:12:40 Asia/Bangkok
 
 - Verify GCP from the VM before planning Terraform or Cloud Run work. The current VM account is present, but OAuth scopes are insufficient for Cloud Resource Manager and Service Usage.
 - Keep remote orchestration scripts allowlisted and sentinel-guarded so source synchronization cannot delete unrelated VM data.
@@ -18,3 +18,4 @@ Last updated: 2026-07-26 15:05:30 Asia/Bangkok
 - HGB on log(price/m2) improved relative error and RMSLE but not MAE. Future AVM work should include tail/outlier handling and interval calibration, not just average relative error.
 - Global validation-residual intervals can hit coverage but be too wide. The first 80% interval had 79.61% coverage but 83.79% median width ratio, so interval usefulness needs cohort or quantile modeling.
 - Province/property-type residual cohorts are not enough by themselves. They improved median interval width only to 82.32% and increased p90 width to 107.48%, so the next uncertainty attempt should optimize quantiles directly rather than only regrouping residuals.
+- Direct q10/q90 HGB quantiles improved median interval width to 76.99% and created a 14.33% high-confidence segment, but still failed the <=50% width target. Quantile objectives help, but the listing feature set still lacks enough signal for narrow 80% AVM intervals.

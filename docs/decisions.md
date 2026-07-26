@@ -1,6 +1,6 @@
 # Decisions
 
-Last updated: 2026-07-26 15:05:30 Asia/Bangkok
+Last updated: 2026-07-26 15:12:40 Asia/Bangkok
 
 ## ADR-0001: Local Source of Truth, VM Runtime Executor
 
@@ -23,5 +23,5 @@ Last updated: 2026-07-26 15:05:30 Asia/Bangkok
 ## ADR-0004: Do Not Promote Residual Interval Confidence Policy Yet
 
 - Decision: keep global and province/property-type residual interval experiments as measured baselines, but do not treat the confidence policy as production-ready.
-- Rationale: both interval approaches hit the empirical coverage band, but median width remains above 80% of point estimate versus the <=50% target.
-- Consequence: APIs and model cards may expose these as experimental evidence only; the next AVM uncertainty work should use quantile or conformalized quantile models before promotion.
+- Rationale: residual and direct quantile approaches hit the empirical coverage band, but the best median width measured so far is 76.99% of point estimate versus the <=50% target.
+- Consequence: APIs and model cards may expose these as experimental evidence only; the next AVM uncertainty work needs richer support/comparable features, legitimate spatial enrichment, or stronger quantile diagnostics before promotion.

@@ -244,7 +244,58 @@ def evaluate_tabular_hgb_cohort_intervals(
     }
 
 
-def make_tabular_hgb_pipeline(random_state: int = 42) -> Pipeline:
+def evaluate_tabular_hgb_quantile_intervals(gold: pd.DataFrame, random_state: int = 42) -> dict:
+    clean = _clean_gold(gold)
+    splits = temporal_split(clean)
+    train = splits["train"]
+    validation = splits["validation"]
+    test = splits["test"]
+    feature_columns = NUMERIC_FEATURES + CATEGORICAL_FEATURES
+    target = np.log(train["price_per_m2"])
+
+    point_model = make_tabular_hgb_pipeline(random_state=random_state)
+    lower_model = make_tabular_hgb_pipeline(random_state=random_state, loss="quantile", quantile=0.10)
+    upper_model = make_tabular_hgb_pipeline(random_state=random_state, loss="quantile", quantile=0.90)
+    point_model.fit(train[feature_columns], target)
+    lower_model.fit(train[feature_columns], target)
+    upper_model.fit(train[feature_columns], target)
+
+    validation_interval_metrics = _predict_interval_metrics(
+        validation,
+        point_model,
+        lower_model,
+        upper_model,
+        feature_columns,
+    )
+    test_interval_metrics = _predict_interval_metrics(
+        test,
+        point_model,
+        lower_model,
+        upper_model,
+        feature_columns,
+    )
+    return {
+        "model": "hist_gradient_boosting_log_price_per_m2",
+        "interval": "hist_gradient_boosting_quantile_log_price_per_m2_q10_q90",
+        "target_coverage": 0.80,
+        "random_state": random_state,
+        "split_rows": {name: len(frame) for name, frame in splits.items()},
+        "point_metrics": compute_avm_metrics(
+            "hist_gradient_boosting_log_price_per_m2",
+            "test",
+            test["price_vnd"],
+            test_interval_metrics["point"],
+        ).__dict__,
+        "validation_interval_metrics": validation_interval_metrics["summary"],
+        "interval_metrics": test_interval_metrics["summary"],
+    }
+
+
+def make_tabular_hgb_pipeline(
+    random_state: int = 42,
+    loss: str = "squared_error",
+    quantile: float | None = None,
+) -> Pipeline:
     preprocessor = ColumnTransformer(
         transformers=[
             ("num", SimpleImputer(strategy="median"), NUMERIC_FEATURES),
@@ -274,6 +325,8 @@ def make_tabular_hgb_pipeline(random_state: int = 42) -> Pipeline:
             (
                 "model",
                 HistGradientBoostingRegressor(
+                    loss=loss,
+                    quantile=quantile,
                     learning_rate=0.06,
                     max_iter=220,
                     max_leaf_nodes=31,
@@ -402,6 +455,42 @@ def _assign_cohort_residuals(
         lower[position], upper[position] = quantiles
         used_cohort[position] = True
     return lower, upper, used_cohort
+
+
+def _predict_interval_metrics(
+    frame: pd.DataFrame,
+    point_model: Pipeline,
+    lower_model: Pipeline,
+    upper_model: Pipeline,
+    feature_columns: list[str],
+) -> dict:
+    features = frame[feature_columns]
+    point_log_ppm = point_model.predict(features)
+    lower_log_ppm = lower_model.predict(features)
+    upper_log_ppm = upper_model.predict(features)
+    lower_log_ppm, upper_log_ppm = np.minimum(lower_log_ppm, upper_log_ppm), np.maximum(
+        lower_log_ppm,
+        upper_log_ppm,
+    )
+    area = frame["area_m2"].to_numpy(dtype=float)
+    point = np.exp(point_log_ppm) * area
+    lower = np.exp(lower_log_ppm) * area
+    upper = np.exp(upper_log_ppm) * area
+    actual = frame["price_vnd"].to_numpy(dtype=float)
+    coverage = np.mean((actual >= lower) & (actual <= upper))
+    width_ratio = (upper - lower) / np.maximum(point, 1.0)
+    confidence = np.where(width_ratio <= 0.5, "high", np.where(width_ratio <= 0.8, "medium", "low"))
+    return {
+        "point": point,
+        "summary": {
+            "coverage": float(coverage),
+            "median_interval_width_ratio": float(np.median(width_ratio)),
+            "p90_interval_width_ratio": float(np.quantile(width_ratio, 0.90)),
+            "high_confidence_share": float(np.mean(confidence == "high")),
+            "medium_confidence_share": float(np.mean(confidence == "medium")),
+            "low_confidence_share": float(np.mean(confidence == "low")),
+        },
+    }
 
 
 def _best_metric(metrics: list[AvmMetrics], split_name: str, field: str) -> AvmMetrics:
