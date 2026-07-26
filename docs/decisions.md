@@ -107,5 +107,11 @@ Last updated: 2026-07-26 21:52:20 Asia/Bangkok
 ## ADR-0018: Use Plain Docker Smokes Until Compose Is Available
 
 - Decision: build UI/API/monitor images and smoke them with plain `docker run` on the VM, but keep `remote-up` and service-stack claims blocked until Docker Compose exists.
-- Rationale: Docker daemon access is restored and individual image validation is valuable, while `docker compose` is still unavailable and cannot exercise Postgres, Redis, MLflow, or multi-container wiring.
-- Consequence: image build and single-container health evidence can be reported; Compose, Docker service integration, image push, and Cloud Run deployment remain incomplete.
+- Rationale: Docker daemon access was restored and individual image validation was valuable while Compose was not yet available.
+- Consequence: superseded by ADR-0019 for core Compose smoke; image push, monitoring-profile service integration, Dockerized load tests, and Cloud Run deployment remain incomplete.
+
+## ADR-0019: Run Compose Smoke In An Isolated VM Project
+
+- Decision: add `make remote-compose-smoke` with a user-level Compose plugin, VM-only `.env` default, isolated project name, core Postgres/Redis/API/UI health checks, and teardown.
+- Rationale: Compose can now be verified without sudo, without syncing local secrets, and without leaving persistent database volumes from a smoke run.
+- Consequence: core Compose service wiring is measured; monitoring-profile jobs, Dockerized load tests, registry push, and Cloud Run deployment remain separate evidence requirements.

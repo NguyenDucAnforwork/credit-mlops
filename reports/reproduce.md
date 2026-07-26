@@ -1,6 +1,6 @@
 # Remote Reproduction Report
 
-Last updated: 2026-07-26 22:51:40 Asia/Bangkok
+Last updated: 2026-07-26 23:00:30 Asia/Bangkok
 
 This project is reproduced from the local repository by executing runtime work on VM `lfm` in `/home/ducan/credit-mlops-codex`. Do not install dependencies, run tests, train models, build Docker images, run databases, execute Terraform, or deploy GCP resources locally.
 
@@ -16,9 +16,10 @@ This project is reproduced from the local repository by executing runtime work o
 | Docker context guard | pass; source excludes `.env`/generated artifacts | `docs/evidence/phase6_docker_context_guard_20260726.txt` |
 | Docker image builds | pass; UI/API/monitor images built on VM | `docs/evidence/phase6_docker_images_20260726.txt` |
 | Docker plain-container smokes | pass; API/UI health and monitor import checks passed | `docs/evidence/phase6_docker_api_smoke_20260726.txt` |
+| `make remote-compose-smoke` | pass; isolated Postgres/Redis/API/UI healthy and HTTP smokes passed in 74s | `docs/evidence/phase6_compose_smoke_20260726.txt` |
 | Container dependency alignment | partial; main requirements audit passes, monitoring requirements blocked by NannyML/LightGBM | `docs/evidence/phase6_container_dependency_alignment_20260726.txt` |
-| `make remote-reproduce-full` | blocked | Docker Compose and cloud prerequisites |
-| `make remote-up` | blocked | Docker Compose unavailable |
+| `make remote-reproduce-full` | blocked | monitoring-profile/cloud prerequisites |
+| `make remote-up` | partial | core Compose smoke passes; full long-running stack not left up |
 | `make remote-cloud-smoke` | blocked | VM GCP Cloud Resource Manager/IAM/API access |
 
 ## Exact Commands

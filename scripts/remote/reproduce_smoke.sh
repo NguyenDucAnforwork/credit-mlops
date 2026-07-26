@@ -54,8 +54,8 @@ fi
     tests/test_api.py \
     tests/test_ui_property_workflow.py
   echo '=== smoke: blockers intentionally skipped ==='
-  echo 'docker=skipped: VM docker socket/compose access blocked'
-  echo 'gcp=skipped: VM access token scope insufficient'
+  echo 'docker=skipped: use make remote-compose-smoke for Docker Compose evidence'
+  echo 'gcp=skipped: VM Cloud Resource Manager/IAM/API access incomplete'
 } | tee $EVIDENCE; status=\${PIPESTATUS[0]}; end=\$(date +%s); printf 'remote_reproduce_smoke_exit=%s\nruntime_seconds=%s\n' \"\$status\" \"\$((end-start))\" | tee $RUNTIME; exit \"\$status\""
 
 "$SCRIPT_DIR/fetch_artifacts.sh"

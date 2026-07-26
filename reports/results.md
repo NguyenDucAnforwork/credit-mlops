@@ -176,7 +176,7 @@ Measured on VM `lfm` in `/home/ducan/credit-mlops-codex`.
 | Dependency sync | pass, 168 packages installed with `uv sync --frozen --all-extras --dev` | `docs/experiments.md` |
 | Baseline data prep | version `cac9de3c`, 16,000 train rows, 4,000 test rows | `docs/evidence/baseline_processed_files_20260726.txt` |
 | Original pytest suite | 76 passed in 7.42 seconds; wrapper runtime 9 seconds | `docs/evidence/baseline_pytest_20260726.txt` |
-| Docker preflight | updated: Docker daemon access works; `docker compose` unavailable | `docs/evidence/phase6_docker_recheck_20260726.txt` |
+| Docker preflight | updated: Docker daemon access works; Compose v5.3.1 installed/reused by later smoke | `docs/evidence/phase6_docker_recheck_20260726.txt` |
 | GCP access from VM | updated: Service Usage list works; Cloud Resource Manager project describe blocked | `docs/evidence/phase6_gcp_recheck_20260726.txt` |
 
 The initial Docker/API smoke was not run during baseline preflight. Later Phase 6 evidence built UI/API/monitor images and passed plain-container smokes after Docker daemon access was restored.
@@ -190,7 +190,7 @@ An intermediate SSH/GitHub auth failure was observed earlier in the session, but
 | VM SSH to `lfm` | recovered; later remote coverage and vulnerability targets executed successfully | `docs/evidence/phase7_coverage_runtime_20260726.txt`, `docs/evidence/phase7_pip_audit_runtime_20260726.txt` |
 | GitHub push | recovered; feature branch pushed through commit `334be2f` before vulnerability target work | branch `feat/onemount-property-intelligence` |
 
-Current external blockers remain Docker socket/Compose access and GCP OAuth scopes, not SSH or GitHub push.
+Current external blockers remain GCP Cloud Resource Manager/IAM/API access and cost-sensitive deployment approval, not SSH, GitHub push, Docker daemon access, or core Compose smoke.
 
 ---
 
@@ -597,8 +597,8 @@ Full Hugging Face ingestion, row counts, checksums, ETL runtime, and peak RAM ar
 | Ruff lint | 0 errors |
 | Focused tests | 61 passed in 3.24 seconds |
 | End-to-end runtime | 5 seconds |
-| Docker status | skipped, VM Docker socket/Compose access blocked |
-| GCP status | skipped, VM access token scope insufficient |
+| Docker status | skipped in this older smoke; later `make remote-compose-smoke` passes for core Postgres/Redis/API/UI |
+| GCP status | skipped in this older smoke; later checks show Service Usage list works but Cloud Resource Manager project describe remains blocked |
 | Evidence | `docs/evidence/remote_reproduce_smoke_20260726.txt` |
 | Final verification after report | 139 tests passed in 11.11 seconds; wrapper runtime 13 seconds |
 | Criterion status | smoke path <=15 minutes passes for non-Docker/non-cloud scope; full CI Docker/Terraform/cloud checks remain incomplete |
@@ -639,7 +639,7 @@ Full Hugging Face ingestion, row counts, checksums, ETL runtime, and peak RAM ar
 | Source changes | added `.dockerignore`; removed `COPY .env` from API and monitoring Dockerfiles |
 | Runtime | 0 seconds |
 | Result | `docker_context_guard_exit=0`; `.env`, `data/raw`, and `artifacts/models` exclusions verified; no `COPY .env` remains |
-| Docker status | Historical guard run happened before daemon access was refreshed; latest daemon recheck now works, but Compose remains unavailable |
+| Docker status | Historical guard run happened before daemon access was refreshed; later daemon and core Compose smokes pass |
 | Evidence | `docs/evidence/phase6_docker_context_guard_20260726.txt`, `docs/evidence/phase6_docker_context_guard_runtime_20260726.txt` |
 | Criterion status | source packaging guard passes; later image builds and plain-container smokes pass, but Compose service-stack validation remains blocked |
 
@@ -663,7 +663,7 @@ Full Hugging Face ingestion, row counts, checksums, ETL runtime, and peak RAM ar
 |-------|-------|
 | Execution location | VM `lfm`, workspace `/home/ducan/credit-mlops-codex` |
 | Docker access | `ducan` is now in group `docker`; Docker client/server 29.1.3 respond |
-| Compose status | `docker compose` unavailable; Compose smoke not run |
+| Compose status | unavailable during this experiment; later EXP-0038 installs/reuses Compose v5.3.1 and passes core stack smoke |
 | Failed probe | `docker build --check` unsupported by the legacy builder; API/UI/monitor checks exited 125 |
 | UI image build | passed; image `credit-mlops-ui:codex-20260726`, ID `94df2d30ecb0`, size 837MB, runtime 55s |
 | API image build | passed; image `credit-mlops-api:codex-20260726`, ID `b4e4dcd3afd7`, size 3.01GB, runtime 286s |
@@ -673,6 +673,23 @@ Full Hugging Face ingestion, row counts, checksums, ETL runtime, and peak RAM ar
 | Monitoring image smoke | passed import check; NannyML 0.13.1, Pandas 2.2.3, LightGBM 4.5.0; runtime 3s |
 | Evidence | `docs/evidence/phase6_docker_recheck_20260726.txt`, `docs/evidence/phase6_docker_build_check_20260726.txt`, `docs/evidence/phase6_docker_ui_build_20260726.txt`, `docs/evidence/phase6_docker_api_build_20260726.txt`, `docs/evidence/phase6_docker_monitor_build_20260726.txt`, `docs/evidence/phase6_docker_images_20260726.txt`, `docs/evidence/phase6_docker_api_smoke_20260726.txt`, `docs/evidence/phase6_docker_ui_smoke_20260726.txt`, `docs/evidence/phase6_docker_monitor_smoke_20260726.txt` |
 | Criterion status | individual Docker image build and plain-container smoke pass; Docker Compose, service-stack integration, registry push, and cloud deployment remain incomplete |
+
+### Docker Compose Core Stack Smoke
+
+| Field | Value |
+|-------|-------|
+| Command | `bash scripts/remote/compose_smoke.sh` / `make remote-compose-smoke` |
+| Execution location | VM `lfm`, workspace `/home/ducan/credit-mlops-codex` |
+| Compose version | Docker Compose `v5.3.1`, user-level plugin under `$HOME/.docker/cli-plugins` |
+| Runtime env | VM-only `.env` created if missing; no local `.env` synced or committed |
+| Compose project | `credit_mlops_codex_smoke`, isolated from any persistent stack |
+| Services | `postgres`, `redis`, `api`, `ui` |
+| Runtime | 74 seconds |
+| Result | `compose_smoke_exit=0`; `docker compose config --quiet` passed; API/UI builds passed; Postgres, Redis, API, and UI reached Docker health `healthy` |
+| HTTP smoke | API `/health` returned `status=ok`, `model_version=fallback_local`; UI health returned `ok` |
+| Cleanup | `docker compose down -v --remove-orphans` removed containers, network, and isolated Postgres volume |
+| Evidence | `docs/evidence/phase6_compose_smoke_20260726.txt`, `docs/evidence/phase6_compose_smoke_runtime_20260726.txt` |
+| Criterion status | core Compose stack passes; monitoring profile, Dockerized load tests, image push, and Cloud Run remain incomplete |
 
 ### Scoped Remote Coverage
 

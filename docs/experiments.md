@@ -668,3 +668,21 @@
 - Decision: keep the image build and plain-container smoke evidence; do not claim `remote-up`, Compose, or cloud deployment completion until Compose and GCP blockers are cleared.
 - Lesson learned: Docker readiness is layered. Group membership fixed daemon access, but Compose availability and vulnerable monitoring transitive dependencies remain separate blockers.
 - Next experiment: install or enable a Compose-compatible command on the VM if approved/available, then run `remote-up`/Compose smoke; otherwise continue GCP read-only/IAM diagnosis and source-only cloud hardening.
+
+## EXP-0038: Isolated Docker Compose Core Stack Smoke
+
+- Timestamp in Asia/Bangkok: 2026-07-26 23:00:30
+- Hypothesis: A user-level Docker Compose plugin plus VM-only default `.env` can validate the core Postgres/Redis/API/UI stack without committing secrets or leaving runtime state behind.
+- Local Git commit or working-tree identifier: `1b2ff7b` plus uncommitted `remote-compose-smoke` orchestration, evidence, and documentation.
+- Dataset snapshot ID and checksums: no new dataset or model artifact generated. Compose used the VM workspace and Docker volumes under isolated project `credit_mlops_codex_smoke`, then removed its own containers/volume.
+- Exact remote command: `bash scripts/remote/compose_smoke.sh`.
+- Configuration and seed: Docker Compose plugin `v5.3.1` installed under `$HOME/.docker/cli-plugins`; `COMPOSE_PROJECT_NAME=credit_mlops_codex_smoke`; core services `postgres`, `redis`, `api`, and `ui`; `.env` created on the VM only with a no-secret comment if missing.
+- VM hardware/environment: Ubuntu 24.04.4 LTS, 4 vCPU AMD EPYC 7B12, 15 GiB RAM, no GPU.
+- Runtime: 74 seconds.
+- Peak RAM when available: not measured.
+- Metrics: `compose_smoke_exit=0`; `docker compose config --quiet` passed; API/UI Compose builds passed using cached layers; Postgres, Redis, API, and UI reached Docker health `healthy`; API `/health` returned `{"status":"ok","model_version":"fallback_local","uptime_s":11.2}`; UI health returned `ok`; `docker compose down -v --remove-orphans` removed the isolated containers, network, and Postgres volume.
+- Baseline comparison: EXP-0037 could only run individual `docker run` smokes because `docker compose` was unavailable.
+- Interpretation: core Docker Compose service wiring is now verified for API/UI with Postgres and Redis. Monitoring-profile batch job, Prometheus/Grafana stack, Dockerized load tests, image push, and Cloud Run deployment are still not measured.
+- Decision: keep `make remote-compose-smoke` as the reusable VM Compose evidence path and keep `remote-up`/deployment claims separate.
+- Lesson learned: create VM-only runtime defaults instead of syncing local `.env`; isolated Compose project names make teardown safe and auditable.
+- Next experiment: extend Compose evidence to monitoring profile and/or Dockerized load tests, then proceed to Artifact Registry/Cloud Run only after GCP Cloud Resource Manager/IAM/API access is fixed.

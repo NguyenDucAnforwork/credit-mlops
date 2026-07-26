@@ -32,7 +32,7 @@ Measured on 2026-07-26 from branch `feat/onemount-property-intelligence`.
 | Blocker | Current evidence |
 |---------|------------------|
 | GIS/PostGIS/H3 | Primary source has no coordinate columns, so spatial holdout, distance, radius, and H3 criteria are not claimed |
-| Docker/Compose on VM | Docker daemon access works and image smokes pass; `docker compose` is unavailable |
+| Docker/Compose on VM | Docker daemon, image builds, plain smokes, and core Compose stack pass; monitoring profile and Dockerized load tests not measured |
 | GCP deployment | VM account exists and Service Usage list works; Cloud Resource Manager project describe remains blocked |
 | AVM promotion | Dry-run gate rejects candidate because interval width, spatial holdout, cohort regression, and production service evidence are incomplete |
 | Dependency security | Latest audit is clean; FastAPI/Starlette TestClient warning resolved by adding `httpx2==2.9.1` to dev dependencies |
@@ -77,10 +77,11 @@ Current measured targets:
 - `make remote-vulnerability-smoke`: dependency audit on VM; evidence capture completed in 41 seconds and found 0 known vulnerabilities after remediation.
 - `make remote-type-smoke`: pinned mypy on new property intelligence modules, API code, and selected property scripts; 19 source files checked with 0 issues in a 1-second wrapper runtime.
 - `make remote-terraform-validate`: GCP Terraform scaffold fmt/init/validate on VM; completed in 2 seconds with `terraform_validate_exit=0`.
-- Docker image builds: UI/API/monitor images build on the VM and pass plain-container smokes; Docker Compose remains unavailable.
+- `make remote-compose-smoke`: installs/reuses user-level Compose on the VM, starts isolated Postgres/Redis/API/UI, reaches healthy status for all four, verifies API/UI HTTP health, and tears down in 74 seconds.
+- Docker image builds: UI/API/monitor images build on the VM and pass plain-container smokes.
 - Container dependency alignment: UI deps import and main `requirements.txt` audit passes; monitoring requirements audit remains blocked by `PYSEC-2024-231` in transitive `lightgbm 4.5.0`.
 
-Compose and cloud targets are intentionally blocked until VM Docker Compose availability and GCP Cloud Resource Manager/IAM/API access are fixed:
+Full-stack and cloud targets are intentionally blocked until monitoring-profile/Dockerized load evidence and GCP Cloud Resource Manager/IAM/API access are fixed:
 
 ```bash
 make remote-reproduce-full

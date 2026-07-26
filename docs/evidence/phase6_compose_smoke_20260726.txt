@@ -1,0 +1,286 @@
+Docker Compose version v5.3.1
+time="2026-07-26T15:59:19Z" level=warning msg="/home/ducan/credit-mlops-codex/docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+time="2026-07-26T15:59:19Z" level=warning msg="/home/ducan/credit-mlops-codex/docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+time="2026-07-26T15:59:19Z" level=warning msg="Docker Compose requires buildx plugin to be installed"
+ Image credit_mlops_codex_smoke-api Building
+ Image credit_mlops_codex_smoke-api Building
+Sending build context to Docker daemon  524.4kBSending build context to Docker daemon  1.049MBSending build context to Docker daemon  1.573MBSending build context to Docker daemon  2.098MBSending build context to Docker daemon  2.622MBSending build context to Docker daemon  3.146MBSending build context to Docker daemon  3.671MBSending build context to Docker daemon  4.195MBSending build context to Docker daemon   4.72MBSending build context to Docker daemon  5.244MBSending build context to Docker daemon  5.768MBSending build context to Docker daemon  6.293MBSending build context to Docker daemon  6.817MBSending build context to Docker daemon  7.342MBSending build context to Docker daemon  7.866MBSending build context to Docker daemon   8.39MBSending build context to Docker daemon  8.844MB
+Step 1/18 : FROM python:3.12-slim
+ ---> 57cd7c3a7a27
+Step 2/18 : WORKDIR /app
+ ---> Using cache
+ ---> 4a1558110ab3
+Step 3/18 : RUN apt-get update && apt-get install -y --no-install-recommends     gcc libpq-dev curl     && rm -rf /var/lib/apt/lists/*
+ ---> Using cache
+ ---> cd72e6730331
+Step 4/18 : COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
+ ---> Using cache
+ ---> 2ca920017d21
+Step 5/18 : COPY pyproject.toml uv.lock ./
+ ---> Using cache
+ ---> 57cb1265c93f
+Step 6/18 : RUN uv sync --frozen --no-dev --no-install-project
+ ---> Using cache
+ ---> 0031e9ecbcc2
+Step 7/18 : ENV PATH="/app/.venv/bin:$PATH"
+ ---> Using cache
+ ---> ff27ce239aee
+Step 8/18 : COPY src/ ./src/
+ ---> Using cache
+ ---> cdee19328e44
+Step 9/18 : COPY api/ ./api/
+ ---> Using cache
+ ---> f6fbbf3267f1
+Step 10/18 : COPY artifacts/ ./artifacts/
+ ---> Using cache
+ ---> 1c54c29d09a1
+Step 11/18 : COPY data/processed/ ./data/processed/
+ ---> Using cache
+ ---> 70858bb67467
+Step 12/18 : WORKDIR /app/api
+ ---> Using cache
+ ---> 9950e0c07922
+Step 13/18 : ENV PYTHONPATH=/app/src:/app/api
+ ---> Using cache
+ ---> a9c5d0ef9ba5
+Step 14/18 : ENV PYTHONUNBUFFERED=1
+ ---> Using cache
+ ---> b7997b3a7d1d
+Step 15/18 : EXPOSE 8000
+ ---> Using cache
+ ---> 94daa684165c
+Step 16/18 : HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3     CMD curl -f http://localhost:8000/health || exit 1
+ ---> Using cache
+ ---> 9e23e28c277b
+Step 17/18 : CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+ ---> Using cache
+ ---> b4e4dcd3afd7
+Step 18/18 : LABEL com.docker.compose.image.builder=classic
+ ---> Running in f0a17e15acde
+ ---> Removed intermediate container f0a17e15acde
+ ---> 2b9f35f091bd
+Successfully built 2b9f35f091bd
+Successfully tagged credit_mlops_codex_smoke-api:latest
+ Image credit_mlops_codex_smoke-api Built
+ Image credit_mlops_codex_smoke-api Built
+ Image credit_mlops_codex_smoke-ui Building
+ Image credit_mlops_codex_smoke-ui Building
+Sending build context to Docker daemon  524.4kBSending build context to Docker daemon  1.049MBSending build context to Docker daemon  1.573MBSending build context to Docker daemon  2.098MBSending build context to Docker daemon  2.622MBSending build context to Docker daemon  3.146MBSending build context to Docker daemon  3.671MBSending build context to Docker daemon  4.195MBSending build context to Docker daemon   4.72MBSending build context to Docker daemon  5.244MBSending build context to Docker daemon  5.768MBSending build context to Docker daemon  6.293MBSending build context to Docker daemon  6.817MBSending build context to Docker daemon  7.342MBSending build context to Docker daemon  7.866MBSending build context to Docker daemon   8.39MBSending build context to Docker daemon  8.844MB
+Step 1/9 : FROM python:3.12-slim
+ ---> 57cd7c3a7a27
+Step 2/9 : WORKDIR /app
+ ---> Using cache
+ ---> 4a1558110ab3
+Step 3/9 : COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
+ ---> Using cache
+ ---> 6d238afbf863
+Step 4/9 : RUN uv pip install --system --no-cache streamlit==1.54.0 requests==2.34.2 matplotlib
+ ---> Using cache
+ ---> b739f59a9f60
+Step 5/9 : COPY ui/streamlit_app.py ui/property_workflow.py ./
+ ---> Using cache
+ ---> 3b2808fd2277
+Step 6/9 : EXPOSE 8501
+ ---> Using cache
+ ---> a50009dc58fb
+Step 7/9 : HEALTHCHECK --interval=30s --timeout=10s --start-period=15s --retries=3     CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8501/_stcore/health')"
+ ---> Using cache
+ ---> e5eca4c0f010
+Step 8/9 : CMD ["streamlit", "run", "streamlit_app.py",      "--server.port=8501",      "--server.headless=true",      "--server.address=0.0.0.0"]
+ ---> Using cache
+ ---> 94df2d30ecb0
+Step 9/9 : LABEL com.docker.compose.image.builder=classic
+ ---> Running in 3825a0c2dcb4
+ ---> Removed intermediate container 3825a0c2dcb4
+ ---> 2a427229f2b0
+Successfully built 2a427229f2b0
+Successfully tagged credit_mlops_codex_smoke-ui:latest
+ Image credit_mlops_codex_smoke-ui Built
+ Image credit_mlops_codex_smoke-ui Built
+time="2026-07-26T15:59:44Z" level=warning msg="/home/ducan/credit-mlops-codex/docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+ Image redis:7-alpine Pulling
+ Image postgres:16-alpine Pulling
+ 0749aef11dca Pulling fs layer 0B
+ 55afa1ecc21d Pulling fs layer 0B
+ cc7fa208b8a7 Pulling fs layer 0B
+ 7af924000309 Pulling fs layer 0B
+ 689a434e3a86 Pulling fs layer 0B
+ 2d3064b8615b Pulling fs layer 0B
+ ef6ab46d98b2 Pulling fs layer 0B
+ 2f537278bc74 Pulling fs layer 0B
+ 4096c457dc0d Pulling fs layer 0B
+ c86ab38aa6db Pulling fs layer 0B
+ 713473b5b92b Pulling fs layer 0B
+ 897d797d2723 Pulling fs layer 0B
+ f5a655897537 Pulling fs layer 0B
+ 63e63047b377 Pulling fs layer 0B
+ 627d9d06d3d0 Pulling fs layer 0B
+ 93ebed1aef27 Pulling fs layer 0B
+ db197c512a33 Pulling fs layer 0B
+ 4f4fb700ef54 Pulling fs layer 0B
+ 4f4fb700ef54 Already exists 0B
+ 0749aef11dca Download complete 0B
+ 2d3064b8615b Download complete 0B
+ db197c512a33 Download complete 0B
+ 55afa1ecc21d Downloading 2.097MB
+ 897d797d2723 Download complete 0B
+ 897d797d2723 Extracting 1B
+ c86ab38aa6db Downloading 128B
+ 7af924000309 Download complete 0B
+ cc7fa208b8a7 Downloading 184B
+ 63e63047b377 Download complete 0B
+ ef6ab46d98b2 Download complete 0B
+ 689a434e3a86 Download complete 0B
+ 4096c457dc0d Download complete 0B
+ 713473b5b92b Downloading 167B
+ 55afa1ecc21d Download complete 0B
+ 2f537278bc74 Downloading 2.097MB
+ 897d797d2723 Extracting 1B
+ 55afa1ecc21d Extracting 1B
+ 627d9d06d3d0 Downloading 4.194MB
+ 93ebed1aef27 Download complete 0B
+ 713473b5b92b Download complete 0B
+ 2f537278bc74 Downloading 10.49MB
+ f5a655897537 Download complete 0B
+ c86ab38aa6db Download complete 0B
+ cc7fa208b8a7 Download complete 0B
+ 897d797d2723 Extracting 1B
+ 55afa1ecc21d Extracting 1B
+ 2f537278bc74 Downloading 19.92MB
+ 627d9d06d3d0 Downloading 12.41MB
+ 897d797d2723 Extracting 1B
+ 55afa1ecc21d Extracting 1B
+ 2f537278bc74 Downloading 29.36MB
+ 627d9d06d3d0 Download complete 0B
+ 897d797d2723 Extracting 1B
+ 55afa1ecc21d Extracting 1B
+ 2f537278bc74 Downloading 39.85MB
+ 897d797d2723 Extracting 1B
+ 55afa1ecc21d Extracting 1B
+ 2f537278bc74 Downloading 48.23MB
+ 897d797d2723 Pull complete 0B
+ 55afa1ecc21d Pull complete 0B
+ f5a655897537 Extracting 1B
+ 2f537278bc74 Downloading 58.72MB
+ cac39341ecaa Download complete 0B
+ 4ecb750a4bb0 Download complete 0B
+ 22b5e73fc01c Download complete 0B
+ 0749aef11dca Pull complete 0B
+ 2d3064b8615b Pull complete 0B
+ 63e63047b377 Extracting 1B
+ f5a655897537 Pull complete 0B
+ 2f537278bc74 Downloading 68.16MB
+ ef6ab46d98b2 Pull complete 0B
+ 689a434e3a86 Pull complete 0B
+ 63e63047b377 Extracting 1B
+ 015d68c2a4bf Download complete 0B
+ 2f537278bc74 Downloading 78.64MB
+ 63e63047b377 Pull complete 0B
+ 627d9d06d3d0 Extracting 1B
+ 2f537278bc74 Downloading 88.08MB
+ 627d9d06d3d0 Extracting 1B
+ 2f537278bc74 Downloading 99.61MB
+ 627d9d06d3d0 Extracting 1B
+ 2f537278bc74 Downloading 110.1MB
+ 4f4fb700ef54 Pull complete 0B
+ 93ebed1aef27 Pull complete 0B
+ 627d9d06d3d0 Pull complete 0B
+ 2f537278bc74 Downloading 111.3MB
+ 2f537278bc74 Downloading 111.3MB
+ 2f537278bc74 Downloading 111.3MB
+ 2f537278bc74 Downloading 111.3MB
+ 2f537278bc74 Download complete 0B
+ db197c512a33 Pull complete 0B
+ 2f537278bc74 Extracting 1B
+ Image redis:7-alpine Pulled
+ 2f537278bc74 Extracting 1B
+ 2f537278bc74 Extracting 1B
+ 2f537278bc74 Extracting 1B
+ 2f537278bc74 Extracting 1B
+ 2f537278bc74 Extracting 1B
+ 2f537278bc74 Extracting 1B
+ 2f537278bc74 Extracting 1B
+ 2f537278bc74 Extracting 1B
+ 2f537278bc74 Extracting 1B
+ 2f537278bc74 Extracting 1B
+ 2f537278bc74 Extracting 2B
+ 2f537278bc74 Extracting 2B
+ 2f537278bc74 Extracting 2B
+ 2f537278bc74 Extracting 2B
+ 2f537278bc74 Extracting 2B
+ 2f537278bc74 Extracting 2B
+ 2f537278bc74 Extracting 2B
+ 2f537278bc74 Extracting 2B
+ 2f537278bc74 Extracting 2B
+ 2f537278bc74 Extracting 2B
+ 2f537278bc74 Extracting 3B
+ 2f537278bc74 Extracting 3B
+ 2f537278bc74 Extracting 3B
+ 2f537278bc74 Extracting 3B
+ 2f537278bc74 Extracting 3B
+ 4096c457dc0d Pull complete 0B
+ 713473b5b92b Extracting 1B
+ c86ab38aa6db Pull complete 0B
+ 2f537278bc74 Pull complete 0B
+ 7af924000309 Pull complete 0B
+ 713473b5b92b Pull complete 0B
+ cc7fa208b8a7 Pull complete 0B
+ Image postgres:16-alpine Pulled
+ Network credit_mlops_codex_smoke_default Creating
+ Network credit_mlops_codex_smoke_default Created
+ Volume credit_mlops_codex_smoke_postgres_data Creating
+ Volume credit_mlops_codex_smoke_postgres_data Created
+ Container credit_mlops_codex_smoke-postgres-1 Creating
+ Container credit_mlops_codex_smoke-redis-1 Creating
+ Container credit_mlops_codex_smoke-postgres-1 Created
+ Container credit_mlops_codex_smoke-redis-1 Created
+ Container credit_mlops_codex_smoke-api-1 Creating
+ Container credit_mlops_codex_smoke-api-1 Created
+ Container credit_mlops_codex_smoke-ui-1 Creating
+ Container credit_mlops_codex_smoke-ui-1 Created
+ Container credit_mlops_codex_smoke-postgres-1 Starting
+ Container credit_mlops_codex_smoke-redis-1 Starting
+ Container credit_mlops_codex_smoke-postgres-1 Started
+ Container credit_mlops_codex_smoke-redis-1 Started
+ Container credit_mlops_codex_smoke-postgres-1 Waiting
+ Container credit_mlops_codex_smoke-redis-1 Waiting
+ Container credit_mlops_codex_smoke-redis-1 Healthy
+ Container credit_mlops_codex_smoke-postgres-1 Healthy
+ Container credit_mlops_codex_smoke-api-1 Starting
+ Container credit_mlops_codex_smoke-api-1 Started
+ Container credit_mlops_codex_smoke-api-1 Waiting
+ Container credit_mlops_codex_smoke-api-1 Healthy
+ Container credit_mlops_codex_smoke-ui-1 Starting
+ Container credit_mlops_codex_smoke-ui-1 Started
+health_poll_1=api:healthy,ui:starting,postgres:healthy,redis:healthy
+health_poll_2=api:healthy,ui:starting,postgres:healthy,redis:healthy
+health_poll_3=api:healthy,ui:healthy,postgres:healthy,redis:healthy
+time="2026-07-26T16:00:30Z" level=warning msg="/home/ducan/credit-mlops-codex/docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+NAME                                  IMAGE                          COMMAND                  SERVICE    CREATED          STATUS                    PORTS
+credit_mlops_codex_smoke-api-1        credit_mlops_codex_smoke-api   "uvicorn main:app --…"   api        37 seconds ago   Up 25 seconds (healthy)   0.0.0.0:8000->8000/tcp, [::]:8000->8000/tcp
+credit_mlops_codex_smoke-postgres-1   postgres:16-alpine             "docker-entrypoint.s…"   postgres   38 seconds ago   Up 36 seconds (healthy)   0.0.0.0:5432->5432/tcp, [::]:5432->5432/tcp
+credit_mlops_codex_smoke-redis-1      redis:7-alpine                 "docker-entrypoint.s…"   redis      38 seconds ago   Up 36 seconds (healthy)   0.0.0.0:6379->6379/tcp, [::]:6379->6379/tcp
+credit_mlops_codex_smoke-ui-1         credit_mlops_codex_smoke-ui    "streamlit run strea…"   ui         37 seconds ago   Up 10 seconds (healthy)   0.0.0.0:8501->8501/tcp, [::]:8501->8501/tcp
+{"status":"ok","model_version":"fallback_local","uptime_s":11.2}
+ok
+time="2026-07-26T16:00:30Z" level=warning msg="/home/ducan/credit-mlops-codex/docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+ Container credit_mlops_codex_smoke-ui-1 Stopping
+ Container credit_mlops_codex_smoke-ui-1 Stopped
+ Container credit_mlops_codex_smoke-ui-1 Removing
+ Container credit_mlops_codex_smoke-ui-1 Removed
+ Container credit_mlops_codex_smoke-api-1 Stopping
+ Container credit_mlops_codex_smoke-api-1 Stopped
+ Container credit_mlops_codex_smoke-api-1 Removing
+ Container credit_mlops_codex_smoke-api-1 Removed
+ Container credit_mlops_codex_smoke-redis-1 Stopping
+ Container credit_mlops_codex_smoke-postgres-1 Stopping
+ Container credit_mlops_codex_smoke-postgres-1 Stopped
+ Container credit_mlops_codex_smoke-postgres-1 Removing
+ Container credit_mlops_codex_smoke-postgres-1 Removed
+ Container credit_mlops_codex_smoke-redis-1 Stopped
+ Container credit_mlops_codex_smoke-redis-1 Removing
+ Container credit_mlops_codex_smoke-redis-1 Removed
+ Network credit_mlops_codex_smoke_default Removing
+ Volume credit_mlops_codex_smoke_postgres_data Removing
+ Volume credit_mlops_codex_smoke_postgres_data Removed
+ Network credit_mlops_codex_smoke_default Removed

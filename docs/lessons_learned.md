@@ -1,12 +1,12 @@
 # Lessons Learned
 
-Last updated: 2026-07-26 22:51:40 Asia/Bangkok
+Last updated: 2026-07-26 23:00:30 Asia/Bangkok
 
 - Verify GCP from the VM before planning Terraform or Cloud Run work. The current VM account is present, but OAuth scopes are insufficient for Cloud Resource Manager and Service Usage.
 - Keep remote orchestration scripts allowlisted and sentinel-guarded so source synchronization cannot delete unrelated VM data.
 - Do not assume a local Git remote alias works on the VM. The VM could not resolve `github-nguyenducan`, so bootstrap must support an rsync-backed workspace.
 - Preserve remote-only safety sentinels during `rsync --delete`; `.codex_remote_workspace` must be excluded and re-touched after sync.
-- Docker readiness requires daemon access, image build evidence, and Compose availability as separate checks. The VM now permits Docker daemon access for `ducan` and individual images build/smoke successfully, but `docker compose` remains unavailable.
+- Docker readiness requires daemon access, image build evidence, and Compose evidence as separate checks. The VM now permits Docker daemon access for `ducan`, individual images build/smoke successfully, and the core Compose stack passes; monitoring-profile and Dockerized load evidence remain separate.
 - Keep fixture ETL evidence separate from full dataset claims. The current Phase 1 evidence proves incremental semantics, not full Hugging Face row counts or runtime.
 - Add new production packages to `pyproject.toml`; after adding `src/property_intelligence`, standalone VM imports work without `PYTHONPATH`.
 - Capture Hugging Face dataset revision metadata before downloading shards; row counts and checksums should always point back to a stable revision.
@@ -41,3 +41,4 @@ Last updated: 2026-07-26 22:51:40 Asia/Bangkok
 - Do not turn a vulnerability fix into an unsatisfiable requirements file. The monitoring image needs a NannyML-compatible LightGBM fix or redesign, not a forced transitive pin that the resolver rejects.
 - Treat Dockerfile lint/build-check tooling as environment-specific. `docker build --check` is not supported by the VM's legacy builder path, so the failed probe is evidence about tooling capability rather than image correctness.
 - Plain `docker run` smokes are useful when Compose is missing, but they do not replace multi-service evidence for Postgres, Redis, MLflow, or Cloud Run deployment.
+- A user-level Compose plugin is enough for VM verification when sudo is off limits. The helper should create only VM-local default env files, isolate the project name, and tear down its own containers and volumes.

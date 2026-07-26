@@ -184,6 +184,7 @@ make remote-coverage-smoke
 make remote-vulnerability-smoke
 make remote-type-smoke
 make remote-terraform-validate
+make remote-compose-smoke
 make remote-reproduce-full
 make remote-up
 make remote-cloud-smoke
@@ -236,7 +237,13 @@ scripts/remote/run.sh 'docker build -f monitoring/Dockerfile.monitor -t credit-m
 
 The latest UI/API/monitor builds and plain-container smokes passed; see `docs/evidence/phase6_docker_ui_build_20260726.txt`, `docs/evidence/phase6_docker_api_build_20260726.txt`, `docs/evidence/phase6_docker_monitor_build_20260726.txt`, `docs/evidence/phase6_docker_api_smoke_20260726.txt`, `docs/evidence/phase6_docker_ui_smoke_20260726.txt`, and `docs/evidence/phase6_docker_monitor_smoke_20260726.txt`.
 
-Docker Compose reproduction remains blocked until a Compose command is available on the VM.
+Core Docker Compose smoke is now reusable:
+
+```bash
+make remote-compose-smoke
+```
+
+It installs/reuses a user-level Docker Compose plugin on the VM, creates a VM-only no-secret `.env` default if missing, validates Compose config, builds API/UI, starts isolated Postgres/Redis/API/UI services, checks Docker and HTTP health, records evidence, and tears down its own containers and volume. The latest run completed in 74 seconds with all four services healthy; see `docs/evidence/phase6_compose_smoke_20260726.txt`.
 
 Docker source packaging guard evidence is available under `docs/evidence/phase6_docker_context_guard_20260726.txt`; it does not replace a Docker build.
 

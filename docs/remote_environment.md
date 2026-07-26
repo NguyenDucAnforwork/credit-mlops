@@ -1,6 +1,6 @@
 # Remote Environment
 
-Last updated: 2026-07-26 22:51:40 Asia/Bangkok
+Last updated: 2026-07-26 23:00:30 Asia/Bangkok
 
 ## SSH
 
@@ -28,7 +28,7 @@ Last updated: 2026-07-26 22:51:40 Asia/Bangkok
 - `uv`: installed later at `/home/ducan/.local/bin/uv`
 - Docker client: 29.1.3
 - Docker server access: works for user `ducan` after group refresh
-- Docker Compose: `docker compose` unavailable
+- Docker Compose: user-level plugin `v5.3.1` under `$HOME/.docker/cli-plugins`
 - Latest measured Python suite: 139 tests passed in 15.91 seconds under `make remote-coverage-smoke`; latest warnings-enabled non-coverage suite was 139 passed in 11.20 seconds with Ruff passing and no TestClient warning summary.
 - Latest remote smoke reproduction: `make remote-reproduce-smoke` completed in 5 seconds with Ruff passing and 61 focused tests passing in 3.24 seconds.
 - Latest scoped coverage measurement: 81% total coverage for `api/*`, `src/*`, and `scripts/property_*.py`; wrapper runtime 19 seconds; evidence files `docs/evidence/phase7_coverage_report_20260726.txt`, `docs/evidence/phase7_coverage_stdout_20260726.txt`, and `reports/generated/phase7_coverage_20260726.json`.
@@ -37,9 +37,10 @@ Last updated: 2026-07-26 22:51:40 Asia/Bangkok
 - Latest Terraform validation: `make remote-terraform-validate` completed in 2 seconds with Terraform 1.9.8 and Google provider 6.50.0; backend disabled, `terraform_validate_exit=0`, no plan/apply.
 - Latest Docker context guard: source check completed in 0 seconds and confirmed `.env` is not copied by Dockerfiles.
 - Latest container dependency alignment: UI dependency import passed; main requirements audit exit 0; monitoring requirements audit exit 1 due transitive `lightgbm 4.5.0` vulnerability through NannyML.
-- Latest Docker daemon recheck: `ducan` is in group `docker`; Docker client/server 29.1.3 respond; Docker Compose remains unavailable.
+- Latest Docker daemon recheck: `ducan` is in group `docker`; Docker client/server 29.1.3 respond.
 - Latest Docker image builds: UI `94df2d30ecb0` 837MB in 55s, API `b4e4dcd3afd7` 3.01GB in 286s, monitor `ab3038d25eeb` 3.64GB in 298s.
 - Latest plain container smokes: API `/health` returned `status=ok` with fallback local model and Docker health `healthy`; UI Streamlit health returned `ok` and Docker health `healthy`; monitoring image import check passed.
+- Latest Compose smoke: `make remote-compose-smoke` completed in 74 seconds; Postgres, Redis, API, and UI reached Docker health `healthy`; API/UI HTTP health passed; isolated containers, network, and Postgres volume were removed.
 - Latest measured local VM HTTP benchmark: AVM p95 140.84 ms and lending p95 24.21 ms with 0% errors at 1,000 requests/concurrency 10.
 - Latest startup warm-up benchmark: property index startup 4.85 seconds, first comparable request after startup 10.99 ms.
 - Latest AVM artifact evidence: 2.37 MB remote-only joblib, load 87.13 ms, single prediction 21.32 ms, same-seed MdAPE delta 0.0 percentage points.
@@ -50,8 +51,8 @@ Last updated: 2026-07-26 22:51:40 Asia/Bangkok
 - User/group: `uid=1002(ducan) gid=1003(ducan)`
 - Groups: `ducan adm dialout cdrom floppy audio dip video plugdev lxd netdev ubuntu google-sudoers docker`
 - Socket: `/var/run/docker.sock` is owned by `root:docker` with mode `srw-rw----`
-- Result: Docker daemon access works; individual image build and plain-container smoke evidence is captured.
-- Remaining blocker: install the Docker Compose plugin or compatible `docker-compose` before running `remote-up`/service-stack checks.
+- Result: Docker daemon and user-level Compose access work; individual image, plain-container, and core Compose stack evidence is captured.
+- Remaining blocker: monitoring-profile Compose, Dockerized load tests, image push, and cloud deployment are not measured yet.
 
 ## GCP Access
 

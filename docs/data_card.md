@@ -1,6 +1,6 @@
 # Data Card
 
-Last updated: 2026-07-26 22:51:40 Asia/Bangkok
+Last updated: 2026-07-26 23:00:30 Asia/Bangkok
 
 ## Primary Dataset
 
@@ -38,6 +38,7 @@ Last updated: 2026-07-26 22:51:40 Asia/Bangkok
 - The 2026-07-26 Docker context guard excludes generated data layers from Docker build context; it did not delete or regenerate any local or VM data.
 - The 2026-07-26 container dependency alignment phase changed requirement pins only. It did not read, move, delete, or regenerate local/VM data.
 - The 2026-07-26 Docker image build and plain-container smoke phase did not regenerate raw/silver/gold/quarantine data. Docker context excludes generated data layers by default, and the API image smoke used only committed fallback artifacts.
+- The 2026-07-26 Compose smoke created and removed an isolated Postgres volume only. It did not migrate, export, or commit any database/data artifact.
 
 ## Fixture Data
 
