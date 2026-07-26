@@ -1,0 +1,174 @@
+Docker Compose version v5.3.1
+time="2026-07-26T16:15:23Z" level=warning msg="/home/ducan/credit-mlops-codex/docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+time="2026-07-26T16:15:23Z" level=warning msg="/home/ducan/credit-mlops-codex/docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+time="2026-07-26T16:15:23Z" level=warning msg="Docker Compose requires buildx plugin to be installed"
+ Image credit_mlops_codex_load-api Building
+ Image credit_mlops_codex_load-api Building
+Sending build context to Docker daemon  524.4kBSending build context to Docker daemon  1.049MBSending build context to Docker daemon  1.573MBSending build context to Docker daemon  2.098MBSending build context to Docker daemon  2.622MBSending build context to Docker daemon  3.146MBSending build context to Docker daemon  3.671MBSending build context to Docker daemon  4.195MBSending build context to Docker daemon   4.72MBSending build context to Docker daemon  5.244MBSending build context to Docker daemon  5.768MBSending build context to Docker daemon  6.293MBSending build context to Docker daemon  6.817MBSending build context to Docker daemon  7.342MBSending build context to Docker daemon  7.866MBSending build context to Docker daemon   8.39MBSending build context to Docker daemon  8.849MB
+Step 1/18 : FROM python:3.12-slim
+ ---> 57cd7c3a7a27
+Step 2/18 : WORKDIR /app
+ ---> Using cache
+ ---> 4a1558110ab3
+Step 3/18 : RUN apt-get update && apt-get install -y --no-install-recommends     gcc libpq-dev curl     && rm -rf /var/lib/apt/lists/*
+ ---> Using cache
+ ---> cd72e6730331
+Step 4/18 : COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
+ ---> Using cache
+ ---> 2ca920017d21
+Step 5/18 : COPY pyproject.toml uv.lock ./
+ ---> Using cache
+ ---> 57cb1265c93f
+Step 6/18 : RUN uv sync --frozen --no-dev --no-install-project
+ ---> Using cache
+ ---> 0031e9ecbcc2
+Step 7/18 : ENV PATH="/app/.venv/bin:$PATH"
+ ---> Using cache
+ ---> ff27ce239aee
+Step 8/18 : COPY src/ ./src/
+ ---> Using cache
+ ---> cdee19328e44
+Step 9/18 : COPY api/ ./api/
+ ---> Using cache
+ ---> f6fbbf3267f1
+Step 10/18 : COPY artifacts/ ./artifacts/
+ ---> Using cache
+ ---> 1c54c29d09a1
+Step 11/18 : COPY data/processed/ ./data/processed/
+ ---> Using cache
+ ---> 70858bb67467
+Step 12/18 : WORKDIR /app/api
+ ---> Using cache
+ ---> 9950e0c07922
+Step 13/18 : ENV PYTHONPATH=/app/src:/app/api
+ ---> Using cache
+ ---> a9c5d0ef9ba5
+Step 14/18 : ENV PYTHONUNBUFFERED=1
+ ---> Using cache
+ ---> b7997b3a7d1d
+Step 15/18 : EXPOSE 8000
+ ---> Using cache
+ ---> 94daa684165c
+Step 16/18 : HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3     CMD curl -f http://localhost:8000/health || exit 1
+ ---> Using cache
+ ---> 9e23e28c277b
+Step 17/18 : CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+ ---> Using cache
+ ---> b4e4dcd3afd7
+Step 18/18 : LABEL com.docker.compose.image.builder=classic
+ ---> Using cache
+ ---> 2b9f35f091bd
+Successfully built 2b9f35f091bd
+Successfully tagged credit_mlops_codex_load-api:latest
+ Image credit_mlops_codex_load-api Built
+ Image credit_mlops_codex_load-api Built
+ Image credit_mlops_codex_load-ui Building
+ Image credit_mlops_codex_load-ui Building
+Sending build context to Docker daemon  524.4kBSending build context to Docker daemon  1.049MBSending build context to Docker daemon  1.573MBSending build context to Docker daemon  2.098MBSending build context to Docker daemon  2.622MBSending build context to Docker daemon  3.146MBSending build context to Docker daemon  3.671MBSending build context to Docker daemon  4.195MBSending build context to Docker daemon   4.72MBSending build context to Docker daemon  5.244MBSending build context to Docker daemon  5.768MBSending build context to Docker daemon  6.293MBSending build context to Docker daemon  6.817MBSending build context to Docker daemon  7.342MBSending build context to Docker daemon  7.866MBSending build context to Docker daemon   8.39MBSending build context to Docker daemon  8.849MB
+Step 1/9 : FROM python:3.12-slim
+ ---> 57cd7c3a7a27
+Step 2/9 : WORKDIR /app
+ ---> Using cache
+ ---> 4a1558110ab3
+Step 3/9 : COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
+ ---> Using cache
+ ---> 6d238afbf863
+Step 4/9 : RUN uv pip install --system --no-cache streamlit==1.54.0 requests==2.34.2 matplotlib
+ ---> Using cache
+ ---> b739f59a9f60
+Step 5/9 : COPY ui/streamlit_app.py ui/property_workflow.py ./
+ ---> Using cache
+ ---> 3b2808fd2277
+Step 6/9 : EXPOSE 8501
+ ---> Using cache
+ ---> a50009dc58fb
+Step 7/9 : HEALTHCHECK --interval=30s --timeout=10s --start-period=15s --retries=3     CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8501/_stcore/health')"
+ ---> Using cache
+ ---> e5eca4c0f010
+Step 8/9 : CMD ["streamlit", "run", "streamlit_app.py",      "--server.port=8501",      "--server.headless=true",      "--server.address=0.0.0.0"]
+ ---> Using cache
+ ---> 94df2d30ecb0
+Step 9/9 : LABEL com.docker.compose.image.builder=classic
+ ---> Using cache
+ ---> 2a427229f2b0
+Successfully built 2a427229f2b0
+Successfully tagged credit_mlops_codex_load-ui:latest
+ Image credit_mlops_codex_load-ui Built
+ Image credit_mlops_codex_load-ui Built
+time="2026-07-26T16:15:32Z" level=warning msg="/home/ducan/credit-mlops-codex/docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+ Network credit_mlops_codex_load_default Creating
+ Network credit_mlops_codex_load_default Created
+ Volume credit_mlops_codex_load_postgres_data Creating
+ Volume credit_mlops_codex_load_postgres_data Created
+ Container credit_mlops_codex_load-postgres-1 Creating
+ Container credit_mlops_codex_load-redis-1 Creating
+ Container credit_mlops_codex_load-redis-1 Created
+ Container credit_mlops_codex_load-postgres-1 Created
+ Container credit_mlops_codex_load-api-1 Creating
+ Container credit_mlops_codex_load-api-1 Created
+ Container credit_mlops_codex_load-ui-1 Creating
+ Container credit_mlops_codex_load-ui-1 Created
+ Container credit_mlops_codex_load-postgres-1 Starting
+ Container credit_mlops_codex_load-redis-1 Starting
+ Container credit_mlops_codex_load-postgres-1 Started
+ Container credit_mlops_codex_load-redis-1 Started
+ Container credit_mlops_codex_load-postgres-1 Waiting
+ Container credit_mlops_codex_load-redis-1 Waiting
+ Container credit_mlops_codex_load-postgres-1 Healthy
+ Container credit_mlops_codex_load-redis-1 Healthy
+ Container credit_mlops_codex_load-api-1 Starting
+ Container credit_mlops_codex_load-api-1 Started
+ Container credit_mlops_codex_load-api-1 Waiting
+ Container credit_mlops_codex_load-api-1 Healthy
+ Container credit_mlops_codex_load-ui-1 Starting
+ Container credit_mlops_codex_load-ui-1 Started
+health_poll_1=api:healthy,ui:starting,postgres:healthy,redis:healthy
+health_poll_2=api:healthy,ui:starting,postgres:healthy,redis:healthy
+health_poll_3=api:healthy,ui:healthy,postgres:healthy,redis:healthy
+time="2026-07-26T16:16:14Z" level=warning msg="/home/ducan/credit-mlops-codex/docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+NAME                                 IMAGE                         COMMAND                  SERVICE    CREATED          STATUS                    PORTS
+credit_mlops_codex_load-api-1        credit_mlops_codex_load-api   "uvicorn main:app --…"   api        41 seconds ago   Up 30 seconds (healthy)   0.0.0.0:8000->8000/tcp, [::]:8000->8000/tcp
+credit_mlops_codex_load-postgres-1   postgres:16-alpine            "docker-entrypoint.s…"   postgres   41 seconds ago   Up 41 seconds (healthy)   0.0.0.0:5432->5432/tcp, [::]:5432->5432/tcp
+credit_mlops_codex_load-redis-1      redis:7-alpine                "docker-entrypoint.s…"   redis      41 seconds ago   Up 41 seconds (healthy)   0.0.0.0:6379->6379/tcp, [::]:6379->6379/tcp
+credit_mlops_codex_load-ui-1         credit_mlops_codex_load-ui    "streamlit run strea…"   ui         41 seconds ago   Up 10 seconds (healthy)   0.0.0.0:8501->8501/tcp, [::]:8501->8501/tcp
+{
+  "api_base_url": "http://127.0.0.1:8000",
+  "avm": {
+    "latency_ms": {
+      "max": 507.0390450000559,
+      "median": 198.9405624999563,
+      "p95": 283.0085584499557,
+      "p99": 353.70690118974835
+    },
+    "status_codes": [
+      200
+    ],
+    "throughput_rps": 49.01792022822914,
+    "total_runtime_seconds": 20.40070234199993,
+    "valid_request_error_rate": 0.0
+  },
+  "concurrency": 10,
+  "criterion_scope": "docker_compose_core_stack",
+  "execution": "external_httpx_async",
+  "lending": {
+    "latency_ms": {
+      "max": 93.04504199963048,
+      "median": 16.552623500047048,
+      "p95": 33.92709850006667,
+      "p99": 76.3316661000044
+    },
+    "status_codes": [
+      200
+    ],
+    "throughput_rps": 508.43041073105616,
+    "total_runtime_seconds": 1.9668375040000683,
+    "valid_request_error_rate": 0.0
+  },
+  "requests_per_endpoint": 1000,
+  "server": {
+    "health_status": "ok",
+    "warmup_latency_ms": 19.219029000396404,
+    "warmup_status_code": 200
+  },
+  "snapshot_id": "a9a66ffa985edcf76b4be59ae2c6f5b1db889c38"
+}

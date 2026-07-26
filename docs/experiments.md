@@ -704,3 +704,21 @@
 - Decision: make `make remote-cloud-smoke` call the reusable diagnostic script and exit nonzero when cloud prerequisites are blocked.
 - Lesson learned: a cloud smoke should check every deployment prerequisite explicitly; a single successful Service Usage list is not deployment readiness.
 - Next experiment: after APIs/IAM are fixed, rerun `make remote-cloud-smoke`, then run Terraform plan and image push/deploy only with cost-sensitive deployment approval.
+
+## EXP-0040: Docker Compose API Load Smoke With Property Data Mount
+
+- Timestamp in Asia/Bangkok: 2026-07-26 23:16:14
+- Hypothesis: The Docker Compose API can meet the property AVM and lending p95 target when the VM-only gold parquet is mounted read-only and the benchmark targets the running container over HTTP.
+- Local Git commit or working-tree identifier: `2b07e80` plus uncommitted Compose data mount, external benchmark script, load-smoke helper, evidence, and documentation.
+- Dataset snapshot ID and checksums: existing VM-only gold snapshot revision `a9a66ffa985edcf76b4be59ae2c6f5b1db889c38`; no data was regenerated or copied locally.
+- Exact remote command: `bash scripts/remote/compose_load_smoke.sh`.
+- Configuration and seed: Docker Compose v5.3.1; isolated project `credit_mlops_codex_load`; services `postgres`, `redis`, `api`, and `ui`; API bind-mounts `./data:/app/data:ro` and sets `PROPERTY_GOLD_PATH=/app/data/gold/a9a66ffa985edcf76b4be59ae2c6f5b1db889c38/listings_gold.parquet`; 1,000 requests per endpoint at concurrency 10.
+- VM hardware/environment: Ubuntu 24.04.4 LTS, 4 vCPU AMD EPYC 7B12, 15 GiB RAM, no GPU.
+- Runtime: 78 seconds.
+- Peak RAM when available: not measured.
+- Metrics: `compose_load_smoke_exit=0`; Postgres, Redis, API, and UI reached Docker health `healthy`; warm comparable request status 200 with 19.22 ms latency; AVM 1,000/1,000 status 200, 0% valid-request errors, p95 283.01 ms, median 198.94 ms, p99 353.71 ms; lending 1,000/1,000 status 200, 0% valid-request errors, p95 33.93 ms, median 16.55 ms, p99 76.33 ms.
+- Baseline comparison: the first Compose load attempt returned AVM 503 and warm comparable 503 because the API container did not have an explicit property gold data path; adding the read-only data mount and `PROPERTY_GOLD_PATH` fixed it.
+- Interpretation: Dockerized core API/UI/Postgres/Redis wiring now has service-level load evidence and meets the sub-500 ms p95 criterion for the tested property AVM and lending paths. This still does not cover Cloud Run or monitoring-profile jobs.
+- Decision: keep the Compose API data mount and external benchmark helper.
+- Lesson learned: container health does not prove domain endpoint readiness. Property endpoints need their VM-only data mount declared explicitly, and benchmarks should fail on 4xx/5xx responses.
+- Next experiment: run monitoring-profile Compose smoke and address monitoring image vulnerability separately; cloud deployment remains blocked by GCP API/IAM prerequisites.

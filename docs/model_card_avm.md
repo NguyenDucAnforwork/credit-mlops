@@ -1,6 +1,6 @@
 # AVM Model Card
 
-Last updated: 2026-07-26 23:06:44 Asia/Bangkok
+Last updated: 2026-07-26 23:16:14 Asia/Bangkok
 
 Status: non-GIS tabular baseline measured; production AVM not promoted.
 
@@ -38,6 +38,7 @@ Estimate listing-based residential market value and price per square meter for l
 - The 2026-07-26 Docker image build and plain-container smoke phase did not retrain, repack, promote, reload, or alter AVM metrics. API container `/health` verified the committed credit-scoring fallback model path only; property AVM artifact-backed service behavior remains measured by the prior VM uvicorn benchmark.
 - The 2026-07-26 Compose smoke verified core service wiring and API/UI health only. It did not run AVM load tests, retrain, promote, or change artifact-backed AVM metrics.
 - The 2026-07-26 read-only GCP smoke did not deploy, promote, reload, or change AVM serving behavior.
+- The 2026-07-26 Dockerized API load smoke measured the non-artifact comparable fallback path after mounting VM gold data. It did not measure Dockerized artifact-backed AVM serving.
 
 ## Known Limitations
 
@@ -50,4 +51,4 @@ Estimate listing-based residential market value and price per square meter for l
 - API can serve the experimental HGB quantile artifact when `AVM_ARTIFACT_PATH` is configured, and otherwise falls back to non-GIS comparables.
 - No `property_avm@champion` alias is promoted yet.
 - Monitoring currently covers synthetic drift and delayed-label replay; production delayed-label ingestion is not implemented yet.
-- Warm local VM service p95 is measured with uvicorn; plain Docker API/UI health checks pass, but Dockerized property API load p95 and Cloud Run p95 are not measured.
+- Warm local VM service p95 is measured with uvicorn; Dockerized Compose API load p95 is measured for the fallback property path; Cloud Run p95 is not measured.

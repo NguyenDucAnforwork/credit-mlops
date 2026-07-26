@@ -1,0 +1,41 @@
+{
+  "api_base_url": "http://127.0.0.1:8000",
+  "avm": {
+    "latency_ms": {
+      "max": 507.0390450000559,
+      "median": 198.9405624999563,
+      "p95": 283.0085584499557,
+      "p99": 353.70690118974835
+    },
+    "status_codes": [
+      200
+    ],
+    "throughput_rps": 49.01792022822914,
+    "total_runtime_seconds": 20.40070234199993,
+    "valid_request_error_rate": 0.0
+  },
+  "concurrency": 10,
+  "criterion_scope": "docker_compose_core_stack",
+  "execution": "external_httpx_async",
+  "lending": {
+    "latency_ms": {
+      "max": 93.04504199963048,
+      "median": 16.552623500047048,
+      "p95": 33.92709850006667,
+      "p99": 76.3316661000044
+    },
+    "status_codes": [
+      200
+    ],
+    "throughput_rps": 508.43041073105616,
+    "total_runtime_seconds": 1.9668375040000683,
+    "valid_request_error_rate": 0.0
+  },
+  "requests_per_endpoint": 1000,
+  "server": {
+    "health_status": "ok",
+    "warmup_latency_ms": 19.219029000396404,
+    "warmup_status_code": 200
+  },
+  "snapshot_id": "a9a66ffa985edcf76b4be59ae2c6f5b1db889c38"
+}

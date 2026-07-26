@@ -1,0 +1,2 @@
+compose_load_smoke_exit=0
+runtime_seconds=78

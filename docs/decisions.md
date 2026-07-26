@@ -121,3 +121,9 @@ Last updated: 2026-07-26 21:52:20 Asia/Bangkok
 - Decision: replace the one-line `remote-cloud-smoke` target with `scripts/remote/cloud_smoke.sh`, a read-only prerequisite diagnostic that records command-level exit codes and returns nonzero while deployment APIs/IAM are blocked.
 - Rationale: `gcloud services list` can succeed even when Cloud Resource Manager, Artifact Registry, Cloud Run, and Scheduler are not usable.
 - Consequence: cloud readiness is no longer overstated; Terraform plan/apply, image push, API enablement, and deployment stay blocked until the diagnostic passes and cost-sensitive actions are approved.
+
+## ADR-0021: Mount VM Property Gold Data Into Compose API
+
+- Decision: mount `./data:/app/data:ro` into the Compose API service and set `PROPERTY_GOLD_PATH` to the current VM gold parquet path.
+- Rationale: Dockerized API health did not guarantee property endpoint readiness; the first Compose load attempt returned AVM 503 because the API process ran from `/app/api` and could not resolve the default relative gold path.
+- Consequence: Dockerized AVM/lending load evidence now passes without committing generated data locally; the mount depends on VM-only ETL artifacts being present.

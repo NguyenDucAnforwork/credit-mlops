@@ -185,6 +185,7 @@ make remote-vulnerability-smoke
 make remote-type-smoke
 make remote-terraform-validate
 make remote-compose-smoke
+make remote-compose-load-smoke
 make remote-reproduce-full
 make remote-up
 make remote-cloud-smoke
@@ -252,6 +253,14 @@ make remote-compose-smoke
 ```
 
 It installs/reuses a user-level Docker Compose plugin on the VM, creates a VM-only no-secret `.env` default if missing, validates Compose config, builds API/UI, starts isolated Postgres/Redis/API/UI services, checks Docker and HTTP health, records evidence, and tears down its own containers and volume. The latest run completed in 74 seconds with all four services healthy; see `docs/evidence/phase6_compose_smoke_20260726.txt`.
+
+Dockerized API load smoke is also reusable:
+
+```bash
+make remote-compose-load-smoke
+```
+
+It starts the same isolated core Compose stack, runs 1,000 AVM and 1,000 lending requests at concurrency 10 against the Dockerized API, writes JSON evidence, and tears down the stack. The latest run passed with AVM p95 283.01 ms and lending p95 33.93 ms, both with 0% errors; see `docs/evidence/property_api_docker_compose_benchmark_20260726.json`.
 
 Docker source packaging guard evidence is available under `docs/evidence/phase6_docker_context_guard_20260726.txt`; it does not replace a Docker build.
 

@@ -1,6 +1,6 @@
 # Remote Environment
 
-Last updated: 2026-07-26 23:06:44 Asia/Bangkok
+Last updated: 2026-07-26 23:16:14 Asia/Bangkok
 
 ## SSH
 
@@ -41,6 +41,7 @@ Last updated: 2026-07-26 23:06:44 Asia/Bangkok
 - Latest Docker image builds: UI `94df2d30ecb0` 837MB in 55s, API `b4e4dcd3afd7` 3.01GB in 286s, monitor `ab3038d25eeb` 3.64GB in 298s.
 - Latest plain container smokes: API `/health` returned `status=ok` with fallback local model and Docker health `healthy`; UI Streamlit health returned `ok` and Docker health `healthy`; monitoring image import check passed.
 - Latest Compose smoke: `make remote-compose-smoke` completed in 74 seconds; Postgres, Redis, API, and UI reached Docker health `healthy`; API/UI HTTP health passed; isolated containers, network, and Postgres volume were removed.
+- Latest Dockerized API load: `make remote-compose-load-smoke` completed in 78 seconds; 1,000 AVM and 1,000 lending requests at concurrency 10 returned status 200 with 0% errors; AVM p95 283.01 ms; lending p95 33.93 ms.
 - Latest cloud smoke: `make remote-cloud-smoke` completed in 10 seconds with `gcp_readonly_smoke_exit=1`; auth/project config and filtered Service Usage list passed, while Cloud Resource Manager, Artifact Registry, Cloud Run Admin, and Cloud Scheduler checks failed because APIs are disabled or inaccessible.
 - Latest measured local VM HTTP benchmark: AVM p95 140.84 ms and lending p95 24.21 ms with 0% errors at 1,000 requests/concurrency 10.
 - Latest startup warm-up benchmark: property index startup 4.85 seconds, first comparable request after startup 10.99 ms.

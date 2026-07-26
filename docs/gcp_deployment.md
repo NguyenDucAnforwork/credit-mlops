@@ -1,6 +1,6 @@
 # GCP Deployment
 
-Last updated: 2026-07-26 23:06:44 Asia/Bangkok
+Last updated: 2026-07-26 23:16:14 Asia/Bangkok
 
 ## Target
 
@@ -37,4 +37,4 @@ Source hardening completed on 2026-07-26: `.dockerignore` excludes `.env`, gener
 
 Container dependency alignment completed partially on 2026-07-26: main requirements audit passes and UI Docker dependencies import, but monitoring image requirements still resolve vulnerable `lightgbm 4.5.0` through NannyML. This blocks a clean monitoring image security claim even after Docker access is restored.
 
-Latest Docker evidence: UI image `94df2d30ecb0` built in 55 seconds, API image `b4e4dcd3afd7` built in 286 seconds, and monitoring image `ab3038d25eeb` built in 298 seconds. API `/health` returned `status=ok` with `model_version=fallback_local`; UI Streamlit health returned `ok`; monitoring imports passed. Compose v5.3.1 then started an isolated Postgres/Redis/API/UI stack, all four services reached Docker health `healthy`, API/UI HTTP health passed, and teardown removed containers/network/volume. Monitoring profile, image push, and Cloud Run smoke remain incomplete.
+Latest Docker evidence: UI image `94df2d30ecb0` built in 55 seconds, API image `b4e4dcd3afd7` built in 286 seconds, and monitoring image `ab3038d25eeb` built in 298 seconds. API `/health` returned `status=ok` with `model_version=fallback_local`; UI Streamlit health returned `ok`; monitoring imports passed. Compose v5.3.1 then started an isolated Postgres/Redis/API/UI stack, all four services reached Docker health `healthy`, API/UI HTTP health passed, and teardown removed containers/network/volume. Dockerized API load passed after mounting VM property data into the API container: AVM p95 283.01 ms and lending p95 33.93 ms with 0% errors at 1,000 requests/concurrency 10. Monitoring profile, image push, and Cloud Run smoke remain incomplete.

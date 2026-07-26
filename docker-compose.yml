@@ -40,10 +40,12 @@ services:
     volumes:
       - ./api:/app/api   # bind mount: edit api/ locally, changes visible immediately
       - ./src:/app/src   # bind mount: edit src/ locally, changes visible immediately
+      - ./data:/app/data:ro   # VM-only generated property gold data for property endpoints
     command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER:-credituser}:${POSTGRES_PASSWORD:-creditpass}@postgres:5432/${POSTGRES_DB:-creditdb}
       REDIS_URL: redis://redis:6379/0
+      PROPERTY_GOLD_PATH: ${PROPERTY_GOLD_PATH:-/app/data/gold/a9a66ffa985edcf76b4be59ae2c6f5b1db889c38/listings_gold.parquet}
     depends_on:
       postgres:
         condition: service_healthy

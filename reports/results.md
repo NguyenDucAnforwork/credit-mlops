@@ -708,6 +708,24 @@ Full Hugging Face ingestion, row counts, checksums, ETL runtime, and peak RAM ar
 | Evidence | `docs/evidence/phase6_gcp_readonly_smoke_20260726.txt`, `docs/evidence/phase6_gcp_readonly_smoke_runtime_20260726.txt` |
 | Criterion status | cloud deployment remains blocked by APIs/IAM; read-only diagnostic path is reusable and correctly fails |
 
+### Docker Compose API Load Smoke
+
+| Field | Value |
+|-------|-------|
+| Command | `bash scripts/remote/compose_load_smoke.sh` / `make remote-compose-load-smoke` |
+| Execution location | VM `lfm`, workspace `/home/ducan/credit-mlops-codex` |
+| Compose project | `credit_mlops_codex_load`, isolated and torn down |
+| Services | `postgres`, `redis`, `api`, `ui` |
+| Data mount | API mounts VM-only `./data:/app/data:ro` and sets `PROPERTY_GOLD_PATH` to the gold parquet |
+| Workload | 1,000 AVM requests and 1,000 lending requests at concurrency 10 against Dockerized API |
+| Runtime | 78 seconds |
+| Health | Postgres, Redis, API, and UI reached Docker health `healthy` |
+| AVM result | status 200 only; 0% errors; median 198.94 ms; p95 283.01 ms; p99 353.71 ms |
+| Lending result | status 200 only; 0% errors; median 16.55 ms; p95 33.93 ms; p99 76.33 ms |
+| Failed approach | initial load attempt returned AVM 503 until Compose mounted/configured the property gold path |
+| Evidence | `docs/evidence/phase6_compose_load_smoke_20260726.txt`, `docs/evidence/phase6_compose_load_smoke_runtime_20260726.txt`, `docs/evidence/property_api_docker_compose_benchmark_20260726.json`, `reports/generated/property_api_docker_compose_benchmark_20260726.json` |
+| Criterion status | Dockerized API load p95 passes for core property AVM/lending paths; Cloud Run p95 and monitoring-profile Compose remain incomplete |
+
 ### Scoped Remote Coverage
 
 | Field | Value |

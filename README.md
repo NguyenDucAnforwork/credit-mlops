@@ -32,7 +32,7 @@ Measured on 2026-07-26 from branch `feat/onemount-property-intelligence`.
 | Blocker | Current evidence |
 |---------|------------------|
 | GIS/PostGIS/H3 | Primary source has no coordinate columns, so spatial holdout, distance, radius, and H3 criteria are not claimed |
-| Docker/Compose on VM | Docker daemon, image builds, plain smokes, and core Compose stack pass; monitoring profile and Dockerized load tests not measured |
+| Docker/Compose on VM | Docker daemon, image builds, plain smokes, core Compose stack, and Dockerized API load pass; monitoring profile not measured |
 | GCP deployment | VM account and Service Usage visibility work; Cloud Resource Manager, Artifact Registry, Cloud Run Admin, and Scheduler APIs are disabled or inaccessible |
 | AVM promotion | Dry-run gate rejects candidate because interval width, spatial holdout, cohort regression, and production service evidence are incomplete |
 | Dependency security | Latest audit is clean; FastAPI/Starlette TestClient warning resolved by adding `httpx2==2.9.1` to dev dependencies |
@@ -78,6 +78,7 @@ Current measured targets:
 - `make remote-type-smoke`: pinned mypy on new property intelligence modules, API code, and selected property scripts; 19 source files checked with 0 issues in a 1-second wrapper runtime.
 - `make remote-terraform-validate`: GCP Terraform scaffold fmt/init/validate on VM; completed in 2 seconds with `terraform_validate_exit=0`.
 - `make remote-compose-smoke`: installs/reuses user-level Compose on the VM, starts isolated Postgres/Redis/API/UI, reaches healthy status for all four, verifies API/UI HTTP health, and tears down in 74 seconds.
+- `make remote-compose-load-smoke`: Dockerized API load test; 1,000 AVM and 1,000 lending requests at concurrency 10 pass with 0% errors, AVM p95 283.01 ms, and lending p95 33.93 ms.
 - `make remote-cloud-smoke`: read-only GCP prerequisite diagnostic; currently exits nonzero in 10 seconds because required deployment APIs/IAM are blocked.
 - Docker image builds: UI/API/monitor images build on the VM and pass plain-container smokes.
 - Container dependency alignment: UI deps import and main `requirements.txt` audit passes; monitoring requirements audit remains blocked by `PYSEC-2024-231` in transitive `lightgbm 4.5.0`.
