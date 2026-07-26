@@ -1,0 +1,3 @@
+407M	data/silver
+287M	data/gold
+52M	data/quarantine

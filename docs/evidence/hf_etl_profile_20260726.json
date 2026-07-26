@@ -1,0 +1,19 @@
+{
+  "gold_city_counts": {
+    "Hà Nội": 311266,
+    "Hồ Chí Minh": 326857
+  },
+  "gold_property_type_counts": {
+    "apartment": 133458,
+    "house": 414940,
+    "land": 84935,
+    "shophouse": 4790
+  },
+  "quarantine_reason_counts": {
+    "duplicate_listing_id": 8,
+    "invalid_area": 1,
+    "invalid_price": 78418,
+    "invalid_published_at": 1267,
+    "missing_district": 26476
+  }
+}

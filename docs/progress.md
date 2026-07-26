@@ -1,11 +1,11 @@
 # Progress
 
-Last updated: 2026-07-26 14:33:45 Asia/Bangkok
+Last updated: 2026-07-26 14:41:00 Asia/Bangkok
 
 ## Phase Checklist
 
 - Phase 0 audit and remote baseline: partially complete; tests pass, Docker smoke blocked
-- Phase 1 ETL: raw HF snapshot downloaded on VM; silver/gold full ETL not started
+- Phase 1 ETL: raw snapshot and first full silver/gold ETL complete; GIS coordinates absent in source
 - Phase 2 PostGIS and GIS: not started
 - Phase 3 AVM: not started
 - Phase 4 APIs: not started
@@ -36,7 +36,11 @@ Last updated: 2026-07-26 14:33:45 Asia/Bangkok
 - Full HF snapshot downloaded on the VM only: 5 Parquet shards, 469,122,864 bytes, 1,000,000 rows from footers, full SHA256 for every shard.
 - Snapshot download runtime: 74 seconds; rerun/reuse runtime: 12 seconds; disk usage: 448M under `data/raw/vietnam-real-estates`.
 - Full suite after snapshot downloader passed on the VM: 96 passed in 7.35 seconds; wrapper runtime 9 seconds.
+- Full HF ETL on VM: 1,000,000 raw rows, 893,830 silver rows, 638,123 Hà Nội/Hồ Chí Minh gold rows, 106,170 quarantine rows, 8 duplicate rows.
+- ETL runtime: 48 seconds; disk: 407M silver, 287M gold, 52M quarantine.
+- Coordinate source columns `latitude` and `longitude` are absent from the actual dataset schema; records are marked `coordinate_status=missing_source_columns`.
+- Full suite after HF ETL passed on the VM: 99 passed in 7.38 seconds; wrapper runtime 9 seconds.
 
 ## Next
 
-Commit and push the verified raw snapshot milestone, then continue toward silver/gold ETL, schema normalization, and data contracts.
+Commit and push the verified HF ETL milestone, then continue toward coordinate enrichment strategy, data contracts, and model-ready feature definitions.

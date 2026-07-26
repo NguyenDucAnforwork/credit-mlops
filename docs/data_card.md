@@ -1,13 +1,13 @@
 # Data Card
 
-Last updated: 2026-07-26 14:33:45 Asia/Bangkok
+Last updated: 2026-07-26 14:41:00 Asia/Bangkok
 
 ## Primary Dataset
 
 - Source: Hugging Face dataset `vduydong/vietnam-real-estates`
 - Expected scale: approximately 1,000,000 listings
 - Format: Parquet
-- Coordinates: WGS84
+- Coordinates: expected WGS84 from contract, but actual Parquet schema has no latitude/longitude columns
 - License: CC BY-NC 4.0
 - Current local status: not downloaded
 - Current VM status: downloaded under ignored path `data/raw/vietnam-real-estates/a9a66ffa985edcf76b4be59ae2c6f5b1db889c38`
@@ -20,6 +20,11 @@ Last updated: 2026-07-26 14:33:45 Asia/Bangkok
 - Schema width: 19 columns from Parquet footers
 - Total shard size: 469,122,864 bytes from HTTP headers
 - VM raw snapshot disk use: 448M
+- Silver rows: 893,830
+- Gold MVP rows: 638,123 for Hà Nội and Hồ Chí Minh City
+- Quarantine rows: 106,170
+- Duplicate rows: 8
+- Coordinate status: `missing_source_columns`
 
 ## Fixture Data
 
@@ -34,4 +39,4 @@ The dataset is non-commercial. Listing prices are not verified transaction price
 
 ## MVP Geography
 
-The MVP focuses on Hà Nội and Hồ Chí Minh City, with configuration intended to extend to additional provinces.
+The MVP gold cohort has 311,266 Hà Nội rows and 326,857 Hồ Chí Minh City rows. Configuration remains extensible to additional provinces.

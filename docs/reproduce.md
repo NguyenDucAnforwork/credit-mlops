@@ -1,6 +1,6 @@
 # Reproduce
 
-Last updated: 2026-07-26 14:33:45 Asia/Bangkok
+Last updated: 2026-07-26 14:41:00 Asia/Bangkok
 
 All heavy work runs on the VM. Do not install project dependencies, run tests, train models, Docker, Terraform, or `gcloud` locally.
 
@@ -36,6 +36,14 @@ Full raw snapshot download on VM:
 ```bash
 make remote-sync
 scripts/remote/run.sh 'uv run python scripts/property_snapshot.py'
+scripts/remote/fetch_artifacts.sh
+```
+
+Full HF silver/gold ETL on VM:
+
+```bash
+make remote-sync
+scripts/remote/run.sh 'uv run python scripts/property_etl.py'
 scripts/remote/fetch_artifacts.sh
 ```
 

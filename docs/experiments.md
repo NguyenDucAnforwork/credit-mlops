@@ -145,3 +145,21 @@
 - Decision: keep.
 - Lesson learned: shard-level reuse avoids repeat downloads, but still recomputes local SHA256 to prove the existing file content.
 - Next experiment: convert raw snapshot into immutable bronze metadata and silver normalized/quarantine layers on the VM.
+
+## EXP-0009: Full HF Silver/Gold ETL
+
+- Timestamp in Asia/Bangkok: 2026-07-26 14:40:57
+- Hypothesis: The full pinned HF raw snapshot can be normalized into silver, MVP Hà Nội/Hồ Chí Minh gold, and quarantine layers on the VM within the contract runtime/disk limits.
+- Local Git commit or working-tree identifier: `e744235` plus uncommitted HF ETL source/tests/docs.
+- Dataset snapshot ID and checksums: revision `a9a66ffa985edcf76b4be59ae2c6f5b1db889c38`; raw shard SHA256 checksums in `reports/generated/hf_vietnam_real_estates_snapshot_manifest_20260726.json`.
+- Exact remote command: `scripts/remote/run.sh 'uv run python scripts/property_etl.py'`.
+- Configuration and seed: full raw snapshot under `data/raw/vietnam-real-estates/a9a66ffa985edcf76b4be59ae2c6f5b1db889c38`; no random seed.
+- VM hardware/environment: Ubuntu 24.04.4 LTS, 4 vCPU AMD EPYC 7B12, 15 GiB RAM, no GPU.
+- Runtime: ETL 48 seconds; final pytest 7.38 seconds with 9-second wrapper runtime.
+- Peak RAM when available: not measured.
+- Metrics: 1,000,000 raw rows; 893,830 silver rows; 638,123 gold MVP rows; 106,170 quarantine rows; 8 duplicate rows; 311,266 Hà Nội gold rows; 326,857 Hồ Chí Minh gold rows.
+- Baseline comparison: previous snapshot downloader had 96 passing tests; HF ETL adds 3 passing tests for 99 total.
+- Interpretation: full data volume is usable for MVP AVM row-count criteria, but source coordinates are absent, so PostGIS/H3 work needs an explicit enrichment source or geocoding strategy.
+- Decision: keep ETL and document coordinate blocker honestly.
+- Lesson learned: verify real schema before assuming coordinates from dataset descriptions.
+- Next experiment: data contracts and coordinate enrichment decision; do not fabricate latitude/longitude.

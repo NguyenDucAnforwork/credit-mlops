@@ -1,0 +1,15 @@
+{
+  "duplicate_rows": 8,
+  "gold_path": "data/gold/a9a66ffa985edcf76b4be59ae2c6f5b1db889c38/listings_gold.parquet",
+  "gold_rows": 638123,
+  "missing_coordinate_columns": [
+    "latitude",
+    "longitude"
+  ],
+  "quarantine_path": "data/quarantine/a9a66ffa985edcf76b4be59ae2c6f5b1db889c38/listings_quarantine.parquet",
+  "quarantine_rows": 106170,
+  "raw_rows": 1000000,
+  "silver_path": "data/silver/a9a66ffa985edcf76b4be59ae2c6f5b1db889c38/listings.parquet",
+  "silver_rows": 893830,
+  "snapshot_id": "a9a66ffa985edcf76b4be59ae2c6f5b1db889c38"
+}

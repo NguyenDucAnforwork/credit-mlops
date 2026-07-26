@@ -133,6 +133,8 @@ def test_text_and_property_type_normalization():
     assert normalize_text("  A   B  ") == "A B"
     assert normalize_property_type("nhà") == "house"
     assert normalize_property_type("đất") == "land"
+    assert normalize_property_type("căn hộ chung cư") == "apartment"
+    assert normalize_property_type("biệt thự/nhà liền kề") == "house"
 
 
 def test_listing_id_is_stable_for_equivalent_numeric_values():

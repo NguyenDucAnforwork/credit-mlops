@@ -18,6 +18,13 @@ from property_intelligence.sources import (
     write_shard_manifest,
     write_source_metadata,
 )
+from property_intelligence.hf_etl import (
+    HFEtlSummary,
+    build_hf_gold,
+    normalize_hf_frame,
+    run_hf_silver_gold_etl,
+    write_hf_etl_summary,
+)
 
 __all__ = [
     "build_gold",
@@ -34,4 +41,9 @@ __all__ = [
     "write_bronze_snapshot",
     "write_shard_manifest",
     "write_source_metadata",
+    "HFEtlSummary",
+    "build_hf_gold",
+    "normalize_hf_frame",
+    "run_hf_silver_gold_etl",
+    "write_hf_etl_summary",
 ]

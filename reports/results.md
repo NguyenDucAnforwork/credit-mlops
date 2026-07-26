@@ -233,3 +233,21 @@ Full Hugging Face ingestion, row counts, checksums, ETL runtime, and peak RAM ar
 | Verified rerun runtime | 12 seconds |
 | Full SHA256 | captured for every shard in `reports/generated/hf_vietnam_real_estates_snapshot_manifest_20260726.json` |
 | Full suite after snapshot downloader | 96 passed in 7.35 seconds; wrapper runtime 9 seconds |
+
+### HF Silver/Gold ETL
+
+| Field | Value |
+|-------|-------|
+| Raw rows | 1,000,000 |
+| Silver rows | 893,830 |
+| Gold MVP rows | 638,123 |
+| Hà Nội gold rows | 311,266 |
+| Hồ Chí Minh gold rows | 326,857 |
+| Quarantine rows | 106,170 |
+| Duplicate rows | 8 |
+| Quarantine reasons | `invalid_price=78,418`, `missing_district=26,476`, `invalid_published_at=1,267`, `duplicate_listing_id=8`, `invalid_area=1` |
+| Coordinate status | source lacks `latitude` and `longitude`; no coordinates fabricated |
+| ETL runtime | 48 seconds |
+| Layer disk use | 407M silver, 287M gold, 52M quarantine |
+| Evidence | `docs/evidence/hf_etl_summary_20260726.json`, `docs/evidence/hf_etl_profile_20260726.json` |
+| Full suite after ETL | 99 passed in 7.38 seconds; wrapper runtime 9 seconds |
