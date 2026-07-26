@@ -1,6 +1,6 @@
 # Lessons Learned
 
-Last updated: 2026-07-26 20:51:13 Asia/Bangkok
+Last updated: 2026-07-26 21:18:02 Asia/Bangkok
 
 - Verify GCP from the VM before planning Terraform or Cloud Run work. The current VM account is present, but OAuth scopes are insufficient for Cloud Resource Manager and Service Usage.
 - Keep remote orchestration scripts allowlisted and sentinel-guarded so source synchronization cannot delete unrelated VM data.
@@ -34,4 +34,4 @@ Last updated: 2026-07-26 20:51:13 Asia/Bangkok
 - Dependency security evidence should be captured even when it fails. The current `pip-audit` result found 59 vulnerabilities, so remediation needs its own compatibility-tested upgrade pass rather than silent package drift.
 - Rewrite public entrypoint docs when the operating model changes. A stale local-first README can be more harmful than missing docs because it encourages exactly the commands the remote-execution contract forbids.
 - Resolver success is not equivalent to application compatibility. The vulnerability fix path requires moving MLflow and FastAPI/Starlette together, so tests and API smoke must follow any lockfile change.
-- Coordinated dependency remediation can clear security findings without changing product behavior, but warning output matters. The upgraded stack passes tests, coverage, API smoke, and `pip-audit`, while surfacing a FastAPI/Starlette TestClient deprecation warning to track next.
+- Coordinated dependency remediation can clear security findings without changing product behavior, but warning output matters. The upgraded stack passes tests, coverage, API smoke, and `pip-audit`; the remaining FastAPI/Starlette TestClient warning was resolved by adding the framework-supported `httpx2` test dependency and rerunning the warnings-enabled suite.

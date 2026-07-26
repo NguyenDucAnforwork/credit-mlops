@@ -22,7 +22,7 @@ Measured on 2026-07-26 from branch `feat/onemount-property-intelligence`.
 | Model artifact | VM-only HGB quantile joblib, 2.37 MB, load 87.13 ms, single prediction 21.32 ms |
 | Monitoring | Synthetic drift triggers 4 alerts; delayed-label fallback replay MdAPE 16.73% on 2,000 labels |
 | UI | Streamlit Property Intelligence workspace with three required demo scenarios and LTV decision flow |
-| Tests/quality | 139 tests pass under coverage in 18.58 seconds; scoped coverage 81%; Ruff smoke passes |
+| Tests/quality | 139 tests pass under coverage in 15.91 seconds; scoped coverage 81%; Ruff and warnings-enabled full suite pass |
 | Security audit | After dependency remediation, `pip-audit` passes with 0 known vulnerabilities |
 
 ## Known Blockers
@@ -33,7 +33,7 @@ Measured on 2026-07-26 from branch `feat/onemount-property-intelligence`.
 | Docker/Compose on VM | User `ducan` cannot access `/var/run/docker.sock`; `docker compose` is unavailable |
 | GCP deployment | VM account exists, but project/service calls fail with `ACCESS_TOKEN_SCOPE_INSUFFICIENT` |
 | AVM promotion | Dry-run gate rejects candidate because interval width, spatial holdout, cohort regression, and production service evidence are incomplete |
-| Dependency security | Latest audit is clean; FastAPI/Starlette emits a TestClient deprecation warning that should be tracked |
+| Dependency security | Latest audit is clean; FastAPI/Starlette TestClient warning resolved by adding `httpx2==2.9.1` to dev dependencies |
 
 ## Architecture
 
@@ -68,8 +68,8 @@ make remote-vulnerability-smoke
 Current measured targets:
 
 - `make remote-reproduce-smoke`: local secret/path scan, VM sync, syntax checks, Ruff, 61 focused tests; completed in 5 seconds.
-- `make remote-coverage-smoke`: full pytest under coverage on VM; 139 passed in 18.58 seconds, 81% scoped coverage, 23-second wrapper runtime.
-- `make remote-vulnerability-smoke`: dependency audit on VM; evidence capture completed in 33 seconds and found 0 known vulnerabilities after remediation.
+- `make remote-coverage-smoke`: full pytest under coverage on VM; 139 passed in 15.91 seconds, 81% scoped coverage, 19-second wrapper runtime.
+- `make remote-vulnerability-smoke`: dependency audit on VM; evidence capture completed in 41 seconds and found 0 known vulnerabilities after remediation.
 
 Docker and cloud targets are intentionally blocked until VM Docker permissions and GCP OAuth scopes are fixed:
 

@@ -560,3 +560,21 @@
 - Decision: keep the dependency pin and lockfile update.
 - Lesson learned: broad security upgrades need both resolver evidence and product smoke evidence; the successful audit alone would not have been enough.
 - Next experiment: handle the FastAPI/Starlette `httpx`/`httpx2` TestClient deprecation warning or continue with remaining Docker/GCP/GIS blockers.
+
+## EXP-0032: FastAPI/Starlette TestClient Warning Remediation
+
+- Timestamp in Asia/Bangkok: 2026-07-26 21:18:02
+- Hypothesis: Adding Starlette's supported `httpx2` TestClient dependency removes the post-upgrade deprecation warning without breaking the API test suite, coverage, or vulnerability gate.
+- Local Git commit or working-tree identifier: `45cbb6a` plus uncommitted `httpx2` dependency, lockfile, evidence, and docs.
+- Dataset snapshot ID and checksums: existing VM gold snapshot revision `a9a66ffa985edcf76b4be59ae2c6f5b1db889c38`; no new dataset download.
+- Exact remote commands: `uv run --with httpx2 pytest -q tests/test_api.py tests/test_deployment.py tests/test_chaos.py -W default`; `uv lock`; `uv sync --frozen --all-extras --dev`; `uvx ruff check . --output-format=concise && uv run pytest -q -W default`; `make remote-coverage-smoke`; `make remote-vulnerability-smoke`.
+- Configuration and seed: dev dependencies add `httpx2==2.9.1`; lockfile adds `httpcore2==2.9.1` and `truststore==0.10.4`; no model or random-seed changes.
+- VM hardware/environment: Ubuntu 24.04.4 LTS, 4 vCPU AMD EPYC 7B12, 15 GiB RAM, no GPU.
+- Runtime: focused `httpx2` probe 4.89 seconds for 39 tests; lock 0 seconds; sync 0 seconds; Ruff + full pytest wrapper 14 seconds; coverage wrapper 19 seconds; vulnerability audit wrapper 41 seconds.
+- Peak RAM when available: not measured.
+- Metrics: focused probe passed 39 tests with no warning summary; Ruff 0 errors; warnings-enabled full suite passed 139 tests in 11.20 seconds with no warning summary; coverage 81% with 139 tests in 15.91 seconds; `pip_audit_exit=0`, 0 known vulnerabilities.
+- Baseline comparison: EXP-0031 passed 139 tests in 22.96 seconds but emitted 1 FastAPI/Starlette TestClient deprecation warning.
+- Interpretation: `httpx2` is a dev-only compatibility dependency that removes noisy TestClient warnings while preserving the remediated dependency security posture.
+- Decision: keep `httpx2==2.9.1` in dev dependency groups.
+- Lesson learned: framework deprecation warnings should be closed through the documented compatibility package when possible, then verified with warnings enabled rather than suppressed.
+- Next experiment: remaining blocked done criteria require Docker socket/Compose access, GCP OAuth/IAM fixes, or legitimate coordinate enrichment.

@@ -1,0 +1,2 @@
+httpx2_tests_exit=0
+runtime_seconds=14

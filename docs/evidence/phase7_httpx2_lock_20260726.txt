@@ -1,0 +1,4 @@
+Resolved 175 packages in 789ms
+Added httpcore2 v2.9.1
+Added httpx2 v2.9.1
+Added truststore v0.10.4

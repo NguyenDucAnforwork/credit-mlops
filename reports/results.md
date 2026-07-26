@@ -607,8 +607,8 @@ Full Hugging Face ingestion, row counts, checksums, ETL runtime, and peak RAM ar
 |-------|-------|
 | Command | `make remote-coverage-smoke` |
 | Execution location | VM `lfm`, workspace `/home/ducan/credit-mlops-codex` |
-| Tests under coverage | 139 passed in 18.58 seconds |
-| Wrapper runtime | 23 seconds |
+| Tests under coverage | 139 passed in 15.91 seconds |
+| Wrapper runtime | 19 seconds |
 | Total scoped coverage | 81% |
 | Weakest modules | `src/data_prep.py` 31%, `src/scorecard.py` 48%, `api/model_loader.py` 49% |
 | Evidence | `docs/evidence/phase7_coverage_stdout_20260726.txt`, `docs/evidence/phase7_coverage_report_20260726.txt`, `reports/generated/phase7_coverage_20260726.json` |
@@ -620,9 +620,9 @@ Full Hugging Face ingestion, row counts, checksums, ETL runtime, and peak RAM ar
 |-------|-------|
 | Command | `make remote-vulnerability-smoke` |
 | Execution location | VM `lfm`, workspace `/home/ducan/credit-mlops-codex` |
-| Runtime | 33 seconds |
+| Runtime | 41 seconds |
 | Audit status | `pip_audit_exit=0`, `pip_audit_text_exit=0` |
-| Vulnerability count | 0 known vulnerabilities after dependency remediation |
+| Vulnerability count | 0 known vulnerabilities after dependency and TestClient warning remediation |
 | Affected packages | none in latest audit |
 | Skipped package | `credit-mlops` 0.1.0, local package not found on PyPI |
 | Evidence | `docs/evidence/phase7_pip_audit_report_20260726.txt`, `docs/evidence/phase7_pip_audit_runtime_20260726.txt`, `reports/generated/phase7_pip_audit_summary_20260726.json` |
@@ -659,6 +659,20 @@ Full Hugging Face ingestion, row counts, checksums, ETL runtime, and peak RAM ar
 | Coverage after remediation | 139 tests passed in 18.58 seconds; scoped coverage 81%; wrapper runtime 23 seconds |
 | API smoke after remediation | comparables, AVM, and lending endpoints returned 200; wrapper runtime 5 seconds |
 | Vulnerability audit after remediation | `pip_audit_exit=0`, 0 known vulnerabilities, runtime 33 seconds |
-| Warning | FastAPI/Starlette TestClient deprecation warning: install/use `httpx2` in a future compatibility pass |
-| Evidence | `docs/evidence/phase7_dep_remediation_lock_20260726.txt`, `docs/evidence/phase7_dep_remediation_sync_20260726.txt`, `docs/evidence/phase7_dep_remediation_tests_20260726.txt`, `docs/evidence/phase7_dep_remediation_api_smoke_stdout_20260726.txt`, `docs/evidence/phase7_pip_audit_report_20260726.txt` |
+| Warning | FastAPI/Starlette TestClient deprecation warning was observed here and resolved in the later `httpx2` remediation |
+| Evidence | `docs/evidence/phase7_dep_remediation_lock_20260726.txt`, `docs/evidence/phase7_dep_remediation_sync_20260726.txt`, `docs/evidence/phase7_dep_remediation_tests_20260726.txt`, `docs/evidence/phase7_dep_remediation_api_smoke_runtime_20260726.txt`, `docs/evidence/phase7_pip_audit_report_20260726.txt` |
 | Criterion status | dependency security remediation passes non-Docker VM compatibility checks |
+
+### TestClient Warning Remediation
+
+| Field | Value |
+|-------|-------|
+| Dependency change | added dev-only `httpx2==2.9.1`; lock added `httpcore2==2.9.1` and `truststore==0.10.4` |
+| Lock generation | `uv lock` passed in 0 seconds |
+| VM dependency sync | `uv sync --frozen --all-extras --dev` passed in 0 seconds |
+| Focused probe | 39 API/deployment/chaos tests passed in 4.89 seconds with `httpx2` injected |
+| Ruff/full tests | Ruff passed; `uv run pytest -q -W default` passed 139 tests in 11.20 seconds with no warning summary; wrapper runtime 14 seconds |
+| Coverage after remediation | 139 tests passed in 15.91 seconds; scoped coverage 81%; wrapper runtime 19 seconds |
+| Vulnerability audit after remediation | `pip_audit_exit=0`, 0 known vulnerabilities, runtime 41 seconds |
+| Evidence | `docs/evidence/phase7_httpx2_lock_20260726.txt`, `docs/evidence/phase7_httpx2_sync_20260726.txt`, `docs/evidence/phase7_httpx2_tests_20260726.txt`, `docs/evidence/phase7_coverage_stdout_20260726.txt`, `docs/evidence/phase7_pip_audit_report_20260726.txt` |
+| Criterion status | TestClient deprecation warning resolved for the VM test path; Docker, GCP, and coordinate-backed GIS remain blocked |

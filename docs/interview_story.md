@@ -1,6 +1,6 @@
 # Interview Story
 
-Last updated: 2026-07-26 20:51:13 Asia/Bangkok
+Last updated: 2026-07-26 21:18:02 Asia/Bangkok
 
 ## Current 90-Second Story
 
@@ -28,8 +28,8 @@ I started with an existing credit scoring MLOps project and rebuilt its executio
 - Packaged the HGB quantile AVM as a VM-only 2.37 MB artifact, proved same-seed MdAPE delta 0.0 points, and measured artifact-backed uvicorn p95 at 136.63 ms for AVM requests.
 - Added a Streamlit Property Intelligence workspace covering map reference input, AVM estimate/interval, comparables, factors, credit/LTV decisioning, disclaimers, and the three required demo scenarios.
 - Added a 5-second remote reproduction smoke path that runs syntax checks, Ruff lint, and 61 focused tests on the VM after local secret/path scanning.
-- Measured scoped API/source coverage on the VM after dependency remediation: 139 tests passed in 18.58 seconds with 81% coverage across `api/*`, `src/*`, and property scripts.
-- Added and remediated a remote vulnerability evidence target; initial `pip-audit` found 59 known vulnerabilities, and the post-upgrade audit found 0.
+- Measured scoped API/source coverage on the VM after dependency and TestClient warning remediation: 139 tests passed in 15.91 seconds with 81% coverage across `api/*`, `src/*`, and property scripts.
+- Added and remediated a remote vulnerability evidence target; initial `pip-audit` found 59 known vulnerabilities, and the post-upgrade audit found 0 while the warnings-enabled suite stayed clean.
 - Reworked the repository README and reproduction report into an evidence-led portfolio entrypoint with remote-only reproduction commands and explicit blocker status.
 - Not ready: GIS/spatial AVM metrics are not measured yet because coordinates are absent.
 - Not ready: cloud deployment metrics are not measured yet.

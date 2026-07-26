@@ -1,6 +1,6 @@
 # Decisions
 
-Last updated: 2026-07-26 20:51:13 Asia/Bangkok
+Last updated: 2026-07-26 21:18:02 Asia/Bangkok
 
 ## ADR-0001: Local Source of Truth, VM Runtime Executor
 
@@ -72,4 +72,10 @@ Last updated: 2026-07-26 20:51:13 Asia/Bangkok
 
 - Decision: update dependency pins and `uv.lock` for the broad resolver-compatible remediation set.
 - Rationale: VM verification passed `uv sync --frozen --all-extras --dev`, Ruff, full pytest, coverage, property API smoke, and `pip-audit`.
-- Consequence: vulnerability gate now passes with 0 known vulnerabilities; the FastAPI/Starlette TestClient deprecation warning remains a follow-up.
+- Consequence: vulnerability gate now passes with 0 known vulnerabilities; the FastAPI/Starlette TestClient deprecation warning was resolved in ADR-0013.
+
+## ADR-0013: Add httpx2 For Starlette TestClient Compatibility
+
+- Decision: add `httpx2==2.9.1` to dev dependencies and lock the transitive `httpcore2` and `truststore` packages.
+- Rationale: Starlette 1.3.1 resolves its TestClient compatibility path through `httpx2`; adding it removes the deprecation warning without changing runtime API dependencies.
+- Consequence: Ruff and the warnings-enabled full suite pass on the VM with 139 tests in 11.20 seconds, coverage remains 81%, and `pip-audit` still reports 0 known vulnerabilities.

@@ -1,6 +1,6 @@
 # Summary
 
-Last updated: 2026-07-26 20:51:13 Asia/Bangkok
+Last updated: 2026-07-26 21:18:02 Asia/Bangkok
 
 Status: Phase 7 non-cloud portfolio evidence is mostly complete, with remaining blockers for coordinate-backed GIS/PostGIS, Docker, and GCP deployment.
 
@@ -14,7 +14,7 @@ The project is being converted from a credit scoring MLOps demo into a Property 
 - GCP access: blocked by `ACCESS_TOKEN_SCOPE_INSUFFICIENT`.
 - Remote workspace: created as rsync-backed after VM Git clone failed on local SSH alias `github-nguyenducan`.
 - Baseline tests: 76 passed in 7.42 seconds on the VM.
-- Current tests: 139 passed in 18.58 seconds under `make remote-coverage-smoke`; previous non-coverage compatibility suite after dependency remediation was 139 passed in 22.96 seconds with Ruff passing.
+- Current tests: 139 passed in 15.91 seconds under `make remote-coverage-smoke`; latest warnings-enabled Ruff/full suite passed with 139 tests in 11.20 seconds and no TestClient warning summary.
 - Baseline data split: version `cac9de3c`, 16,000 train rows, 4,000 test rows.
 - ETL fixture: 1,000 inserts, 100 duplicates, identical rerun 0 inserts.
 - HF dataset metadata: revision `a9a66ffa985edcf76b4be59ae2c6f5b1db889c38`, 5 Parquet shards, last modified `2026-04-08T06:51:21.000Z`.
@@ -36,9 +36,9 @@ The project is being converted from a credit scoring MLOps demo into a Property 
 - Artifact-backed API uvicorn load: AVM p95 136.63 ms and lending p95 15.53 ms with 0% valid-request errors at 1,000 requests/concurrency 10.
 - Streamlit UI: property-lending workspace added with map reference input, property attributes, estimate/interval/comparables/factors, credit/LTV decision inputs, disclaimer, and three required scenarios.
 - Remote smoke reproduction: `make remote-reproduce-smoke` performs local secret/path scan, syncs to VM, compiles key modules, runs Ruff with 0 errors, runs 61 focused tests, and completes in 5 seconds while explicitly skipping Docker/GCP blockers.
-- Coverage measurement after dependency remediation: `make remote-coverage-smoke` passed 139 tests in 18.58 seconds on the VM; scoped coverage for `api/*`, `src/*`, and `scripts/property_*.py` is 81% total, with weakest measured modules `src/data_prep.py` 31%, `src/scorecard.py` 48%, and `api/model_loader.py` 49%.
-- Vulnerability audit: initial `pip-audit` found 59 known vulnerabilities across 11 packages; after coordinated dependency remediation, `make remote-vulnerability-smoke` completes in 33 seconds with `pip_audit_exit=0` and 0 known vulnerabilities.
-- Dependency remediation: updated pins/lock for MLflow 3.14.0, FastAPI 0.140.0, Starlette 1.3.1, Streamlit 1.54.0, and vulnerable transitives; VM `uv sync --frozen --all-extras --dev` passed in 6 seconds, Ruff passed, full tests passed, coverage passed, API smoke passed, and `pip-audit` passed. One FastAPI/Starlette TestClient deprecation warning remains.
+- Coverage measurement after TestClient warning remediation: `make remote-coverage-smoke` passed 139 tests in 15.91 seconds on the VM; scoped coverage for `api/*`, `src/*`, and `scripts/property_*.py` is 81% total, with weakest measured modules `src/data_prep.py` 31%, `src/scorecard.py` 48%, and `api/model_loader.py` 49%.
+- Vulnerability audit: initial `pip-audit` found 59 known vulnerabilities across 11 packages; after coordinated dependency remediation and the `httpx2` test-client fix, `make remote-vulnerability-smoke` completes in 41 seconds with `pip_audit_exit=0` and 0 known vulnerabilities.
+- Dependency remediation: updated pins/lock for MLflow 3.14.0, FastAPI 0.140.0, Starlette 1.3.1, Streamlit 1.54.0, vulnerable transitives, and dev-only `httpx2==2.9.1`; VM `uv sync --frozen --all-extras --dev` passed, Ruff passed, warnings-enabled full tests passed, coverage passed, API smoke passed, and `pip-audit` passed.
 - Portfolio documentation: README and `reports/reproduce.md` now present the remote-first Property Intelligence platform, measured evidence, and explicit blockers instead of the older local-first credit-scoring flow.
 - Engineering test-count criterion: 139 passing tests meets the >=125 numeric floor.
 - Docker smoke: blocked because `ducan` cannot access Docker socket and `docker compose` is unavailable.
@@ -46,4 +46,4 @@ The project is being converted from a credit scoring MLOps demo into a Property 
 
 ## Next Step
 
-Track the FastAPI/Starlette TestClient deprecation warning while Docker, GCP, and coordinate-backed GIS remain blocked.
+Continue only on unblocked non-Docker/non-cloud work unless Docker socket/Compose access, GCP OAuth scopes/IAM, or legitimate coordinate enrichment becomes available.

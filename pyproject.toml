@@ -40,6 +40,7 @@ ui = [
 dev = [
     "pytest==9.0.3",
     "httpx==0.28.1",
+    "httpx2==2.9.1",
     "pytest-asyncio==1.4.0",
     "faker>=40.0.0",
 ]
@@ -51,6 +52,7 @@ ui = [
 dev = [
     "pytest==9.0.3",
     "httpx==0.28.1",
+    "httpx2==2.9.1",
     "pytest-asyncio==1.4.0",
     "faker>=40.0.0",
 ]

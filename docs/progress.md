@@ -1,6 +1,6 @@
 # Progress
 
-Last updated: 2026-07-26 20:51:13 Asia/Bangkok
+Last updated: 2026-07-26 21:18:02 Asia/Bangkok
 
 ## Phase Checklist
 
@@ -11,7 +11,7 @@ Last updated: 2026-07-26 20:51:13 Asia/Bangkok
 - Phase 4 APIs: scaffold endpoints implemented; local-on-VM uvicorn AVM/lending p95 criteria measured for fallback and artifact-backed service paths
 - Phase 5 MLOps and monitoring: AVM promotion gate dry-run, synthetic drift, and delayed-label monitoring implemented
 - Phase 6 Docker and GCP: cloud access blocked by VM OAuth scopes; local Docker baseline pending
-- Phase 7 UI, CI, portfolio: Property Intelligence UI, non-Docker remote smoke reproduction, Ruff smoke, scoped coverage measurement, vulnerability audit/remediation, and portfolio README/reproduction packaging implemented
+- Phase 7 UI, CI, portfolio: Property Intelligence UI, non-Docker remote smoke reproduction, Ruff smoke, scoped coverage measurement, vulnerability audit/remediation, TestClient warning remediation, and portfolio README/reproduction packaging implemented
 
 ## Evidence
 
@@ -100,10 +100,12 @@ Last updated: 2026-07-26 20:51:13 Asia/Bangkok
 - Dependency remediation probe 2 succeeded as a dry-run only after allowing a broad upgrade set including `mlflow 3.14.0`, `fastapi 0.140.0`, `starlette 1.3.1`, `streamlit 1.54.0`, `pillow 12.3.0`, `nltk 3.10.0`, and related transitives.
 - Dependency remediation applied: `uv lock --upgrade` succeeded in 1 second and `uv sync --frozen --all-extras --dev` succeeded in 6 seconds on the VM.
 - Post-remediation compatibility: Ruff passed; full suite passed with 139 tests in 22.96 seconds and 1 FastAPI/Starlette TestClient deprecation warning.
-- Post-remediation coverage: `make remote-coverage-smoke` passed 139 tests in 18.58 seconds; scoped coverage remained 81%; wrapper runtime 23 seconds.
+- TestClient warning remediation: adding dev-only `httpx2==2.9.1` locked `httpcore2` and `truststore`; `uv lock` and `uv sync --frozen --all-extras --dev` both completed in 0 seconds on the VM.
+- Warnings-enabled compatibility after `httpx2`: Ruff passed and `uv run pytest -q -W default` passed 139 tests in 11.20 seconds with no warning summary; wrapper runtime 14 seconds.
+- Post-TestClient-remediation coverage: `make remote-coverage-smoke` passed 139 tests in 15.91 seconds; scoped coverage remained 81%; wrapper runtime 19 seconds.
 - Post-remediation property API smoke: comparables, AVM, and lending endpoints returned 200; wrapper runtime 5 seconds.
-- Post-remediation vulnerability audit: `make remote-vulnerability-smoke` passed with `pip_audit_exit=0`, 0 known vulnerabilities, and 33-second runtime.
+- Post-TestClient-remediation vulnerability audit: `make remote-vulnerability-smoke` passed with `pip_audit_exit=0`, 0 known vulnerabilities, and 41-second runtime.
 
 ## Next
 
-Commit and push dependency remediation, then track the FastAPI/Starlette TestClient deprecation warning while Docker, GCP, and coordinate-backed GIS remain blocked.
+Continue only on unblocked non-Docker/non-cloud work unless Docker socket/Compose access, GCP OAuth scopes/IAM, or legitimate coordinate enrichment becomes available.
