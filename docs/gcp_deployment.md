@@ -24,9 +24,11 @@ The 2026-07-27 remote Terraform phase used Terraform 1.9.8 and Google provider 6
 ## Remaining Deployment Blockers
 
 - Terraform plan uses placeholder image tags `property-api:pending` and `property-job:pending`; build/tag/push of deployable images is still required.
+- Immutable production builds now exist on the VM, but both pushes are blocked because Artifact Registry repository `credit-mlops` does not exist. The repository is already a planned Terraform resource; no out-of-band creation was performed.
 - The plan has not been applied, so there is no Cloud Run URL, ETL execution, API smoke, scheduler execution, or rollback evidence.
 - The deployer can perform the read-only smoke, but apply-time IAM for every planned resource and cost approval still need confirmation.
 - MLflow tracking URI and runtime secret values are not provisioned; no secret was created or committed.
+- Secret Manager verification and the final digest-based Terraform plan were not run because the ordered image-push prerequisite stopped at the missing repository.
 - Do not create downloaded long-lived service-account keys.
 
 ## Cost

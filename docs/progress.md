@@ -128,6 +128,7 @@ Last updated: 2026-07-27 00:05:00 Asia/Bangkok
 - Measured plan: 30 resources to add, 0 to change, 0 to destroy; Cloud SQL disabled.
 - No GCP resources, image push, secret population, apply, Cloud Run smoke, scheduler execution, or rollback test ran.
 - Numeric monthly cost is not available from Terraform plan; approved usage assumptions are required.
+- 2026-07-27 production image phase: API and job images built with immutable tags and measured digests, but authenticated pushes stopped because the planned Artifact Registry repository `credit-mlops` does not exist. No Secret Manager verification or second Terraform plan ran.
 
 ## Next
 

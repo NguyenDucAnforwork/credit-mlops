@@ -1,0 +1,2 @@
+production_image_build_exit=0
+runtime_seconds=not_captured

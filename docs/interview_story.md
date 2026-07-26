@@ -47,3 +47,4 @@ I started with an existing credit scoring MLOps project and rebuilt its executio
 
 - Chose a VM executor first because it preserves local responsiveness and avoids accidental local dependency or data sprawl.
 - Deferred cloud deployment because no image push, Terraform apply, Cloud Run smoke, scheduler execution, or rollback test has run, and the plan has no numeric cost estimate without approved usage assumptions.
+- Built a production API image and a dedicated ETL job image with immutable commit-based tags and measured SHA256 digests. The authenticated Artifact Registry push exposed a precise blocker: the planned repository does not exist, so the flow stopped without creating it out of band.

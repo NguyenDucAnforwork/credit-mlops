@@ -2,6 +2,8 @@
 
 Infrastructure update 2026-07-27: Terraform plan passed remotely with 30 additions and Cloud SQL disabled, but no Cloud Run service or model deployment was created. AVM performance and latency claims remain VM/Docker evidence only.
 
+Deployment update: the immutable API image was built on the VM but is not registry-backed because the planned Artifact Registry repository is absent; no Cloud Run model serving claim is made.
+
 Last updated: 2026-07-27 00:05:00 Asia/Bangkok
 
 Status: non-GIS tabular baseline measured; production AVM not promoted.

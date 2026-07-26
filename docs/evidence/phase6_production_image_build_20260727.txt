@@ -1,0 +1,5 @@
+production_image_build_exit=0
+build_commands=docker build -f Dockerfile -t asia-southeast1-docker.pkg.dev/driven-reef-452414-b5/credit-mlops/property-api:codex-20260727-5de2e58 .
+build_commands=docker build -f Dockerfile.job -t asia-southeast1-docker.pkg.dev/driven-reef-452414-b5/credit-mlops/property-job:codex-20260727-5de2e58 .
+[asia-southeast1-docker.pkg.dev/driven-reef-452414-b5/credit-mlops/property-api:codex-20260727-5de2e58 credit-mlops-api:codex-20260726] sha256:b4e4dcd3afd7171a29b808afe45fc913d9c8b4a35d8e1b273f14dd725650f0d6 856410496
+[asia-southeast1-docker.pkg.dev/driven-reef-452414-b5/credit-mlops/property-job:codex-20260727-5de2e58] sha256:d74322f93c6b0fb33176cfb3208835303a5d960e6edeaefd60cade902a2b03a1 852474397

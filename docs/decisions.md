@@ -97,6 +97,13 @@ Last updated: 2026-07-27 00:05:00 Asia/Bangkok
 - Evidence: cloud smoke exit 0 in 10 seconds; plan exit 0 in 3 seconds with 30 add, 0 change, 0 destroy; Cloud SQL disabled.
 - Rationale: read-only readiness is measured, but Terraform still references placeholder images and an unpopulated MLflow secret. Apply requires explicit cost/IAM approval and creates billable resources.
 - Consequence: no deployment URL, resource runtime, cost, image push, scheduler execution, or rollback metrics are claimed.
+
+## ADR-0023: Do Not Create Artifact Registry Out Of Band
+
+- Decision: do not create the planned `credit-mlops` Artifact Registry repository outside Terraform to unblock image pushes.
+- Evidence: authenticated API and job pushes both exit 1 with `Repository "credit-mlops" not found`; the repository list is empty.
+- Rationale: out-of-band creation would bypass the requested Terraform-only resource gate and create a billable cloud resource before apply approval.
+- Consequence: image digests are measured locally on the VM, but are not registry-backed; Secret Manager verification and the final digest-based plan wait for the repository gate.
 - Consequence: Terraform source now validates on the VM; deployment remains blocked until project scopes/IAM, Docker build/push, and cost-sensitive apply approval are available.
 
 ## ADR-0016: Keep Secrets Out Of Docker Images

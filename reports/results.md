@@ -814,3 +814,15 @@ Full Hugging Face ingestion, row counts, checksums, ETL runtime, and peak RAM ar
 | Remaining blockers | Placeholder image tags, image push, MLflow secret population, apply-time IAM/cost approval, apply, Cloud Run/API/scheduler smoke, and rollback evidence |
 | Evidence | `docs/evidence/phase6_gcp_readonly_smoke_20260726.txt`, `docs/evidence/phase6_terraform_init_plan_20260727.txt` |
 | Criterion status | Remote GCP prerequisite and Terraform plan gates pass; no apply was run |
+
+### Immutable Production Image Build And Push Blocker
+
+| Field | Value |
+|-------|-------|
+| Build location | VM `lfm`, workspace `/home/ducan/credit-mlops-codex` |
+| API image | `asia-southeast1-docker.pkg.dev/driven-reef-452414-b5/credit-mlops/property-api:codex-20260727-5de2e58`; digest `sha256:b4e4dcd3afd7171a29b808afe45fc913d9c8b4a35d8e1b273f14dd725650f0d6`; 856,410,496 bytes |
+| Job image | `asia-southeast1-docker.pkg.dev/driven-reef-452414-b5/credit-mlops/property-job:codex-20260727-5de2e58`; digest `sha256:d74322f93c6b0fb33176cfb3208835303a5d960e6edeaefd60cade902a2b03a1`; 852,474,397 bytes |
+| Push result | Docker auth configured with active deployer account; both pushes exit 1 because Artifact Registry repository `credit-mlops` does not exist |
+| Source change | Added `Dockerfile.job`; Terraform ETL command now invokes `python scripts/property_etl.py` |
+| Remaining blockers | Terraform apply or separately approved repository creation, then image pushes; Secret Manager verification and final no-placeholder plan are not yet run |
+| Criterion status | Image build passes; image push gate is blocked; no cloud resource was created |

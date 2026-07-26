@@ -1,0 +1,137 @@
+api_image=asia-southeast1-docker.pkg.dev/driven-reef-452414-b5/credit-mlops/property-api:codex-20260727-5de2e58
+job_image=asia-southeast1-docker.pkg.dev/driven-reef-452414-b5/credit-mlops/property-job:codex-20260727-5de2e58
+=== artifact_registry_repositories ===
+Listing items under project driven-reef-452414-b5, location asia-southeast1.
+
+=== image_inspect ===
+[asia-southeast1-docker.pkg.dev/driven-reef-452414-b5/credit-mlops/property-api:codex-20260727-5de2e58 credit-mlops-api:codex-20260726] sha256:b4e4dcd3afd7171a29b808afe45fc913d9c8b4a35d8e1b273f14dd725650f0d6 856410496
+[asia-southeast1-docker.pkg.dev/driven-reef-452414-b5/credit-mlops/property-job:codex-20260727-5de2e58] sha256:d74322f93c6b0fb33176cfb3208835303a5d960e6edeaefd60cade902a2b03a1 852474397
+=== api_push ===
+The push refers to repository [asia-southeast1-docker.pkg.dev/driven-reef-452414-b5/credit-mlops/property-api]
+2a431338fe37: Waiting
+062e450697fa: Waiting
+fd079632edc0: Waiting
+98db2485a0d0: Waiting
+bf7dd8058557: Waiting
+e33c618756eb: Waiting
+2642efefc249: Waiting
+7119972fa495: Waiting
+48347b15c85f: Waiting
+1e36bdbe4fda: Waiting
+752b4bfd598e: Waiting
+6d903270e0ff: Waiting
+c7980f788444: Waiting
+e33c618756eb: Waiting
+2642efefc249: Waiting
+7119972fa495: Waiting
+48347b15c85f: Waiting
+1e36bdbe4fda: Waiting
+752b4bfd598e: Waiting
+6d903270e0ff: Waiting
+c7980f788444: Waiting
+2a431338fe37: Waiting
+062e450697fa: Waiting
+fd079632edc0: Waiting
+98db2485a0d0: Waiting
+bf7dd8058557: Waiting
+752b4bfd598e: Waiting
+6d903270e0ff: Waiting
+c7980f788444: Waiting
+2a431338fe37: Waiting
+062e450697fa: Waiting
+fd079632edc0: Waiting
+98db2485a0d0: Waiting
+bf7dd8058557: Waiting
+e33c618756eb: Waiting
+2642efefc249: Waiting
+7119972fa495: Waiting
+48347b15c85f: Waiting
+1e36bdbe4fda: Waiting
+6d903270e0ff: Waiting
+c7980f788444: Waiting
+2a431338fe37: Waiting
+062e450697fa: Waiting
+fd079632edc0: Waiting
+98db2485a0d0: Waiting
+bf7dd8058557: Waiting
+e33c618756eb: Waiting
+2642efefc249: Waiting
+7119972fa495: Waiting
+48347b15c85f: Waiting
+1e36bdbe4fda: Waiting
+752b4bfd598e: Waiting
+e33c618756eb: Waiting
+2642efefc249: Waiting
+7119972fa495: Waiting
+48347b15c85f: Waiting
+1e36bdbe4fda: Waiting
+752b4bfd598e: Waiting
+6d903270e0ff: Waiting
+c7980f788444: Waiting
+2a431338fe37: Waiting
+062e450697fa: Waiting
+fd079632edc0: Waiting
+98db2485a0d0: Waiting
+bf7dd8058557: Waiting
+error from registry: Repository "credit-mlops" not found
+api_push_exit=1
+=== job_push ===
+The push refers to repository [asia-southeast1-docker.pkg.dev/driven-reef-452414-b5/credit-mlops/property-job]
+ab79cb6c765e: Waiting
+b8988e77b7f5: Waiting
+57e8e5d506dd: Waiting
+98db2485a0d0: Waiting
+48347b15c85f: Waiting
+fd079632edc0: Waiting
+062e450697fa: Waiting
+8ff11b7ea0c3: Waiting
+b10a54ea985f: Waiting
+98176a66d896: Waiting
+1bf2c36dc292: Waiting
+b4c82a44caea: Waiting
+a10306704c9c: Waiting
+71d12033d101: Waiting
+062e450697fa: Waiting
+8ff11b7ea0c3: Waiting
+b10a54ea985f: Waiting
+98176a66d896: Waiting
+1bf2c36dc292: Waiting
+b4c82a44caea: Waiting
+a10306704c9c: Waiting
+71d12033d101: Waiting
+ab79cb6c765e: Waiting
+b8988e77b7f5: Waiting
+57e8e5d506dd: Waiting
+98db2485a0d0: Waiting
+48347b15c85f: Waiting
+fd079632edc0: Waiting
+062e450697fa: Waiting
+8ff11b7ea0c3: Waiting
+b10a54ea985f: Waiting
+98176a66d896: Waiting
+1bf2c36dc292: Waiting
+b4c82a44caea: Waiting
+a10306704c9c: Waiting
+71d12033d101: Waiting
+ab79cb6c765e: Waiting
+b8988e77b7f5: Waiting
+57e8e5d506dd: Waiting
+98db2485a0d0: Waiting
+48347b15c85f: Waiting
+fd079632edc0: Waiting
+98176a66d896: Waiting
+1bf2c36dc292: Waiting
+b4c82a44caea: Waiting
+a10306704c9c: Waiting
+71d12033d101: Waiting
+ab79cb6c765e: Waiting
+b8988e77b7f5: Waiting
+57e8e5d506dd: Waiting
+98db2485a0d0: Waiting
+48347b15c85f: Waiting
+fd079632edc0: Waiting
+062e450697fa: Waiting
+8ff11b7ea0c3: Waiting
+b10a54ea985f: Waiting
+error from registry: Repository "credit-mlops" not found
+job_push_exit=1

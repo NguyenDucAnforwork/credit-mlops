@@ -237,6 +237,8 @@ It runs from the VM and latest completed in 10 seconds with `gcp_readonly_smoke_
 
 The 2026-07-27 remote Terraform init and plan passed with 30 resources to add, 0 to change, and 0 to destroy. Stop before `terraform apply`; the plan uses placeholder image tags and has no numeric cost estimate without approved usage assumptions. Evidence: `docs/evidence/phase6_terraform_init_plan_20260727.txt`.
 
+Production image preparation is VM-only. The API and ETL job images build successfully with immutable tags, but pushing is currently stopped because the planned `credit-mlops` Artifact Registry repository does not exist. Do not create it outside Terraform.
+
 Individual Docker image reproduction is now available on the VM:
 
 ```bash

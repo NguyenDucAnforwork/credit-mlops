@@ -188,7 +188,7 @@ resource "google_cloud_run_v2_job" "etl" {
 
       containers {
         image   = var.job_image
-        command = ["uv", "run", "python", "scripts/property_etl.py"]
+        command = ["python", "scripts/property_etl.py"]
 
         env {
           name  = "PROPERTY_DATA_BUCKET"

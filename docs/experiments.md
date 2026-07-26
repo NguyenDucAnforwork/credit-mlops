@@ -734,3 +734,13 @@
 - Cost: no numeric monthly estimate is derivable from Terraform plan without approved storage, query, image, request, CPU/memory, job-runtime, and scheduler assumptions; Cloud SQL is disabled.
 - Decision: stop before `terraform apply`; require immutable image tags, approved secret population, apply-time IAM, cost approval, and post-deploy verification.
 - Evidence: `docs/evidence/phase6_gcp_readonly_smoke_20260726.txt`, `docs/evidence/phase6_terraform_init_plan_20260727.txt`, and their runtime files.
+
+## EXP-0042: Immutable Production Image Build And Registry Push Blocker
+
+- Timestamp in Asia/Bangkok: 2026-07-27 00:46:00
+- Hypothesis: API and ETL production images can be built with immutable commit-based tags and pushed to the planned Artifact Registry repository without broadening IAM or creating resources outside Terraform.
+- Exact remote commands: `docker build -f Dockerfile -t <registry>/property-api:codex-20260727-5de2e58 .`; `docker build -f Dockerfile.job -t <registry>/property-job:codex-20260727-5de2e58 .`; `gcloud auth configure-docker asia-southeast1-docker.pkg.dev`; `docker push` for both tags.
+- Metrics: both builds exit 0. API digest `sha256:b4e4dcd3afd7171a29b808afe45fc913d9c8b4a35d8e1b273f14dd725650f0d6`, size 856,410,496 bytes. Job digest `sha256:d74322f93c6b0fb33176cfb3208835303a5d960e6edeaefd60cade902a2b03a1`, size 852,474,397 bytes. Artifact Registry repository listing is empty; both authenticated pushes exit 1 with `Repository "credit-mlops" not found`.
+- Source fix: added `Dockerfile.job` and changed the Terraform Cloud Run job command to `python scripts/property_etl.py`, because the prior monitoring image did not contain the ETL script or a compatible `uv` runtime.
+- Decision: stop before Secret Manager verification and Terraform plan. Do not create the repository out of band; it is already a planned Terraform resource and creation would be a billable infrastructure mutation outside the requested no-apply boundary.
+- Evidence: `docs/evidence/phase6_production_image_build_20260727.txt`, `docs/evidence/phase6_production_image_build_runtime_20260727.txt`, `docs/evidence/phase6_production_image_push_20260727.txt`.
