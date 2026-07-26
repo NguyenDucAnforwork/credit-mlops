@@ -1,6 +1,6 @@
 # Data Card
 
-Last updated: 2026-07-26 16:16:20 Asia/Bangkok
+Last updated: 2026-07-26 21:18:02 Asia/Bangkok
 
 ## Primary Dataset
 
@@ -32,6 +32,7 @@ Last updated: 2026-07-26 16:16:20 Asia/Bangkok
 - Current AVM artifact evidence uses the same VM gold cohort and non-GIS features; no model binary or generated dataset is stored locally.
 - Comparable fallback evidence uses administrative fields and listing age only; it cannot provide distance, radius, H3, or nearest-neighbor spatial support until coordinates are enriched.
 - Property API smoke reads the VM gold parquet through `PROPERTY_GOLD_PATH`; the full dataset remains VM-only.
+- The 2026-07-26 `httpx2` TestClient remediation was dependency-only. It did not change source data, ETL outputs, row counts, checksums, data contracts, or the VM-only raw/silver/gold/quarantine artifacts.
 
 ## Fixture Data
 

@@ -1,5 +1,7 @@
 # Results Summary
 
+Last updated: 2026-07-26 21:18:02 Asia/Bangkok
+
 All models trained on the same dataset: 16,000 train / 4,000 test (stratified 80/20 split, SHA256: `cac9de3c`). Default rate: 18.2%.
 
 ---
