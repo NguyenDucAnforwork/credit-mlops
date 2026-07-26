@@ -1,0 +1,8 @@
+UI_DEPS_OK 1.54.0 2.34.2
+No known vulnerabilities found
+Found 1 known vulnerability in 1 package
+Name     Version ID             Fix Versions
+-------- ------- -------------- ------------
+lightgbm 4.5.0   PYSEC-2024-231 4.6.0
+main_requirements_audit_exit=0
+monitor_requirements_audit_exit=1

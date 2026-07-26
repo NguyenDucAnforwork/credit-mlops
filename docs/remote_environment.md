@@ -1,6 +1,6 @@
 # Remote Environment
 
-Last updated: 2026-07-26 21:46:09 Asia/Bangkok
+Last updated: 2026-07-26 21:52:20 Asia/Bangkok
 
 ## SSH
 
@@ -36,6 +36,7 @@ Last updated: 2026-07-26 21:46:09 Asia/Bangkok
 - Latest type-check smoke: `make remote-type-smoke` completed in 1 second with `mypy==1.18.2`; 19 source files checked, 0 issues.
 - Latest Terraform validation: `make remote-terraform-validate` completed in 2 seconds with Terraform 1.9.8 and Google provider 6.50.0; backend disabled, `terraform_validate_exit=0`, no plan/apply.
 - Latest Docker context guard: source check completed in 0 seconds and confirmed `.env` is not copied by Dockerfiles; Docker daemon still fails with permission denied on `/var/run/docker.sock`.
+- Latest container dependency alignment: UI dependency import passed; main requirements audit exit 0; monitoring requirements audit exit 1 due transitive `lightgbm 4.5.0` vulnerability through NannyML.
 - Latest measured local VM HTTP benchmark: AVM p95 140.84 ms and lending p95 24.21 ms with 0% errors at 1,000 requests/concurrency 10.
 - Latest startup warm-up benchmark: property index startup 4.85 seconds, first comparable request after startup 10.99 ms.
 - Latest AVM artifact evidence: 2.37 MB remote-only joblib, load 87.13 ms, single prediction 21.32 ms, same-seed MdAPE delta 0.0 percentage points.

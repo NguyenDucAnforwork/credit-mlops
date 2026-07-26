@@ -1,6 +1,6 @@
 # Reproduce
 
-Last updated: 2026-07-26 21:46:09 Asia/Bangkok
+Last updated: 2026-07-26 21:52:20 Asia/Bangkok
 
 All heavy work runs on the VM. Do not install project dependencies, run tests, train models, Docker, Terraform, or `gcloud` locally.
 
@@ -228,3 +228,5 @@ Cloud reproduction is blocked until the VM service account has sufficient OAuth 
 Docker reproduction is blocked until user `ducan` can access `/var/run/docker.sock` and a Compose command is available on the VM.
 
 Docker source packaging guard evidence is available under `docs/evidence/phase6_docker_context_guard_20260726.txt`; it does not replace a Docker build.
+
+Container dependency alignment evidence is available under `docs/evidence/phase6_container_dependency_alignment_20260726.txt`. It shows the main requirements audit passes and the monitoring requirements audit is blocked by NannyML's transitive LightGBM vulnerability.

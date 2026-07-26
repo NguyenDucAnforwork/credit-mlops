@@ -25,7 +25,7 @@ Measured on 2026-07-26 from branch `feat/onemount-property-intelligence`.
 | Terraform | GCP source scaffold validates on VM with Terraform 1.9.8 and Google provider 6.50.0; no plan/apply run |
 | Docker packaging | `.dockerignore` excludes secrets/raw data/model directories; Dockerfiles no longer copy `.env`; Docker build still blocked |
 | Tests/quality | 139 tests pass under coverage in 15.91 seconds; scoped coverage 81%; Ruff, warnings-enabled full suite, and mypy type smoke pass |
-| Security audit | After dependency remediation, `pip-audit` passes with 0 known vulnerabilities |
+| Security audit | Project lock/main requirements audit clean; monitoring container requirements still blocked by NannyML `lightgbm` 4.5.0 vulnerability |
 
 ## Known Blockers
 
@@ -36,6 +36,7 @@ Measured on 2026-07-26 from branch `feat/onemount-property-intelligence`.
 | GCP deployment | VM account exists, but project/service calls fail with `ACCESS_TOKEN_SCOPE_INSUFFICIENT` |
 | AVM promotion | Dry-run gate rejects candidate because interval width, spatial holdout, cohort regression, and production service evidence are incomplete |
 | Dependency security | Latest audit is clean; FastAPI/Starlette TestClient warning resolved by adding `httpx2==2.9.1` to dev dependencies |
+| Monitoring container audit | `requirements-monitor.txt` resolves vulnerable `lightgbm 4.5.0`; fixed `lightgbm 4.6.0` conflicts with available NannyML releases |
 
 ## Architecture
 
@@ -77,6 +78,7 @@ Current measured targets:
 - `make remote-type-smoke`: pinned mypy on new property intelligence modules, API code, and selected property scripts; 19 source files checked with 0 issues in a 1-second wrapper runtime.
 - `make remote-terraform-validate`: GCP Terraform scaffold fmt/init/validate on VM; completed in 2 seconds with `terraform_validate_exit=0`.
 - Docker context guard: VM source check passed in 0 seconds, but Docker daemon access still fails with permission denied.
+- Container dependency alignment: UI deps import and main `requirements.txt` audit passes; monitoring requirements audit remains blocked by `PYSEC-2024-231` in transitive `lightgbm 4.5.0`.
 
 Docker and cloud targets are intentionally blocked until VM Docker permissions and GCP OAuth scopes are fixed:
 

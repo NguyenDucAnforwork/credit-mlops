@@ -1,6 +1,6 @@
 # Remote Reproduction Report
 
-Last updated: 2026-07-26 21:46:09 Asia/Bangkok
+Last updated: 2026-07-26 21:52:20 Asia/Bangkok
 
 This project is reproduced from the local repository by executing runtime work on VM `lfm` in `/home/ducan/credit-mlops-codex`. Do not install dependencies, run tests, train models, build Docker images, run databases, execute Terraform, or deploy GCP resources locally.
 
@@ -14,6 +14,7 @@ This project is reproduced from the local repository by executing runtime work o
 | `make remote-type-smoke` | pass; mypy found 0 issues in 19 source files, end-to-end 1s | `docs/evidence/phase7_type_smoke_stdout_20260726.txt` |
 | `make remote-terraform-validate` | pass; Terraform fmt/init/validate, end-to-end 2s, no plan/apply | `docs/evidence/phase6_terraform_validate_20260726.txt` |
 | Docker context guard | pass; source excludes `.env`/generated artifacts, no build run | `docs/evidence/phase6_docker_context_guard_20260726.txt` |
+| Container dependency alignment | partial; main requirements audit passes, monitoring requirements blocked by NannyML/LightGBM | `docs/evidence/phase6_container_dependency_alignment_20260726.txt` |
 | `make remote-reproduce-full` | blocked | VM Docker socket/Compose access |
 | `make remote-up` | blocked | VM Docker socket/Compose access |
 | `make remote-cloud-smoke` | blocked | VM GCP OAuth scope/IAM |

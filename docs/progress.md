@@ -1,6 +1,6 @@
 # Progress
 
-Last updated: 2026-07-26 21:46:09 Asia/Bangkok
+Last updated: 2026-07-26 21:52:20 Asia/Bangkok
 
 ## Phase Checklist
 
@@ -109,6 +109,7 @@ Last updated: 2026-07-26 21:46:09 Asia/Bangkok
 - GCP Terraform scaffold added under `infra/terraform`: required APIs, Artifact Registry, GCS, BigQuery, Secret Manager placeholder, Cloud Run service, Cloud Run ETL job, Scheduler, IAM service accounts, and optional disabled-by-default Cloud SQL/PostGIS scaffold.
 - `make remote-terraform-validate` installed/reused user-level Terraform 1.9.8 on the VM, initialized Google provider 6.50.0 with backend disabled, passed `terraform fmt -check -recursive`, passed `terraform validate`, and completed in 2 seconds. No `terraform plan`, `terraform apply`, `gcloud`, Docker build, image push, or cloud deployment was run.
 - Docker context guard added: `.dockerignore` excludes `.env`, generated data layers, remote model directories, Terraform state/plans, and generated evidence/report paths; API and monitoring Dockerfiles no longer copy `.env`. Remote guard check passed in 0 seconds while confirming Docker daemon access still fails with permission denied.
+- Container dependency alignment: `requirements.txt` updated to match the remediated main dependency set, `requirements-monitor.txt` updated for `python-dotenv==1.2.2`, and `ui/Dockerfile` updated to Streamlit 1.54.0. VM evidence: UI dependency import passed; main requirements audit exit 0; monitoring requirements audit exit 1 due `PYSEC-2024-231` in transitive `lightgbm 4.5.0`.
 
 ## Next
 

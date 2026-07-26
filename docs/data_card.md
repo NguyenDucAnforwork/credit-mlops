@@ -1,6 +1,6 @@
 # Data Card
 
-Last updated: 2026-07-26 21:46:09 Asia/Bangkok
+Last updated: 2026-07-26 21:52:20 Asia/Bangkok
 
 ## Primary Dataset
 
@@ -36,6 +36,7 @@ Last updated: 2026-07-26 21:46:09 Asia/Bangkok
 - The 2026-07-26 type-check smoke phase was source-typing and orchestration only. It did not change source data, ETL outputs, row counts, checksums, data contracts, or VM-only generated datasets.
 - The 2026-07-26 Terraform validation phase was infrastructure source only. It did not move data to GCS or BigQuery, run ETL jobs, or change local/VM dataset artifacts.
 - The 2026-07-26 Docker context guard excludes generated data layers from Docker build context; it did not delete or regenerate any local or VM data.
+- The 2026-07-26 container dependency alignment phase changed requirement pins only. It did not read, move, delete, or regenerate local/VM data.
 
 ## Fixture Data
 

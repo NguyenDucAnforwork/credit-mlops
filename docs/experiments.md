@@ -632,3 +632,21 @@
 - Decision: keep the Docker context guard and do not run Docker build/up until VM socket/Compose access is fixed.
 - Lesson learned: remove secret-copy hazards before container runtime is available; source hardening and build evidence are separate milestones.
 - Next experiment: Docker build and Compose smoke require Docker socket access and a Compose command on the VM.
+
+## EXP-0036: Container Dependency Alignment And Monitoring Audit Blocker
+
+- Timestamp in Asia/Bangkok: 2026-07-26 21:52:20
+- Hypothesis: Legacy container dependency pins can be aligned with the remediated project dependency set and audited without building Docker images.
+- Local Git commit or working-tree identifier: `6a1f0cf` plus uncommitted requirements/UI Dockerfile changes, evidence, and docs.
+- Dataset snapshot ID and checksums: not applicable; dependency audit does not read datasets.
+- Exact remote command: UI dependency import plus `uvx pip-audit -r requirements.txt` and `uvx pip-audit -r requirements-monitor.txt`, captured in `docs/evidence/phase6_container_dependency_alignment_20260726.txt`.
+- Configuration and seed: `requirements.txt` aligned to remediated MLflow/FastAPI/python-dotenv/security pins; `requirements-monitor.txt` aligns `python-dotenv==1.2.2`; `ui/Dockerfile` uses `streamlit==1.54.0`.
+- VM hardware/environment: Ubuntu 24.04.4 LTS, 4 vCPU AMD EPYC 7B12, 15 GiB RAM, no GPU.
+- Runtime: 28 seconds.
+- Peak RAM when available: not measured.
+- Metrics: UI dependency import passed with Streamlit 1.54.0 and requests 2.34.2; main requirements audit exit 0; monitoring requirements audit exit 1 with `PYSEC-2024-231` in transitive `lightgbm 4.5.0`.
+- Baseline comparison: `requirements.txt`, `requirements-monitor.txt`, and `ui/Dockerfile` previously carried stale pre-remediation pins.
+- Interpretation: main/API/UI container dependency source is better aligned, but monitoring image audit remains blocked by NannyML resolving a vulnerable LightGBM version.
+- Decision: keep safe alignment changes; do not pin incompatible `lightgbm==4.6.0` because it conflicts with available NannyML 0.13.x releases.
+- Lesson learned: transitive security fixes can be constrained by monitoring frameworks; record the failed compatible-fix attempt instead of making requirements unsatisfiable.
+- Next experiment: revisit monitoring image dependencies when NannyML releases a compatible LightGBM fix, or redesign the monitor image to avoid the vulnerable path.

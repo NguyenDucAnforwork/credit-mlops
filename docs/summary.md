@@ -1,6 +1,6 @@
 # Summary
 
-Last updated: 2026-07-26 21:46:09 Asia/Bangkok
+Last updated: 2026-07-26 21:52:20 Asia/Bangkok
 
 Status: Phase 6/7 non-cloud portfolio evidence is mostly complete, with Terraform source validation added and remaining blockers for coordinate-backed GIS/PostGIS, Docker runtime, and live GCP deployment.
 
@@ -40,11 +40,13 @@ The project is being converted from a credit scoring MLOps demo into a Property 
 - Type check smoke: `make remote-type-smoke` runs pinned `mypy==1.18.2` on `src/property_intelligence`, `api`, and selected property scripts; it found 0 issues in 19 source files and completed in 1 second. Final source verification also passed Ruff and 139 warnings-enabled tests in 11.16 seconds.
 - Coverage measurement after TestClient warning remediation: `make remote-coverage-smoke` passed 139 tests in 15.91 seconds on the VM; scoped coverage for `api/*`, `src/*`, and `scripts/property_*.py` is 81% total, with weakest measured modules `src/data_prep.py` 31%, `src/scorecard.py` 48%, and `api/model_loader.py` 49%.
 - Vulnerability audit: initial `pip-audit` found 59 known vulnerabilities across 11 packages; after coordinated dependency remediation and the `httpx2` test-client fix, `make remote-vulnerability-smoke` completes in 41 seconds with `pip_audit_exit=0` and 0 known vulnerabilities.
+- Container dependency alignment: UI Docker deps import with Streamlit 1.54.0 and requests 2.34.2; main `requirements.txt` audit exits 0; monitoring requirements audit exits 1 because NannyML resolves `lightgbm 4.5.0` with `PYSEC-2024-231`, while the fixed `lightgbm 4.6.0` conflicts with available NannyML 0.13.x releases.
 - Dependency remediation: updated pins/lock for MLflow 3.14.0, FastAPI 0.140.0, Starlette 1.3.1, Streamlit 1.54.0, vulnerable transitives, and dev-only `httpx2==2.9.1`; VM `uv sync --frozen --all-extras --dev` passed, Ruff passed, warnings-enabled full tests passed, coverage passed, API smoke passed, and `pip-audit` passed.
 - Portfolio documentation: README and `reports/reproduce.md` now present the remote-first Property Intelligence platform, measured evidence, and explicit blockers instead of the older local-first credit-scoring flow.
 - Engineering test-count criterion: 139 passing tests meets the >=125 numeric floor.
 - Docker context guard: `.dockerignore` excludes `.env`, raw/silver/gold/quarantine data, remote model directories, Terraform state, and generated evidence/report paths; API and monitoring Dockerfiles no longer copy `.env`. Docker build/runtime remains blocked because `ducan` cannot access Docker socket and Compose is unavailable.
 - Terraform deploy: source validates, but live plan/apply is blocked by VM GCP OAuth scopes/IAM and image build/push prerequisites.
+- Monitoring container dependency audit: blocked by NannyML transitive LightGBM vulnerability until a compatible NannyML release or monitoring image redesign is available.
 - Deployment URL: not deployed.
 
 ## Next Step

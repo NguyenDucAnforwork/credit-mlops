@@ -1,6 +1,6 @@
 # AVM Model Card
 
-Last updated: 2026-07-26 21:46:09 Asia/Bangkok
+Last updated: 2026-07-26 21:52:20 Asia/Bangkok
 
 Status: non-GIS tabular baseline measured; production AVM not promoted.
 
@@ -34,6 +34,7 @@ Estimate listing-based residential market value and price per square meter for l
 - The 2026-07-26 type-check smoke phase changed annotations/guards and orchestration only. It did not retrain, repack, promote, or mutate the AVM artifact.
 - The 2026-07-26 Terraform validation phase added deployment source only. It did not deploy, reload, promote, or change measured AVM behavior.
 - The 2026-07-26 Docker context guard excludes remote-only model directories from image context by default and did not retrain, repack, promote, or alter the AVM artifact.
+- The 2026-07-26 container dependency alignment phase did not retrain, repack, promote, reload, or alter model artifacts or AVM metrics.
 
 ## Known Limitations
 

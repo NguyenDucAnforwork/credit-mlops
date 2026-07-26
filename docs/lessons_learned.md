@@ -1,6 +1,6 @@
 # Lessons Learned
 
-Last updated: 2026-07-26 21:46:09 Asia/Bangkok
+Last updated: 2026-07-26 21:52:20 Asia/Bangkok
 
 - Verify GCP from the VM before planning Terraform or Cloud Run work. The current VM account is present, but OAuth scopes are insufficient for Cloud Resource Manager and Service Usage.
 - Keep remote orchestration scripts allowlisted and sentinel-guarded so source synchronization cannot delete unrelated VM data.
@@ -38,3 +38,4 @@ Last updated: 2026-07-26 21:46:09 Asia/Bangkok
 - Add scoped typing after behavior is stable. The first mypy probe found 14 issues in path narrowing, Pandas scalar conversion, and optional model state; fixing those made a 19-file type smoke pass without forcing a full-repo typing migration.
 - Terraform validation is useful cloud evidence only when its scope is explicit. Backend-disabled `init` plus `validate` proves source shape, not deployment, IAM, cost, image availability, or live service health.
 - Docker image hygiene should be fixed before runtime access is restored. Removing `COPY .env` and adding a deny-by-default context guard reduces the chance that a later successful build bakes secrets or generated artifacts into an image.
+- Do not turn a vulnerability fix into an unsatisfiable requirements file. The monitoring image needs a NannyML-compatible LightGBM fix or redesign, not a forced transitive pin that the resolver rejects.

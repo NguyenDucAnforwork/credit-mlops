@@ -1,6 +1,6 @@
 # Interview Story
 
-Last updated: 2026-07-26 21:46:09 Asia/Bangkok
+Last updated: 2026-07-26 21:52:20 Asia/Bangkok
 
 ## Current 90-Second Story
 
@@ -33,6 +33,7 @@ I started with an existing credit scoring MLOps project and rebuilt its executio
 - Added a scoped VM type-check smoke for the new property/API surface; after typing-only fixes, mypy found 0 issues in 19 source files with a 1-second wrapper runtime, and the full warnings-enabled suite passed 139 tests in 11.16 seconds.
 - Added a GCP Terraform scaffold for required APIs, Artifact Registry, GCS, BigQuery, Secret Manager, Cloud Run service/job, Scheduler, IAM, and optional Cloud SQL/PostGIS; VM validation passed with Terraform 1.9.8 and Google provider 6.50.0 in 2 seconds without plan/apply.
 - Hardened Docker packaging before build access was restored: added `.dockerignore`, removed baked `.env` copies, and verified the guard on the VM while preserving the Docker socket blocker status.
+- Aligned legacy main/UI container dependency pins with the remediated stack; main requirements audit passed, while monitoring remains blocked by a NannyML transitive LightGBM vulnerability.
 - Reworked the repository README and reproduction report into an evidence-led portfolio entrypoint with remote-only reproduction commands and explicit blocker status.
 - Not ready: GIS/spatial AVM metrics are not measured yet because coordinates are absent.
 - Not ready: cloud deployment metrics are not measured yet.

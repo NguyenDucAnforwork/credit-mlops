@@ -4,8 +4,8 @@ WORKDIR /app
 
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
 
-# Only two runtime deps — install directly into system Python
-RUN uv pip install --system --no-cache streamlit==1.45.1 requests==2.34.2 matplotlib
+# UI runtime deps are pinned to match the remediated project dependency set.
+RUN uv pip install --system --no-cache streamlit==1.54.0 requests==2.34.2 matplotlib
 
 COPY ui/streamlit_app.py ui/property_workflow.py ./
 
