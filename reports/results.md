@@ -427,3 +427,21 @@ Full Hugging Face ingestion, row counts, checksums, ETL runtime, and peak RAM ar
 | Verification before gate | 8 lifecycle tests passed in 0.65 seconds; 126 total tests passed in 8.20 seconds |
 | Final verification after docs/evidence | 126 tests passed in 8.27 seconds; wrapper runtime 10 seconds |
 | Test-count criterion | pass, >=125 total tests |
+
+### Synthetic Property Monitoring Drift
+
+| Field | Value |
+|-------|-------|
+| Reference sample | 5,000 pre-November gold listings, `random_state=42` |
+| Synthetic shifted features | `area_m2`, `price_per_m2`, `interval_width_ratio`, `district_missingness`, `confidence` |
+| Monitoring status | `alert` |
+| Alert count | 4 |
+| Alerting features | `area_m2`, `price_per_m2`, `interval_width_ratio`, `missing_feature_share` |
+| Area mean shift | 35.00% |
+| Price/m2 mean shift | 35.00% |
+| Interval-width mean shift | 0.25 |
+| Missing-feature share shift | 0.0833 |
+| Runtime | 1 second |
+| Evidence | `docs/evidence/property_monitoring_synthetic_drift_20260726.json` |
+| Verification before drift run | 3 monitoring tests passed in 0.63 seconds; 129 total tests passed in 8.26 seconds |
+| Final verification after docs/evidence | 129 tests passed in 8.15 seconds; wrapper runtime 10 seconds |

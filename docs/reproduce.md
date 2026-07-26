@@ -1,6 +1,6 @@
 # Reproduce
 
-Last updated: 2026-07-26 15:33:55 Asia/Bangkok
+Last updated: 2026-07-26 15:39:35 Asia/Bangkok
 
 All heavy work runs on the VM. Do not install project dependencies, run tests, train models, Docker, Terraform, or `gcloud` locally.
 
@@ -116,6 +116,14 @@ AVM promotion gate dry-run:
 ```bash
 make remote-sync
 scripts/remote/run.sh 'uv run python scripts/property_avm_promotion_gate.py'
+scripts/remote/fetch_artifacts.sh
+```
+
+Synthetic property monitoring drift:
+
+```bash
+make remote-sync
+scripts/remote/run.sh 'uv run python scripts/property_monitoring_drift.py'
 scripts/remote/fetch_artifacts.sh
 ```
 

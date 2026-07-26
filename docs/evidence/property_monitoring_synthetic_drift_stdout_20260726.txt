@@ -1,0 +1,68 @@
+{
+  "alert_count": 4,
+  "alert_features": [
+    "area_m2",
+    "price_per_m2",
+    "interval_width_ratio",
+    "missing_feature_share"
+  ],
+  "checks": [
+    {
+      "alert": true,
+      "current_value": 198.40317119958803,
+      "feature": "area_m2",
+      "metric": "relative_mean_change",
+      "reference_value": 146.96531199969482,
+      "threshold": 0.2,
+      "value": 0.35000000000000014
+    },
+    {
+      "alert": true,
+      "current_value": 143468724.37950277,
+      "feature": "price_per_m2",
+      "metric": "relative_mean_change",
+      "reference_value": 220721114.4300042,
+      "threshold": 0.2,
+      "value": 0.3499999999999998
+    },
+    {
+      "alert": true,
+      "current_value": 1.0199999999999996,
+      "feature": "interval_width_ratio",
+      "metric": "absolute_mean_change",
+      "reference_value": 0.77,
+      "threshold": 0.1,
+      "value": 0.24999999999999956
+    },
+    {
+      "alert": false,
+      "current_value": 1.0,
+      "feature": "confidence_low_share",
+      "metric": "absolute_share_change",
+      "reference_value": 1.0,
+      "threshold": 0.1,
+      "value": 0.0
+    },
+    {
+      "alert": true,
+      "current_value": 0.0833,
+      "feature": "missing_feature_share",
+      "metric": "absolute_share_change",
+      "reference_value": 0.0,
+      "threshold": 0.05,
+      "value": 0.0833
+    }
+  ],
+  "current_rows": 5000,
+  "reference_rows": 5000,
+  "shifted_feature_count": 4,
+  "snapshot_id": "a9a66ffa985edcf76b4be59ae2c6f5b1db889c38",
+  "status": "alert",
+  "synthetic_shifted_features": [
+    "area_m2",
+    "price_per_m2",
+    "interval_width_ratio",
+    "district_missingness",
+    "confidence"
+  ]
+}

@@ -1,6 +1,6 @@
 # Decisions
 
-Last updated: 2026-07-26 15:33:55 Asia/Bangkok
+Last updated: 2026-07-26 15:39:35 Asia/Bangkok
 
 ## ADR-0001: Local Source of Truth, VM Runtime Executor
 
@@ -43,3 +43,9 @@ Last updated: 2026-07-26 15:33:55 Asia/Bangkok
 - Decision: evaluate AVM promotion with an auditable dry-run gate and no MLflow alias mutation until all promotion evidence exists and passes.
 - Rationale: the current candidate passes temporal improvement and coverage but fails interval width and lacks spatial/cohort/API load evidence.
 - Consequence: model lifecycle work can progress with explicit rejection reasons while protecting any future `property_avm@champion` alias from premature promotion.
+
+## ADR-0008: Start Monitoring With Deterministic Drift Checks
+
+- Decision: implement deterministic property drift checks for area, price/m2, interval width, confidence mix, and missingness before wiring external monitoring services.
+- Rationale: synthetic drift evidence must be reproducible and small enough to commit while Docker/monitoring services remain blocked.
+- Consequence: alert logic is testable now; dashboards and production delayed-label pipelines remain future work.

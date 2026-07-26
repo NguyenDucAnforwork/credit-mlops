@@ -1,6 +1,6 @@
 # Lessons Learned
 
-Last updated: 2026-07-26 15:33:55 Asia/Bangkok
+Last updated: 2026-07-26 15:39:35 Asia/Bangkok
 
 - Verify GCP from the VM before planning Terraform or Cloud Run work. The current VM account is present, but OAuth scopes are insufficient for Cloud Resource Manager and Service Usage.
 - Keep remote orchestration scripts allowlisted and sentinel-guarded so source synchronization cannot delete unrelated VM data.
@@ -22,3 +22,4 @@ Last updated: 2026-07-26 15:33:55 Asia/Bangkok
 - Non-GIS comparables can be fast and leakage-safe for support metadata, but the evidence must remain separate from PostGIS criteria. The 1,000-query fallback p95 was 14.88 ms, but distance and radius are still unavailable.
 - API smoke must distinguish cold initialization from warm request latency. The first comparable request spent 2.62 seconds building the index, while the following AVM request was 13.13 ms after reuse.
 - Promotion gates should reject on missing evidence, not only bad metrics. The current AVM improves temporal MdAPE but must not become champion without spatial holdout, cohort regression, width, and warm API evidence.
+- Synthetic drift tests should shift named features explicitly and report alerting features. This makes the monitoring evidence auditable instead of relying on opaque dashboard screenshots.

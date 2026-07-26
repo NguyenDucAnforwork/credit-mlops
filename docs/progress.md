@@ -1,6 +1,6 @@
 # Progress
 
-Last updated: 2026-07-26 15:33:55 Asia/Bangkok
+Last updated: 2026-07-26 15:39:35 Asia/Bangkok
 
 ## Phase Checklist
 
@@ -9,7 +9,7 @@ Last updated: 2026-07-26 15:33:55 Asia/Bangkok
 - Phase 2 PostGIS and GIS: PostGIS/GIS blocked by missing coordinates; non-GIS comparable fallback measured
 - Phase 3 AVM: non-GIS median/tabular baselines and three interval calibrations measured
 - Phase 4 APIs: scaffold endpoints implemented and smoked with fallback AVM/comparables; load criteria not measured
-- Phase 5 MLOps and monitoring: AVM promotion gate dry-run implemented; monitoring not started
+- Phase 5 MLOps and monitoring: AVM promotion gate dry-run and synthetic drift monitoring implemented
 - Phase 6 Docker and GCP: cloud access blocked by VM OAuth scopes; local Docker baseline pending
 - Phase 7 UI, CI, portfolio: not started
 
@@ -67,7 +67,10 @@ Last updated: 2026-07-26 15:33:55 Asia/Bangkok
 - Lifecycle tests plus full suite before gate passed on the VM: 8 lifecycle tests in 0.65 seconds and 126 total tests in 8.20 seconds.
 - Final full suite after lifecycle docs/evidence passed on the VM: 126 passed in 8.27 seconds; wrapper runtime 10 seconds.
 - Test-count numeric floor status: 126 total passing tests meets the >=125 criterion.
+- Synthetic property drift monitoring: shifted area, price/m2, interval width, district missingness, and confidence; status `alert`; 4 alerting checks for `area_m2`, `price_per_m2`, `interval_width_ratio`, and `missing_feature_share`.
+- Monitoring tests plus full suite before drift run passed on the VM: 3 monitoring tests in 0.63 seconds and 129 total tests in 8.26 seconds.
+- Final full suite after monitoring docs/evidence passed on the VM: 129 passed in 8.15 seconds; wrapper runtime 10 seconds.
 
 ## Next
 
-Run final verification for the AVM lifecycle gate milestone, commit and push it, then continue with monitoring or warm API load reporting while Docker and GCP remain blocked.
+Run final verification for the monitoring milestone, commit and push it, then continue with delayed-label/cohort monitoring or warm API load reporting while Docker and GCP remain blocked.

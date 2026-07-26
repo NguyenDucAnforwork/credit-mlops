@@ -325,3 +325,21 @@
 - Decision: keep dry-run gate; do not mutate MLflow aliases until all gate evidence exists and passes.
 - Lesson learned: a model can satisfy temporal MdAPE and calibration coverage while still being unpromotable because uncertainty width and spatial/API evidence are not ready.
 - Next experiment: add warm API load report or AVM registry artifact packaging when Docker/service execution is unblocked.
+
+## EXP-0019: Synthetic Property Monitoring Drift
+
+- Timestamp in Asia/Bangkok: 2026-07-26 15:39:32
+- Hypothesis: Synthetic monitoring can shift at least three property/AVM features and trigger at least one alert with deterministic evidence.
+- Local Git commit or working-tree identifier: `2b32ead` plus uncommitted monitoring source/tests/docs.
+- Dataset snapshot ID and checksums: reference sample from gold revision `a9a66ffa985edcf76b4be59ae2c6f5b1db889c38`; raw SHA256 manifest in `reports/generated/hf_vietnam_real_estates_snapshot_manifest_20260726.json`.
+- Exact remote command: `scripts/remote/run.sh 'uv run python scripts/property_monitoring_drift.py'`.
+- Configuration and seed: 5,000 pre-November gold rows sampled with `random_state=42`; synthetic shifts to area, price/m2, interval width, district missingness, and confidence.
+- VM hardware/environment: Ubuntu 24.04.4 LTS, 4 vCPU AMD EPYC 7B12, 15 GiB RAM, no GPU.
+- Runtime: monitoring script 1 second; focused monitoring tests passed in 0.63 seconds; full suite passed with 129 tests in 8.26 seconds before drift run.
+- Peak RAM when available: not measured.
+- Metrics: status `alert`; alert count 4; shifted feature count 4; alerts fired for `area_m2`, `price_per_m2`, `interval_width_ratio`, and `missing_feature_share`; relative area mean shift 35%; relative price/m2 mean shift 35%; interval width mean shift 0.25; missing-feature share shift 0.0833.
+- Baseline comparison: previous Phase 5 state had lifecycle gate only and 126 passing tests; monitoring adds deterministic drift checks and raises the remote suite to 129 passing tests.
+- Interpretation: synthetic drift alerting now covers the contract requirement to shift at least three features and trigger an alert, but production monitoring dashboards/services remain unbuilt.
+- Decision: keep deterministic monitoring module and script.
+- Lesson learned: keep monitoring thresholds simple and auditable before connecting external monitoring services.
+- Next experiment: add delayed-label AVM error/cohort monitoring or warm API load reports.

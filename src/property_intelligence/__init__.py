@@ -59,6 +59,14 @@ from property_intelligence.lifecycle import (
     plan_rollback,
     write_lifecycle_report,
 )
+from property_intelligence.monitoring import (
+    DEFAULT_DRIFT_RULES,
+    DriftRule,
+    build_property_monitoring_frame,
+    evaluate_property_drift,
+    inject_synthetic_property_drift,
+    write_monitoring_report,
+)
 
 __all__ = [
     "build_gold",
@@ -106,4 +114,10 @@ __all__ = [
     "plan_alias_update",
     "plan_rollback",
     "write_lifecycle_report",
+    "DEFAULT_DRIFT_RULES",
+    "DriftRule",
+    "build_property_monitoring_frame",
+    "evaluate_property_drift",
+    "inject_synthetic_property_drift",
+    "write_monitoring_report",
 ]
