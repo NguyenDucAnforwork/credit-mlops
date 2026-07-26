@@ -635,7 +635,7 @@ Full Hugging Face ingestion, row counts, checksums, ETL runtime, and peak RAM ar
 | Updated docs | `README.md`, `reports/reproduce.md` |
 | Scope | remote-first project overview, evidence table, blocker table, remote reproduction commands, API surface, documentation map |
 | Baseline issue | prior docs described local/Docker-first credit-scoring reproduction and did not represent the active Property Intelligence contract |
-| Criterion status | portfolio entrypoint aligned with measured evidence; dependency remediation remains open |
+| Criterion status | portfolio entrypoint aligned with measured evidence; dependency remediation is now complete for PyPI-auditable packages |
 
 ### Dependency Remediation Resolver Probe
 
@@ -646,7 +646,7 @@ Full Hugging Face ingestion, row counts, checksums, ETL runtime, and peak RAM ar
 | Probe 2 | resolver dry-run passed with 172 packages |
 | Required broad upgrades | `mlflow 3.14.0`, `fastapi 0.140.0`, `starlette 1.3.1`, `streamlit 1.54.0`, `pillow 12.3.0`, `nltk 3.10.0`, plus transitives |
 | Evidence | `docs/evidence/phase7_dep_remediation_probe1_20260726.txt`, `docs/evidence/phase7_dep_remediation_probe2_20260726.txt` |
-| Criterion status | remediation path identified; no pins changed until VM compatibility tests run |
+| Criterion status | remediation path identified; follow-up compatibility run applied and verified the pin/lock changes |
 
 ### Dependency Remediation Compatibility
 
@@ -660,5 +660,5 @@ Full Hugging Face ingestion, row counts, checksums, ETL runtime, and peak RAM ar
 | API smoke after remediation | comparables, AVM, and lending endpoints returned 200; wrapper runtime 5 seconds |
 | Vulnerability audit after remediation | `pip_audit_exit=0`, 0 known vulnerabilities, runtime 33 seconds |
 | Warning | FastAPI/Starlette TestClient deprecation warning: install/use `httpx2` in a future compatibility pass |
-| Evidence | `docs/evidence/phase7_dep_remediation_lock_20260726.txt`, `docs/evidence/phase7_dep_remediation_sync_20260726.txt`, `docs/evidence/phase7_dep_remediation_tests_20260726.txt`, `reports/generated/phase7_dep_remediation_api_smoke_summary_20260726.json`, `docs/evidence/phase7_pip_audit_report_20260726.txt` |
+| Evidence | `docs/evidence/phase7_dep_remediation_lock_20260726.txt`, `docs/evidence/phase7_dep_remediation_sync_20260726.txt`, `docs/evidence/phase7_dep_remediation_tests_20260726.txt`, `docs/evidence/phase7_dep_remediation_api_smoke_stdout_20260726.txt`, `docs/evidence/phase7_pip_audit_report_20260726.txt` |
 | Criterion status | dependency security remediation passes non-Docker VM compatibility checks |

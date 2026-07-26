@@ -66,7 +66,7 @@ Last updated: 2026-07-26 20:51:13 Asia/Bangkok
 
 - Decision: keep the successful broad dependency resolver dry-run as planning evidence only.
 - Rationale: the narrow fix is blocked by MLflow's `cryptography<47` constraint, and the resolver-level solution upgrades MLflow, FastAPI, Starlette, Streamlit, Pillow, NLTK, and many transitives.
-- Consequence: the next remediation attempt must update pins and lockfile in source, then verify compatibility on the VM before commit.
+- Consequence: the later compatibility run updated pins and lockfile in source, then verified sync, Ruff, full tests, coverage, API smoke, and audit on the VM before commit.
 
 ## ADR-0012: Apply Coordinated Dependency Remediation After VM Compatibility Checks
 
