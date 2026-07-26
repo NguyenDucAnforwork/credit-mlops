@@ -1,0 +1,126 @@
+DEPRECATED: The legacy builder is deprecated and will be removed in a future release.
+            Install the buildx component to build images with BuildKit:
+            https://docs.docker.com/go/buildx/
+
+Sending build context to Docker daemon   65.6MB
+Step 1/8 : FROM python:3.12-slim
+3.12-slim: Pulling from library/python
+fd079632edc0: Pulling fs layer
+48347b15c85f: Pulling fs layer
+98db2485a0d0: Pulling fs layer
+062e450697fa: Pulling fs layer
+fd079632edc0: Download complete
+48347b15c85f: Download complete
+98db2485a0d0: Download complete
+062e450697fa: Download complete
+32d38934c913: Download complete
+87adcff9f8c4: Download complete
+062e450697fa: Pull complete
+98db2485a0d0: Pull complete
+fd079632edc0: Pull complete
+48347b15c85f: Pull complete
+Digest: sha256:57cd7c3a7a273101a6485ba99423ee568157882804b1124b4dd04266317710de
+Status: Downloaded newer image for python:3.12-slim
+ ---> 57cd7c3a7a27
+Step 2/8 : WORKDIR /app
+ ---> Running in fa7d2ca79800
+ ---> Removed intermediate container fa7d2ca79800
+ ---> 4a1558110ab3
+Step 3/8 : COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
+latest: Pulling from astral-sh/uv
+e6baf26ea430: Pulling fs layer
+73f635c1b736: Pulling fs layer
+e6baf26ea430: Download complete
+1039b9fd0080: Download complete
+b75b99b4e168: Download complete
+73f635c1b736: Download complete
+e6baf26ea430: Pull complete
+73f635c1b736: Pull complete
+Digest: sha256:df4cae8f3a96d175e2e5f992e597550000edbe78fdc2594d5cd8de1a217f504c
+Status: Downloaded newer image for ghcr.io/astral-sh/uv:latest
+ ---> 6d238afbf863
+Step 4/8 : RUN uv pip install --system --no-cache streamlit==1.54.0 requests==2.34.2 matplotlib
+ ---> Running in f64cc52b86b4
+[91mUsing Python 3.12.13 environment at: /usr/local
+[0m[91mResolved 43 packages in 452ms
+[0m[91mDownloading pyarrow (47.8MiB)
+[0m[91mDownloading pillow (6.6MiB)
+[0m[91mDownloading pandas (11.8MiB)
+[0m[91mDownloading matplotlib (9.6MiB)
+[0m[91mDownloading streamlit (8.7MiB)
+[0m[91mDownloading numpy (15.9MiB)
+[0m[91mDownloading kiwisolver (1.4MiB)
+[0m[91mDownloading fonttools (4.8MiB)
+[0m[91mDownloading pydeck (10.9MiB)
+[0m[91m Downloaded kiwisolver
+[0m[91m Downloaded pillow
+[0m[91m Downloaded fonttools
+[0m[91m Downloaded pydeck
+[0m[91m Downloaded streamlit
+[0m[91m Downloaded matplotlib
+[0m[91m Downloaded numpy
+[0m[91m Downloaded pyarrow
+[0m[91m Downloaded pandas
+[0m[91mPrepared 43 packages in 2.13s
+[0m[91mInstalled 43 packages in 145ms
+ + altair==6.2.2
+ + attrs==26.1.0
+ + blinker==1.9.0
+ + cachetools==[0m[91m6.2.6
+ + certifi==2026.7.22
+ + charset-normalizer==3.4.9
+ + click==8.4.2
+ +[0m[91m contourpy==1.[0m[91m3.3
+ +[0m[91m cycler==[0m[91m0.12.1[0m[91m
+ + [0m[91mfonttools==4[0m[91m.63.0
+ [0m[91m+ gitdb==4[0m[91m.0.12
+[0m[91m + gitpython[0m[91m==3.1[0m[91m.57[0m[91m
+ + idna==3.18
+ + jinja2==3.1.6
+ + jsonschema==4.26.0
+ + jsonschema-specifications==2025.9.1
+ + kiwisolver==1.5.0
+ + markupsafe==3.0.3
+ + matplotlib==3.11.1
+ + narwhals==2.24.0
+ + numpy==2.5.1
+ + packaging==26.2
+ + pandas==2.3.3
+ + pillow[0m[91m==12.3.0
+ + protobuf[0m[91m==6.33.6
+ + pyarrow==25.0.0
+ + pydeck==0.9.3
+ [0m[91m+[0m[91m pyparsing==3.3.2
+ + python-dateutil==2.9.0.post0
+ + pytz==2026.3.post1
+ + referencing==0.37.0
+ + requests==2.34.2
+ [0m[91m+ rpds-py==2026.6.3
+ + six==1.17.0
+ + smmap==5.0.3
+ + streamlit==1.54.0
+ + tenacity==9.1.4
+ + toml==0.10.2
+ + tornado==6.5.7
+ + typing-extensions==4[0m[91m.16.0
+ + tzdata==2026.3
+ + urllib3==2.7.0
+ + watchdog==6.0.0
+[0m ---> Removed intermediate container f64cc52b86b4
+ ---> b739f59a9f60
+Step 5/8 : COPY ui/streamlit_app.py ui/property_workflow.py ./
+ ---> 3b2808fd2277
+Step 6/8 : EXPOSE 8501
+ ---> Running in 01bebfd87f13
+ ---> Removed intermediate container 01bebfd87f13
+ ---> a50009dc58fb
+Step 7/8 : HEALTHCHECK --interval=30s --timeout=10s --start-period=15s --retries=3     CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8501/_stcore/health')"
+ ---> Running in 8780bed29269
+ ---> Removed intermediate container 8780bed29269
+ ---> e5eca4c0f010
+Step 8/8 : CMD ["streamlit", "run", "streamlit_app.py",      "--server.port=8501",      "--server.headless=true",      "--server.address=0.0.0.0"]
+ ---> Running in 5d2a541aa9df
+ ---> Removed intermediate container 5d2a541aa9df
+ ---> 94df2d30ecb0
+Successfully built 94df2d30ecb0
+Successfully tagged credit-mlops-ui:codex-20260726

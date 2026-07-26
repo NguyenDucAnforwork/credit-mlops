@@ -1,0 +1,37 @@
+=== gcloud auth list ===
+                  Credentialed Accounts
+ACTIVE  ACCOUNT
+*       582914829900-compute@developer.gserviceaccount.com
+
+To set the active account, run:
+    $ gcloud config set account `ACCOUNT`
+
+gcloud_auth_list_exit=0
+=== gcloud project ===
+driven-reef-452414-b5
+gcloud_project_exit=0
+=== project describe ===
+API [cloudresourcemanager.googleapis.com] not enabled on project [582914829900].
+ Would you like to enable and retry (this will take a few minutes)? (y/N)?
+ERROR: (gcloud.projects.describe) [582914829900-compute@developer.gserviceaccount.com] does not have permission to access projects instance [driven-reef-452414-b5] (or it may not exist): Cloud Resource Manager API has not been used in project 582914829900 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/cloudresourcemanager.googleapis.com/overview?project=582914829900 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry. This command is authenticated as 582914829900-compute@developer.gserviceaccount.com which is the active account specified by the [core/account] property.
+Cloud Resource Manager API has not been used in project 582914829900 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/cloudresourcemanager.googleapis.com/overview?project=582914829900 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.
+Google developers console API activation
+https://console.developers.google.com/apis/api/cloudresourcemanager.googleapis.com/overview?project=582914829900
+- '@type': type.googleapis.com/google.rpc.ErrorInfo
+  domain: googleapis.com
+  metadata:
+    activationUrl: https://console.developers.google.com/apis/api/cloudresourcemanager.googleapis.com/overview?project=582914829900
+    consumer: projects/582914829900
+    containerInfo: '582914829900'
+    service: cloudresourcemanager.googleapis.com
+    serviceTitle: Cloud Resource Manager API
+  reason: SERVICE_DISABLED
+gcloud_project_describe_exit=1
+=== services list ===
+NAME                               TITLE
+analyticshub.googleapis.com        Analytics Hub API
+bigquery.googleapis.com            BigQuery API
+bigqueryconnection.googleapis.com  BigQuery Connection API
+bigquerydatapolicy.googleapis.com  BigQuery Data Policy API
+bigquerymigration.googleapis.com   BigQuery Migration API
+gcloud_services_list_exit=0

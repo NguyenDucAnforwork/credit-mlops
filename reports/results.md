@@ -176,10 +176,10 @@ Measured on VM `lfm` in `/home/ducan/credit-mlops-codex`.
 | Dependency sync | pass, 168 packages installed with `uv sync --frozen --all-extras --dev` | `docs/experiments.md` |
 | Baseline data prep | version `cac9de3c`, 16,000 train rows, 4,000 test rows | `docs/evidence/baseline_processed_files_20260726.txt` |
 | Original pytest suite | 76 passed in 7.42 seconds; wrapper runtime 9 seconds | `docs/evidence/baseline_pytest_20260726.txt` |
-| Docker preflight | blocked: `ducan` cannot access `/var/run/docker.sock`; `docker compose` unavailable | `docs/evidence/docker_permission_20260726.txt` |
-| GCP access from VM | blocked: `ACCESS_TOKEN_SCOPE_INSUFFICIENT` | `docs/remote_environment.md` |
+| Docker preflight | updated: Docker daemon access works; `docker compose` unavailable | `docs/evidence/phase6_docker_recheck_20260726.txt` |
+| GCP access from VM | updated: Service Usage list works; Cloud Resource Manager project describe blocked | `docs/evidence/phase6_gcp_recheck_20260726.txt` |
 
-Docker/API smoke tests were not run because Docker access requires an approved VM permission/configuration change.
+The initial Docker/API smoke was not run during baseline preflight. Later Phase 6 evidence built UI/API/monitor images and passed plain-container smokes after Docker daemon access was restored.
 
 ## Control-Plane Auth Recovery, 2026-07-26
 
@@ -639,9 +639,9 @@ Full Hugging Face ingestion, row counts, checksums, ETL runtime, and peak RAM ar
 | Source changes | added `.dockerignore`; removed `COPY .env` from API and monitoring Dockerfiles |
 | Runtime | 0 seconds |
 | Result | `docker_context_guard_exit=0`; `.env`, `data/raw`, and `artifacts/models` exclusions verified; no `COPY .env` remains |
-| Docker status | Docker client 29.1.3 present, daemon access still permission denied on `/var/run/docker.sock` |
+| Docker status | Historical guard run happened before daemon access was refreshed; latest daemon recheck now works, but Compose remains unavailable |
 | Evidence | `docs/evidence/phase6_docker_context_guard_20260726.txt`, `docs/evidence/phase6_docker_context_guard_runtime_20260726.txt` |
-| Criterion status | source packaging guard passes; Docker build/runtime remains blocked |
+| Criterion status | source packaging guard passes; later image builds and plain-container smokes pass, but Compose service-stack validation remains blocked |
 
 ### Container Dependency Alignment
 
@@ -656,6 +656,23 @@ Full Hugging Face ingestion, row counts, checksums, ETL runtime, and peak RAM ar
 | Failed fix attempt | `lightgbm==4.6.0` conflicts with available NannyML 0.13.x dependency constraints |
 | Evidence | `docs/evidence/phase6_container_dependency_alignment_20260726.txt`, `docs/evidence/phase6_container_dependency_alignment_runtime_20260726.txt` |
 | Criterion status | main/UI dependency source aligned; monitoring image vulnerability remains blocked |
+
+### Remote Docker Build And Plain-Container Smoke
+
+| Field | Value |
+|-------|-------|
+| Execution location | VM `lfm`, workspace `/home/ducan/credit-mlops-codex` |
+| Docker access | `ducan` is now in group `docker`; Docker client/server 29.1.3 respond |
+| Compose status | `docker compose` unavailable; Compose smoke not run |
+| Failed probe | `docker build --check` unsupported by the legacy builder; API/UI/monitor checks exited 125 |
+| UI image build | passed; image `credit-mlops-ui:codex-20260726`, ID `94df2d30ecb0`, size 837MB, runtime 55s |
+| API image build | passed; image `credit-mlops-api:codex-20260726`, ID `b4e4dcd3afd7`, size 3.01GB, runtime 286s |
+| Monitoring image build | passed; image `credit-mlops-monitor:codex-20260726`, ID `ab3038d25eeb`, size 3.64GB, runtime 298s |
+| API container smoke | passed; `/health` returned `status=ok`, `model_version=fallback_local`; Docker health `healthy`; runtime 21s |
+| UI container smoke | passed; `/_stcore/health` returned `ok`; Docker health `healthy`; runtime 19s |
+| Monitoring image smoke | passed import check; NannyML 0.13.1, Pandas 2.2.3, LightGBM 4.5.0; runtime 3s |
+| Evidence | `docs/evidence/phase6_docker_recheck_20260726.txt`, `docs/evidence/phase6_docker_build_check_20260726.txt`, `docs/evidence/phase6_docker_ui_build_20260726.txt`, `docs/evidence/phase6_docker_api_build_20260726.txt`, `docs/evidence/phase6_docker_monitor_build_20260726.txt`, `docs/evidence/phase6_docker_images_20260726.txt`, `docs/evidence/phase6_docker_api_smoke_20260726.txt`, `docs/evidence/phase6_docker_ui_smoke_20260726.txt`, `docs/evidence/phase6_docker_monitor_smoke_20260726.txt` |
+| Criterion status | individual Docker image build and plain-container smoke pass; Docker Compose, service-stack integration, registry push, and cloud deployment remain incomplete |
 
 ### Scoped Remote Coverage
 

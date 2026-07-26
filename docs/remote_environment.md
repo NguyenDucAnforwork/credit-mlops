@@ -1,6 +1,6 @@
 # Remote Environment
 
-Last updated: 2026-07-26 21:52:20 Asia/Bangkok
+Last updated: 2026-07-26 22:51:40 Asia/Bangkok
 
 ## SSH
 
@@ -27,7 +27,7 @@ Last updated: 2026-07-26 21:52:20 Asia/Bangkok
 - `terraform`: installed later as user-level Terraform 1.9.8 under `/home/ducan/.local/bin/terraform`
 - `uv`: installed later at `/home/ducan/.local/bin/uv`
 - Docker client: 29.1.3
-- Docker server access: blocked for user `ducan`
+- Docker server access: works for user `ducan` after group refresh
 - Docker Compose: `docker compose` unavailable
 - Latest measured Python suite: 139 tests passed in 15.91 seconds under `make remote-coverage-smoke`; latest warnings-enabled non-coverage suite was 139 passed in 11.20 seconds with Ruff passing and no TestClient warning summary.
 - Latest remote smoke reproduction: `make remote-reproduce-smoke` completed in 5 seconds with Ruff passing and 61 focused tests passing in 3.24 seconds.
@@ -35,8 +35,11 @@ Last updated: 2026-07-26 21:52:20 Asia/Bangkok
 - Latest vulnerability audit: `make remote-vulnerability-smoke` completed in 41 seconds with `pip_audit_exit=0` and 0 known vulnerabilities after dependency and TestClient warning remediation.
 - Latest type-check smoke: `make remote-type-smoke` completed in 1 second with `mypy==1.18.2`; 19 source files checked, 0 issues.
 - Latest Terraform validation: `make remote-terraform-validate` completed in 2 seconds with Terraform 1.9.8 and Google provider 6.50.0; backend disabled, `terraform_validate_exit=0`, no plan/apply.
-- Latest Docker context guard: source check completed in 0 seconds and confirmed `.env` is not copied by Dockerfiles; Docker daemon still fails with permission denied on `/var/run/docker.sock`.
+- Latest Docker context guard: source check completed in 0 seconds and confirmed `.env` is not copied by Dockerfiles.
 - Latest container dependency alignment: UI dependency import passed; main requirements audit exit 0; monitoring requirements audit exit 1 due transitive `lightgbm 4.5.0` vulnerability through NannyML.
+- Latest Docker daemon recheck: `ducan` is in group `docker`; Docker client/server 29.1.3 respond; Docker Compose remains unavailable.
+- Latest Docker image builds: UI `94df2d30ecb0` 837MB in 55s, API `b4e4dcd3afd7` 3.01GB in 286s, monitor `ab3038d25eeb` 3.64GB in 298s.
+- Latest plain container smokes: API `/health` returned `status=ok` with fallback local model and Docker health `healthy`; UI Streamlit health returned `ok` and Docker health `healthy`; monitoring image import check passed.
 - Latest measured local VM HTTP benchmark: AVM p95 140.84 ms and lending p95 24.21 ms with 0% errors at 1,000 requests/concurrency 10.
 - Latest startup warm-up benchmark: property index startup 4.85 seconds, first comparable request after startup 10.99 ms.
 - Latest AVM artifact evidence: 2.37 MB remote-only joblib, load 87.13 ms, single prediction 21.32 ms, same-seed MdAPE delta 0.0 percentage points.
@@ -45,16 +48,16 @@ Last updated: 2026-07-26 21:52:20 Asia/Bangkok
 ## Docker Access
 
 - User/group: `uid=1002(ducan) gid=1003(ducan)`
-- Groups: `ducan adm dialout cdrom floppy audio dip video plugdev lxd netdev ubuntu google-sudoers`
+- Groups: `ducan adm dialout cdrom floppy audio dip video plugdev lxd netdev ubuntu google-sudoers docker`
 - Socket: `/var/run/docker.sock` is owned by `root:docker` with mode `srw-rw----`
-- Result: `permission denied while trying to connect to the docker API at unix:///var/run/docker.sock`
-- Minimum blocker: add `ducan` to the `docker` group or provide another approved non-sudo Docker access path; install the Docker Compose plugin or compatible `docker-compose`.
+- Result: Docker daemon access works; individual image build and plain-container smoke evidence is captured.
+- Remaining blocker: install the Docker Compose plugin or compatible `docker-compose` before running `remote-up`/service-stack checks.
 
 ## GCP Access
 
 - Active account: `582914829900-compute@developer.gserviceaccount.com`
 - Configured project: `driven-reef-452414-b5`
-- Project describe: blocked by `ACCESS_TOKEN_SCOPE_INSUFFICIENT`
-- Service Usage list: blocked by `ACCESS_TOKEN_SCOPE_INSUFFICIENT`
+- Project describe: blocked because Cloud Resource Manager API is disabled/permissioned for consumer project `582914829900`
+- Service Usage list: now succeeds for project `driven-reef-452414-b5`
 
-Minimum blocker for cloud phases: update VM OAuth access scopes and/or IAM so the VM service account can call Cloud Resource Manager and Service Usage for project `driven-reef-452414-b5`. No long-lived service account key should be downloaded as a workaround.
+Minimum blocker for cloud phases: enable/authorize Cloud Resource Manager access for the VM service account/consumer project path and grant IAM needed for Artifact Registry, Cloud Run, Scheduler, Secret Manager, GCS, BigQuery, logging, monitoring, and Terraform-managed resources. No long-lived service account key should be downloaded as a workaround.

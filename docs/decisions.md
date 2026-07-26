@@ -96,10 +96,16 @@ Last updated: 2026-07-26 21:52:20 Asia/Bangkok
 
 - Decision: add `.dockerignore` and remove `COPY .env` from Dockerfiles.
 - Rationale: environment files and generated data/model artifacts must not be baked into images by default; runtime configuration should come from Compose env files, Cloud Run environment, or Secret Manager.
-- Consequence: Docker source guard passes, but build/runtime validation remains blocked by VM Docker permissions.
+- Consequence: Docker source guard passes; later daemon access allowed image builds and plain-container smokes, but Compose service-stack validation remains blocked.
 
 ## ADR-0017: Do Not Force Incompatible NannyML LightGBM Fix
 
 - Decision: align main/UI/container pins where compatible, but do not add `lightgbm==4.6.0` to `requirements-monitor.txt`.
 - Rationale: `pip-audit` reports `PYSEC-2024-231` for transitive `lightgbm 4.5.0`, but pinning the fixed version conflicts with available NannyML 0.13.x releases.
 - Consequence: main requirements audit is clean; monitoring requirements audit remains a documented blocker until NannyML offers a compatible dependency path or the monitor image is redesigned.
+
+## ADR-0018: Use Plain Docker Smokes Until Compose Is Available
+
+- Decision: build UI/API/monitor images and smoke them with plain `docker run` on the VM, but keep `remote-up` and service-stack claims blocked until Docker Compose exists.
+- Rationale: Docker daemon access is restored and individual image validation is valuable, while `docker compose` is still unavailable and cannot exercise Postgres, Redis, MLflow, or multi-container wiring.
+- Consequence: image build and single-container health evidence can be reported; Compose, Docker service integration, image push, and Cloud Run deployment remain incomplete.

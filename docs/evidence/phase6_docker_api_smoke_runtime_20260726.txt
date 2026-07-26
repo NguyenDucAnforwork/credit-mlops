@@ -1,0 +1,2 @@
+docker_api_smoke_exit=0
+runtime_seconds=21

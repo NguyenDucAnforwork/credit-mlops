@@ -1,8 +1,8 @@
 # Summary
 
-Last updated: 2026-07-26 21:52:20 Asia/Bangkok
+Last updated: 2026-07-26 22:51:40 Asia/Bangkok
 
-Status: Phase 6/7 non-cloud portfolio evidence is mostly complete, with Terraform source validation added and remaining blockers for coordinate-backed GIS/PostGIS, Docker runtime, and live GCP deployment.
+Status: Phase 6/7 non-cloud portfolio evidence is mostly complete, with Terraform source validation, Docker image builds, and plain-container smokes added. Remaining blockers are coordinate-backed GIS/PostGIS, Docker Compose service-stack verification, and live GCP deployment.
 
 The project is being converted from a credit scoring MLOps demo into a Property Intelligence & Lending MLOps Platform. The local repository remains the source of truth, and runtime work is executed on `lfm` in `/home/ducan/credit-mlops-codex`.
 
@@ -11,7 +11,7 @@ The project is being converted from a credit scoring MLOps demo into a Property 
 - SSH to `lfm`: working.
 - Feature branch: `feat/onemount-property-intelligence`.
 - VM resources: 4 vCPU, 15 GiB RAM, 66 GiB free disk, no GPU.
-- GCP access: blocked by `ACCESS_TOKEN_SCOPE_INSUFFICIENT`.
+- GCP access: service listing works for `driven-reef-452414-b5`; project describe is blocked because Cloud Resource Manager API is disabled/permissioned for consumer project `582914829900`.
 - Remote workspace: created as rsync-backed after VM Git clone failed on local SSH alias `github-nguyenducan`.
 - Baseline tests: 76 passed in 7.42 seconds on the VM.
 - Current tests: 139 passed in 15.91 seconds under `make remote-coverage-smoke`; latest warnings-enabled Ruff/full suite passed with 139 tests in 11.20 seconds and no TestClient warning summary.
@@ -44,11 +44,12 @@ The project is being converted from a credit scoring MLOps demo into a Property 
 - Dependency remediation: updated pins/lock for MLflow 3.14.0, FastAPI 0.140.0, Starlette 1.3.1, Streamlit 1.54.0, vulnerable transitives, and dev-only `httpx2==2.9.1`; VM `uv sync --frozen --all-extras --dev` passed, Ruff passed, warnings-enabled full tests passed, coverage passed, API smoke passed, and `pip-audit` passed.
 - Portfolio documentation: README and `reports/reproduce.md` now present the remote-first Property Intelligence platform, measured evidence, and explicit blockers instead of the older local-first credit-scoring flow.
 - Engineering test-count criterion: 139 passing tests meets the >=125 numeric floor.
-- Docker context guard: `.dockerignore` excludes `.env`, raw/silver/gold/quarantine data, remote model directories, Terraform state, and generated evidence/report paths; API and monitoring Dockerfiles no longer copy `.env`. Docker build/runtime remains blocked because `ducan` cannot access Docker socket and Compose is unavailable.
-- Terraform deploy: source validates, but live plan/apply is blocked by VM GCP OAuth scopes/IAM and image build/push prerequisites.
+- Docker context guard: `.dockerignore` excludes `.env`, raw/silver/gold/quarantine data, remote model directories, Terraform state, and generated evidence/report paths; API and monitoring Dockerfiles no longer copy `.env`.
+- Docker build/runtime: daemon access now works for `ducan`; UI, API, and monitoring images built on the VM as `credit-mlops-*:codex-20260726`; API and UI health smokes passed with Docker health `healthy`; monitoring import smoke passed. `docker compose` is still unavailable, so service-stack/Compose evidence remains incomplete.
+- Terraform deploy: source validates, but live plan/apply is blocked by VM GCP Cloud Resource Manager/IAM/API access plus image registry push/deployment prerequisites.
 - Monitoring container dependency audit: blocked by NannyML transitive LightGBM vulnerability until a compatible NannyML release or monitoring image redesign is available.
 - Deployment URL: not deployed.
 
 ## Next Step
 
-Continue only on unblocked non-Docker/non-cloud work unless Docker socket/Compose access, GCP OAuth scopes/IAM, or legitimate coordinate enrichment becomes available.
+Continue only on unblocked work unless Docker Compose availability, GCP Cloud Resource Manager/IAM/API access, cost-sensitive deploy approval, or legitimate coordinate enrichment becomes available.

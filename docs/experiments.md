@@ -631,7 +631,7 @@
 - Interpretation: Docker source safety is improved, but this is not Docker build evidence because daemon access remains blocked.
 - Decision: keep the Docker context guard and do not run Docker build/up until VM socket/Compose access is fixed.
 - Lesson learned: remove secret-copy hazards before container runtime is available; source hardening and build evidence are separate milestones.
-- Next experiment: Docker build and Compose smoke require Docker socket access and a Compose command on the VM.
+- Next experiment: superseded by EXP-0037 for Docker socket/build evidence; Compose smoke still requires a Compose command on the VM.
 
 ## EXP-0036: Container Dependency Alignment And Monitoring Audit Blocker
 
@@ -650,3 +650,21 @@
 - Decision: keep safe alignment changes; do not pin incompatible `lightgbm==4.6.0` because it conflicts with available NannyML 0.13.x releases.
 - Lesson learned: transitive security fixes can be constrained by monitoring frameworks; record the failed compatible-fix attempt instead of making requirements unsatisfiable.
 - Next experiment: revisit monitoring image dependencies when NannyML releases a compatible LightGBM fix, or redesign the monitor image to avoid the vulnerable path.
+
+## EXP-0037: Remote Docker Build And Plain-Container Smoke
+
+- Timestamp in Asia/Bangkok: 2026-07-26 22:51:40
+- Hypothesis: After SSH agent restoration and Docker group refresh, plain Docker builds and container health checks can run on the VM even though the Docker Compose plugin is still unavailable.
+- Local Git commit or working-tree identifier: `0fd6708` plus uncommitted Docker/GCP evidence and documentation.
+- Dataset snapshot ID and checksums: no new data was generated; Docker build context uses committed source plus existing small fallback artifacts already present in the repository, while generated HF datasets and remote model directories remain ignored.
+- Exact remote commands: Docker daemon/GCP recheck; `docker build --check` probe; `docker build -f ui/Dockerfile -t credit-mlops-ui:codex-20260726 .`; `docker build -f Dockerfile -t credit-mlops-api:codex-20260726 .`; `docker build -f monitoring/Dockerfile.monitor -t credit-mlops-monitor:codex-20260726 .`; plain `docker run` smoke checks for API, UI, and monitoring imports.
+- Configuration and seed: image tag suffix `codex-20260726`; API smoke used fallback local model artifacts and no registry secret; UI smoke used `API_URL=http://127.0.0.1:18000`; monitoring smoke imported NannyML/Pandas/LightGBM only and did not run the batch monitor.
+- VM hardware/environment: Ubuntu 24.04.4 LTS, 4 vCPU AMD EPYC 7B12, 15 GiB RAM, no GPU.
+- Runtime: daemon/GCP recheck 1/9 seconds; build-check probe 0 seconds; UI build 55 seconds; API build 286 seconds; monitor build 298 seconds; API smoke 21 seconds; UI smoke 19 seconds; monitor import smoke 3 seconds.
+- Peak RAM when available: not measured.
+- Metrics: Docker daemon access now works for `ducan` in group `docker`; Docker server/client 29.1.3; `docker compose` remains unavailable; `docker build --check` is unsupported by the legacy builder and exits 125; UI image `94df2d30ecb0` size 837MB; API image `b4e4dcd3afd7` size 3.01GB; monitor image `ab3038d25eeb` size 3.64GB; API `/health` returned `{"status":"ok","model_version":"fallback_local","uptime_s":9.1}` and Docker health `healthy`; UI `/_stcore/health` returned `ok` and Docker health `healthy`; monitoring image imports passed with NannyML 0.13.1, Pandas 2.2.3, and LightGBM 4.5.0.
+- Baseline comparison: EXP-0035 could only verify Docker context safety because daemon access failed with permission denied.
+- Interpretation: remote Docker build/runtime evidence is now available for individual images, but Compose orchestration, Postgres/Redis/MLflow service integration, image push, and Cloud Run deployment are still not measured.
+- Decision: keep the image build and plain-container smoke evidence; do not claim `remote-up`, Compose, or cloud deployment completion until Compose and GCP blockers are cleared.
+- Lesson learned: Docker readiness is layered. Group membership fixed daemon access, but Compose availability and vulnerable monitoring transitive dependencies remain separate blockers.
+- Next experiment: install or enable a Compose-compatible command on the VM if approved/available, then run `remote-up`/Compose smoke; otherwise continue GCP read-only/IAM diagnosis and source-only cloud hardening.

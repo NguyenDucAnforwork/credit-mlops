@@ -1,0 +1,19 @@
+api_container_smoke_started=2026-07-26T15:50:34+00:00
+b7c8617f997c69cd224ecdc4e4f3b12bed762feb41870a8b59f1a7743c11cf7b
+docker_run_exit=0
+curl_health_output:
+{"status":"ok","model_version":"fallback_local","uptime_s":9.1}
+curl_health_exit=0
+docker_health_status=healthy
+container_logs_tail:
+INFO:     Started server process [1]
+INFO:     Waiting for application startup.
+[model_loader] registry unavailable: 'MLFLOW_TRACKING_URI'
+[model_loader] using local fallback model
+[model_loader] loaded: fallback_local
+[startup] property index warm-up failed (non-fatal): Property gold parquet not found: data/gold/a9a66ffa985edcf76b4be59ae2c6f5b1db889c38/listings_gold.parquet
+[startup] AVM artifact warm-up: {'status': 'skipped', 'reason': 'AVM_ARTIFACT_PATH not configured'}
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     127.0.0.1:35458 - "GET /health HTTP/1.1" 200 OK
+INFO:     172.17.0.1:50318 - "GET /health HTTP/1.1" 200 OK

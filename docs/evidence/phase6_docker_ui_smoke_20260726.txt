@@ -1,0 +1,17 @@
+ui_container_smoke_started=2026-07-26T15:51:11+00:00
+0f7a1308ab0c4b9c610e26593687e31ce04795c25dfdd771fafc941fed95d446
+docker_run_exit=0
+curl_health_output:
+ok
+curl_health_exit=0
+docker_health_status=healthy
+container_logs_tail:
+
+Collecting usage statistics. To deactivate, set browser.gatherUsageStats to false.
+
+
+  You can now view your Streamlit app in your browser.
+
+  Local URL: http://localhost:8501
+  Network URL: http://172.17.0.2:8501
+  External URL: REDACTED_VM_EXTERNAL_URL

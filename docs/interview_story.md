@@ -1,6 +1,6 @@
 # Interview Story
 
-Last updated: 2026-07-26 21:52:20 Asia/Bangkok
+Last updated: 2026-07-26 22:51:40 Asia/Bangkok
 
 ## Current 90-Second Story
 
@@ -32,7 +32,8 @@ I started with an existing credit scoring MLOps project and rebuilt its executio
 - Added and remediated a remote vulnerability evidence target; initial `pip-audit` found 59 known vulnerabilities, and the post-upgrade audit found 0 while the warnings-enabled suite stayed clean.
 - Added a scoped VM type-check smoke for the new property/API surface; after typing-only fixes, mypy found 0 issues in 19 source files with a 1-second wrapper runtime, and the full warnings-enabled suite passed 139 tests in 11.16 seconds.
 - Added a GCP Terraform scaffold for required APIs, Artifact Registry, GCS, BigQuery, Secret Manager, Cloud Run service/job, Scheduler, IAM, and optional Cloud SQL/PostGIS; VM validation passed with Terraform 1.9.8 and Google provider 6.50.0 in 2 seconds without plan/apply.
-- Hardened Docker packaging before build access was restored: added `.dockerignore`, removed baked `.env` copies, and verified the guard on the VM while preserving the Docker socket blocker status.
+- Hardened Docker packaging before build access was restored: added `.dockerignore`, removed baked `.env` copies, and verified the guard on the VM.
+- Built three Docker images on the VM after daemon access was restored: UI 837MB in 55s, API 3.01GB in 286s, and monitoring 3.64GB in 298s; API/UI container health smokes and monitoring import smoke passed without Compose.
 - Aligned legacy main/UI container dependency pins with the remediated stack; main requirements audit passed, while monitoring remains blocked by a NannyML transitive LightGBM vulnerability.
 - Reworked the repository README and reproduction report into an evidence-led portfolio entrypoint with remote-only reproduction commands and explicit blocker status.
 - Not ready: GIS/spatial AVM metrics are not measured yet because coordinates are absent.
@@ -41,4 +42,4 @@ I started with an existing credit scoring MLOps project and rebuilt its executio
 ## Tradeoffs
 
 - Chose a VM executor first because it preserves local responsiveness and avoids accidental local dependency or data sprawl.
-- Deferred cloud deployment because the VM currently lacks sufficient OAuth scopes for project and service inspection.
+- Deferred Compose and cloud deployment because Compose is unavailable and GCP Cloud Resource Manager/IAM/API access is still incomplete.

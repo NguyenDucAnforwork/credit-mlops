@@ -223,9 +223,20 @@ make remote-terraform-validate
 
 It runs on the VM, uses Terraform 1.9.8 with backend disabled, initializes Google provider 6.50.0, passes `fmt` and `validate`, and completed in 2 seconds. See `docs/evidence/phase6_terraform_validate_20260726.txt`.
 
-Cloud reproduction is blocked until the VM service account has sufficient OAuth scopes/IAM for project `driven-reef-452414-b5`.
+Cloud reproduction is blocked until Cloud Resource Manager/IAM/API access is sufficient for project `driven-reef-452414-b5`.
 
-Docker reproduction is blocked until user `ducan` can access `/var/run/docker.sock` and a Compose command is available on the VM.
+Individual Docker image reproduction is now available on the VM:
+
+```bash
+scripts/remote/sync_to_vm.sh
+scripts/remote/run.sh 'docker build -f ui/Dockerfile -t credit-mlops-ui:codex-20260726 .'
+scripts/remote/run.sh 'docker build -f Dockerfile -t credit-mlops-api:codex-20260726 .'
+scripts/remote/run.sh 'docker build -f monitoring/Dockerfile.monitor -t credit-mlops-monitor:codex-20260726 .'
+```
+
+The latest UI/API/monitor builds and plain-container smokes passed; see `docs/evidence/phase6_docker_ui_build_20260726.txt`, `docs/evidence/phase6_docker_api_build_20260726.txt`, `docs/evidence/phase6_docker_monitor_build_20260726.txt`, `docs/evidence/phase6_docker_api_smoke_20260726.txt`, `docs/evidence/phase6_docker_ui_smoke_20260726.txt`, and `docs/evidence/phase6_docker_monitor_smoke_20260726.txt`.
+
+Docker Compose reproduction remains blocked until a Compose command is available on the VM.
 
 Docker source packaging guard evidence is available under `docs/evidence/phase6_docker_context_guard_20260726.txt`; it does not replace a Docker build.
 

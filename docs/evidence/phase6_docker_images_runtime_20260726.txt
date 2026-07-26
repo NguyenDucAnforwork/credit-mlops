@@ -1,0 +1,2 @@
+docker_images_inventory_exit=0
+runtime_seconds=0

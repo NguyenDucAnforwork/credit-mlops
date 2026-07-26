@@ -1,6 +1,6 @@
 # Progress
 
-Last updated: 2026-07-26 21:52:20 Asia/Bangkok
+Last updated: 2026-07-26 22:51:40 Asia/Bangkok
 
 ## Phase Checklist
 
@@ -10,7 +10,7 @@ Last updated: 2026-07-26 21:52:20 Asia/Bangkok
 - Phase 3 AVM: non-GIS median/tabular baselines, three interval calibrations, and remote-only HGB quantile artifact packaging measured
 - Phase 4 APIs: scaffold endpoints implemented; local-on-VM uvicorn AVM/lending p95 criteria measured for fallback and artifact-backed service paths
 - Phase 5 MLOps and monitoring: AVM promotion gate dry-run, synthetic drift, and delayed-label monitoring implemented
-- Phase 6 Docker and GCP: Terraform source scaffold validates on VM; Docker context guard added; Docker runtime and live cloud deployment blocked by VM permissions/scopes
+- Phase 6 Docker and GCP: Terraform source scaffold validates on VM; Docker image builds and plain-container API/UI/monitor smokes pass on VM; Docker Compose and live GCP deployment remain blocked
 - Phase 7 UI, CI, portfolio: Property Intelligence UI, non-Docker remote smoke reproduction, Ruff smoke, scoped coverage measurement, type-check smoke, vulnerability audit/remediation, TestClient warning remediation, and portfolio README/reproduction packaging implemented
 
 ## Evidence
@@ -19,13 +19,13 @@ Last updated: 2026-07-26 21:52:20 Asia/Bangkok
 - Local GitHub dry-run push returned `Everything up-to-date` before feature branch creation.
 - Feature branch created locally: `feat/onemount-property-intelligence`.
 - VM inventory captured in `docs/remote_environment.md`.
-- GCP project access from VM is blocked by `ACCESS_TOKEN_SCOPE_INSUFFICIENT`.
+- GCP access has improved: Service Usage list works for `driven-reef-452414-b5`, but Cloud Resource Manager project describe remains blocked for consumer project `582914829900`.
 - Initial remote bootstrap created the dedicated workspace/sentinel but could not clone with local SSH alias `github-nguyenducan`; the workspace is treated as rsync-backed until the feature branch is pushed.
 - Initial remote bootstrap stopped because `uv` was not installed; bootstrap now attempts a user-level `uv` install without sudo.
 - `uv sync --frozen --all-extras --dev` completed on the VM and installed 168 packages.
 - Baseline data prep on the VM produced data version `cac9de3c`, 16,000 train rows, and 4,000 test rows.
 - Original tests passed on the VM: 76 passed in 7.42 seconds; wrapper runtime 9 seconds.
-- Docker smoke is blocked: `ducan` is not in the `docker` group and `docker compose` is unavailable.
+- Initial Docker smoke was blocked because `ducan` was not in the `docker` group and `docker compose` was unavailable; after the 2026-07-26 SSH/group refresh, Docker daemon access works but `docker compose` is still unavailable.
 - Phase 1 ETL foundation tests passed on the VM: 10 passed in 0.27 seconds.
 - Full suite after Phase 1 foundation passed on the VM: 86 passed in 12.79 seconds; wrapper runtime 15 seconds.
 - Incremental fixture evidence: first run inserted exactly 1,000 rows and found exactly 100 duplicates; identical rerun inserted 0 rows.
@@ -108,9 +108,14 @@ Last updated: 2026-07-26 21:52:20 Asia/Bangkok
 - Type-check smoke added: `make remote-type-smoke` runs pinned `mypy==1.18.2` on `src/property_intelligence`, `api`, and selected property scripts; after typing-only fixes, it passed with 0 issues across 19 source files and 1-second wrapper runtime. Final source verification also passed Ruff and 139 warnings-enabled tests in 11.16 seconds; wrapper runtime 13 seconds.
 - GCP Terraform scaffold added under `infra/terraform`: required APIs, Artifact Registry, GCS, BigQuery, Secret Manager placeholder, Cloud Run service, Cloud Run ETL job, Scheduler, IAM service accounts, and optional disabled-by-default Cloud SQL/PostGIS scaffold.
 - `make remote-terraform-validate` installed/reused user-level Terraform 1.9.8 on the VM, initialized Google provider 6.50.0 with backend disabled, passed `terraform fmt -check -recursive`, passed `terraform validate`, and completed in 2 seconds. No `terraform plan`, `terraform apply`, `gcloud`, Docker build, image push, or cloud deployment was run.
-- Docker context guard added: `.dockerignore` excludes `.env`, generated data layers, remote model directories, Terraform state/plans, and generated evidence/report paths; API and monitoring Dockerfiles no longer copy `.env`. Remote guard check passed in 0 seconds while confirming Docker daemon access still fails with permission denied.
+- Docker context guard added: `.dockerignore` excludes `.env`, generated data layers, remote model directories, Terraform state/plans, and generated evidence/report paths; API and monitoring Dockerfiles no longer copy `.env`. Remote guard check passed in 0 seconds before daemon access was refreshed.
 - Container dependency alignment: `requirements.txt` updated to match the remediated main dependency set, `requirements-monitor.txt` updated for `python-dotenv==1.2.2`, and `ui/Dockerfile` updated to Streamlit 1.54.0. VM evidence: UI dependency import passed; main requirements audit exit 0; monitoring requirements audit exit 1 due `PYSEC-2024-231` in transitive `lightgbm 4.5.0`.
+- Docker/GCP recheck after SSH agent refresh: Docker daemon access works for `ducan` in group `docker`; Docker client/server 29.1.3 respond; `docker compose` remains unavailable; GCP active account is `582914829900-compute@developer.gserviceaccount.com` with project `driven-reef-452414-b5`.
+- GCP service listing now succeeds for project `driven-reef-452414-b5`, but `gcloud projects describe driven-reef-452414-b5` exits 1 because Cloud Resource Manager API is disabled/permissioned for consumer project `582914829900`; no Terraform plan/apply or deployment was run.
+- Docker build-check probe failed as a documented approach: `docker build --check` is unsupported by the VM legacy builder and exited 125 for API/UI/monitoring checks.
+- Individual Docker image builds passed on VM: UI `credit-mlops-ui:codex-20260726` ID `94df2d30ecb0`, 837MB, 55 seconds; API `credit-mlops-api:codex-20260726` ID `b4e4dcd3afd7`, 3.01GB, 286 seconds; monitor `credit-mlops-monitor:codex-20260726` ID `ab3038d25eeb`, 3.64GB, 298 seconds.
+- Plain Docker container smokes passed without Compose: API `/health` returned `status=ok` and `model_version=fallback_local` with Docker health `healthy`; UI Streamlit `/_stcore/health` returned `ok` with Docker health `healthy`; monitoring image imported NannyML 0.13.1, Pandas 2.2.3, and LightGBM 4.5.0.
 
 ## Next
 
-Continue only on unblocked non-Docker/non-cloud work unless Docker socket/Compose access, GCP OAuth scopes/IAM, or legitimate coordinate enrichment becomes available.
+Continue Docker/GCP work only on unblocked steps: plain Docker image checks are available, while Compose service orchestration, cloud image push, Terraform plan/apply, and live deployment still require Compose availability plus GCP IAM/API fixes. Legitimate coordinate enrichment is still required for GIS/PostGIS/H3 criteria.

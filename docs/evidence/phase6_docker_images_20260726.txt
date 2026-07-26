@@ -1,0 +1,3 @@
+credit-mlops-monitor:codex-20260726 ab3038d25eeb 3.64GB
+credit-mlops-api:codex-20260726 b4e4dcd3afd7 3.01GB
+credit-mlops-ui:codex-20260726 94df2d30ecb0 837MB

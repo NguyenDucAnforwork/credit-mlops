@@ -1,12 +1,12 @@
 # Lessons Learned
 
-Last updated: 2026-07-26 21:52:20 Asia/Bangkok
+Last updated: 2026-07-26 22:51:40 Asia/Bangkok
 
 - Verify GCP from the VM before planning Terraform or Cloud Run work. The current VM account is present, but OAuth scopes are insufficient for Cloud Resource Manager and Service Usage.
 - Keep remote orchestration scripts allowlisted and sentinel-guarded so source synchronization cannot delete unrelated VM data.
 - Do not assume a local Git remote alias works on the VM. The VM could not resolve `github-nguyenducan`, so bootstrap must support an rsync-backed workspace.
 - Preserve remote-only safety sentinels during `rsync --delete`; `.codex_remote_workspace` must be excluded and re-touched after sync.
-- Docker readiness requires both socket access and Compose availability. The VM has Docker client 29.1.3, but `ducan` cannot access `/var/run/docker.sock` and `docker compose` is unavailable.
+- Docker readiness requires daemon access, image build evidence, and Compose availability as separate checks. The VM now permits Docker daemon access for `ducan` and individual images build/smoke successfully, but `docker compose` remains unavailable.
 - Keep fixture ETL evidence separate from full dataset claims. The current Phase 1 evidence proves incremental semantics, not full Hugging Face row counts or runtime.
 - Add new production packages to `pyproject.toml`; after adding `src/property_intelligence`, standalone VM imports work without `PYTHONPATH`.
 - Capture Hugging Face dataset revision metadata before downloading shards; row counts and checksums should always point back to a stable revision.
@@ -39,3 +39,5 @@ Last updated: 2026-07-26 21:52:20 Asia/Bangkok
 - Terraform validation is useful cloud evidence only when its scope is explicit. Backend-disabled `init` plus `validate` proves source shape, not deployment, IAM, cost, image availability, or live service health.
 - Docker image hygiene should be fixed before runtime access is restored. Removing `COPY .env` and adding a deny-by-default context guard reduces the chance that a later successful build bakes secrets or generated artifacts into an image.
 - Do not turn a vulnerability fix into an unsatisfiable requirements file. The monitoring image needs a NannyML-compatible LightGBM fix or redesign, not a forced transitive pin that the resolver rejects.
+- Treat Dockerfile lint/build-check tooling as environment-specific. `docker build --check` is not supported by the VM's legacy builder path, so the failed probe is evidence about tooling capability rather than image correctness.
+- Plain `docker run` smokes are useful when Compose is missing, but they do not replace multi-service evidence for Postgres, Redis, MLflow, or Cloud Run deployment.
