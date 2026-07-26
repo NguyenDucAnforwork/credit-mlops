@@ -1,6 +1,6 @@
 # Interview Story
 
-Last updated: 2026-07-26 20:33:58 Asia/Bangkok
+Last updated: 2026-07-26 20:42:23 Asia/Bangkok
 
 ## Current 90-Second Story
 
@@ -30,6 +30,7 @@ I started with an existing credit scoring MLOps project and rebuilt its executio
 - Added a 5-second remote reproduction smoke path that runs syntax checks, Ruff lint, and 61 focused tests on the VM after local secret/path scanning.
 - Measured scoped API/source coverage on the VM: 139 tests passed in 16.29 seconds with 81% coverage across `api/*`, `src/*`, and property scripts.
 - Added a remote vulnerability evidence target; `pip-audit` found 59 known vulnerabilities across 11 packages, making dependency remediation an explicit remaining gate.
+- Reworked the repository README and reproduction report into an evidence-led portfolio entrypoint with remote-only reproduction commands and explicit blocker status.
 - Not ready: GIS/spatial AVM metrics are not measured yet because coordinates are absent.
 - Not ready: cloud deployment metrics are not measured yet.
 

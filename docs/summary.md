@@ -1,6 +1,6 @@
 # Summary
 
-Last updated: 2026-07-26 20:33:58 Asia/Bangkok
+Last updated: 2026-07-26 20:42:23 Asia/Bangkok
 
 Status: Phase 7 non-cloud portfolio evidence is mostly complete, with remaining blockers for coordinate-backed GIS/PostGIS, Docker, and GCP deployment.
 
@@ -38,10 +38,11 @@ The project is being converted from a credit scoring MLOps demo into a Property 
 - Remote smoke reproduction: `make remote-reproduce-smoke` performs local secret/path scan, syncs to VM, compiles key modules, runs Ruff with 0 errors, runs 61 focused tests, and completes in 5 seconds while explicitly skipping Docker/GCP blockers.
 - Coverage measurement: `make remote-coverage-smoke` passed 139 tests in 16.29 seconds on the VM; scoped coverage for `api/*`, `src/*`, and `scripts/property_*.py` is 81% total, with weakest measured modules `src/data_prep.py` 31%, `src/scorecard.py` 48%, and `api/model_loader.py` 49%.
 - Vulnerability audit: `make remote-vulnerability-smoke` completed evidence capture in 33 seconds; `pip-audit` exit 1 found 59 known vulnerabilities across 11 packages, so the vulnerability gate fails.
+- Portfolio documentation: README and `reports/reproduce.md` now present the remote-first Property Intelligence platform, measured evidence, and explicit blockers instead of the older local-first credit-scoring flow.
 - Engineering test-count criterion: 139 passing tests meets the >=125 numeric floor.
 - Docker smoke: blocked because `ducan` cannot access Docker socket and `docker compose` is unavailable.
 - Deployment URL: not deployed.
 
 ## Next Step
 
-Continue with portfolio documentation and dependency remediation planning while Docker, GCP, and coordinate-backed GIS remain blocked.
+Continue with dependency remediation planning while Docker, GCP, and coordinate-backed GIS remain blocked.

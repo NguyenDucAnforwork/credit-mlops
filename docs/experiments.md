@@ -506,3 +506,21 @@
 - Decision: do not blind-upgrade dependencies inside this evidence commit; remediation requires a separate VM compatibility run because several affected packages are transitive and framework-constrained.
 - Lesson learned: security scans should be reported as first-class evidence even when they fail.
 - Next experiment: plan and test dependency upgrades on the VM, then rerun Ruff, coverage, full tests, API smoke, and vulnerability audit.
+
+## EXP-0029: Portfolio README and Reproduction Packaging
+
+- Timestamp in Asia/Bangkok: 2026-07-26 20:42:23
+- Hypothesis: The repository entrypoint can accurately present the Property Intelligence platform without claiming unmeasured Docker, GIS, or GCP outcomes.
+- Local Git commit or working-tree identifier: `e08e630` plus uncommitted README/report docs.
+- Dataset snapshot ID and checksums: documentation references existing evidence only; no data used.
+- Exact remote command: not applicable; documentation packaging follows already verified remote smoke, coverage, and vulnerability evidence.
+- Configuration and seed: README and `reports/reproduce.md` updated against current measured docs.
+- VM hardware/environment: no new VM runtime.
+- Runtime: not applicable.
+- Peak RAM when available: not measured.
+- Metrics: README now lists measured ETL, AVM, API, monitoring, UI, quality, and security evidence; `reports/reproduce.md` now lists three verified remote targets and three blocked targets.
+- Baseline comparison: prior README and report reproduction guide were local/Docker-first credit-scoring docs and contradicted the remote-first contract for this branch.
+- Interpretation: portfolio packaging is now aligned with measured evidence and blockers.
+- Decision: keep current README concise and evidence-led, with detailed evidence delegated to `docs/` and `reports/results.md`.
+- Lesson learned: portfolio docs must be rewritten when the project shape changes; stale quick-start instructions can become safety violations.
+- Next experiment: dependency remediation planning and compatibility-tested upgrades on the VM.

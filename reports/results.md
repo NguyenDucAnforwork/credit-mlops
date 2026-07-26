@@ -627,3 +627,12 @@ Full Hugging Face ingestion, row counts, checksums, ETL runtime, and peak RAM ar
 | Skipped package | `credit-mlops` 0.1.0, local package not found on PyPI |
 | Evidence | `docs/evidence/phase7_pip_audit_report_20260726.txt`, `docs/evidence/phase7_pip_audit_runtime_20260726.txt`, `reports/generated/phase7_pip_audit_summary_20260726.json` |
 | Criterion status | vulnerability audit measured; security gate fails pending dependency remediation |
+
+### Portfolio Documentation Packaging
+
+| Field | Value |
+|-------|-------|
+| Updated docs | `README.md`, `reports/reproduce.md` |
+| Scope | remote-first project overview, evidence table, blocker table, remote reproduction commands, API surface, documentation map |
+| Baseline issue | prior docs described local/Docker-first credit-scoring reproduction and did not represent the active Property Intelligence contract |
+| Criterion status | portfolio entrypoint aligned with measured evidence; dependency remediation remains open |
