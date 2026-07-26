@@ -343,3 +343,21 @@
 - Decision: keep deterministic monitoring module and script.
 - Lesson learned: keep monitoring thresholds simple and auditable before connecting external monitoring services.
 - Next experiment: add delayed-label AVM error/cohort monitoring or warm API load reports.
+
+## EXP-0020: Warm Property API TestClient Load Benchmark
+
+- Timestamp in Asia/Bangkok: 2026-07-26 15:44:25
+- Hypothesis: The Phase 4 AVM and lending endpoints can satisfy local-on-VM p95 targets on a warmed FastAPI TestClient path while Docker service runtime remains blocked.
+- Local Git commit or working-tree identifier: `53ec2bd` plus uncommitted load benchmark script/docs.
+- Dataset snapshot ID and checksums: API reads gold revision `a9a66ffa985edcf76b4be59ae2c6f5b1db889c38`; raw SHA256 manifest in `reports/generated/hf_vietnam_real_estates_snapshot_manifest_20260726.json`.
+- Exact remote command: `scripts/remote/run.sh 'uv run python scripts/property_api_load_benchmark.py'`.
+- Configuration and seed: FastAPI TestClient, index warmed by one comparable request, 1,000 AVM requests and 1,000 lending requests, concurrency 10.
+- VM hardware/environment: Ubuntu 24.04.4 LTS, 4 vCPU AMD EPYC 7B12, 15 GiB RAM, no GPU.
+- Runtime: load script 23 seconds; final pytest after benchmark passed with 129 tests in 8.20 seconds.
+- Peak RAM when available: not measured.
+- Metrics: AVM endpoint status codes `[200]`, 0% valid-request error rate, p95 176.43 ms, p99 249.01 ms, max 302.14 ms, throughput 74.51 rps. Lending endpoint status codes `[200]`, 0% valid-request error rate, p95 64.71 ms, p99 94.07 ms, max 197.76 ms, throughput 220.49 rps.
+- Baseline comparison: previous API smoke was single-request only and showed cold comparable index latency. This warmed benchmark demonstrates the endpoint logic can meet local p95 targets in-process, but not yet as Docker/uvicorn services.
+- Interpretation: API p95 is promising after warm-up, but the contract's service benchmark remains incomplete until a real VM service can run.
+- Decision: keep as scoped warm TestClient evidence; do not mark Docker/service or Cloud Run load criteria complete.
+- Lesson learned: warm index reuse makes the fallback AVM endpoint fast enough in-process; service startup and Docker blockers still need separate evidence.
+- Next experiment: run uvicorn/HTTP load benchmark on the VM if allowed without Docker, or continue delayed-label monitoring.

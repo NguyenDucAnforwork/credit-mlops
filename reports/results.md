@@ -445,3 +445,25 @@ Full Hugging Face ingestion, row counts, checksums, ETL runtime, and peak RAM ar
 | Evidence | `docs/evidence/property_monitoring_synthetic_drift_20260726.json` |
 | Verification before drift run | 3 monitoring tests passed in 0.63 seconds; 129 total tests passed in 8.26 seconds |
 | Final verification after docs/evidence | 129 tests passed in 8.15 seconds; wrapper runtime 10 seconds |
+
+### Warm Property API TestClient Load Benchmark
+
+| Field | Value |
+|-------|-------|
+| Execution scope | VM FastAPI TestClient threads, not Docker/uvicorn service |
+| Requests | 1,000 AVM requests and 1,000 lending requests |
+| Concurrency | 10 |
+| AVM status codes | `[200]` |
+| AVM valid-request error rate | 0% |
+| AVM p95 latency | 176.43 ms |
+| AVM p99 latency | 249.01 ms |
+| AVM throughput | 74.51 rps |
+| Lending status codes | `[200]` |
+| Lending valid-request error rate | 0% |
+| Lending p95 latency | 64.71 ms |
+| Lending p99 latency | 94.07 ms |
+| Lending throughput | 220.49 rps |
+| Runtime | 23 seconds |
+| Evidence | `docs/evidence/property_api_load_benchmark_20260726.json` |
+| Final verification after benchmark | 129 tests passed in 8.20 seconds; wrapper runtime 10 seconds |
+| Criterion status | passes p95/error targets only for in-process TestClient scope; service and Cloud Run criteria remain unmeasured |

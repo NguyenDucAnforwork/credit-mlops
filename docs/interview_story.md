@@ -1,6 +1,6 @@
 # Interview Story
 
-Last updated: 2026-07-26 15:39:35 Asia/Bangkok
+Last updated: 2026-07-26 15:44:40 Asia/Bangkok
 
 ## Current 90-Second Story
 
@@ -22,6 +22,7 @@ I started with an existing credit scoring MLOps project and rebuilt its executio
 - Added Phase 4 API scaffolding for AVM, comparables, and lending decisions; VM smoke returned 200 for all three endpoints and exact LTV boundary tests cover 0.75 and 0.85.
 - Added an AVM promotion dry-run gate that raised the suite to 126 passing tests and correctly rejected the current candidate despite 16.14% MdAPE improvement because interval width and spatial/API evidence are not ready.
 - Added deterministic property monitoring drift checks; synthetic drift shifted 5 inputs and triggered 4 alerts while raising the remote suite to 129 passing tests.
+- Benchmarked warmed in-process property APIs on the VM: 1,000 AVM requests at concurrency 10 reached p95 176.43 ms with 0% errors, and 1,000 lending requests reached p95 64.71 ms.
 - Not ready: GIS/spatial AVM metrics are not measured yet because coordinates are absent.
 - Not ready: cloud deployment metrics are not measured yet.
 

@@ -1,6 +1,6 @@
 # Remote Environment
 
-Last updated: 2026-07-26 15:39:35 Asia/Bangkok
+Last updated: 2026-07-26 15:44:40 Asia/Bangkok
 
 ## SSH
 
@@ -28,7 +28,7 @@ Last updated: 2026-07-26 15:39:35 Asia/Bangkok
 - Docker client: 29.1.3
 - Docker server access: blocked for user `ducan`
 - Docker Compose: `docker compose` unavailable
-- Latest measured Python suite: 129 tests passed in 8.15 seconds on the VM after synthetic monitoring implementation and docs/evidence updates.
+- Latest measured Python suite: 129 tests passed in 8.20 seconds on the VM after warm API TestClient load benchmark.
 
 ## Docker Access
 

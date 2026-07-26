@@ -1,6 +1,6 @@
 # Reproduce
 
-Last updated: 2026-07-26 15:39:35 Asia/Bangkok
+Last updated: 2026-07-26 15:44:40 Asia/Bangkok
 
 All heavy work runs on the VM. Do not install project dependencies, run tests, train models, Docker, Terraform, or `gcloud` locally.
 
@@ -124,6 +124,14 @@ Synthetic property monitoring drift:
 ```bash
 make remote-sync
 scripts/remote/run.sh 'uv run python scripts/property_monitoring_drift.py'
+scripts/remote/fetch_artifacts.sh
+```
+
+Warm property API TestClient load benchmark:
+
+```bash
+make remote-sync
+scripts/remote/run.sh 'uv run python scripts/property_api_load_benchmark.py'
 scripts/remote/fetch_artifacts.sh
 ```
 

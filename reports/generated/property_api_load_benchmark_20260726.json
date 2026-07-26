@@ -1,0 +1,36 @@
+{
+  "avm": {
+    "latency_ms": {
+      "max": 302.13633899984416,
+      "median": 129.39856599405175,
+      "p95": 176.4267630052927,
+      "p99": 249.00718518576465
+    },
+    "status_codes": [
+      200
+    ],
+    "throughput_rps": 74.50913771427255,
+    "total_runtime_seconds": 13.421172633010428,
+    "valid_request_error_rate": 0.0
+  },
+  "concurrency": 10,
+  "criterion_scope": "vm_testclient_warm_path_not_docker_service",
+  "execution": "fastapi_testclient_threads",
+  "gold_path_exists": true,
+  "lending": {
+    "latency_ms": {
+      "max": 197.75600600405596,
+      "median": 42.762967001181096,
+      "p95": 64.7140590561321,
+      "p99": 94.0718929420103
+    },
+    "status_codes": [
+      200
+    ],
+    "throughput_rps": 220.4919579346119,
+    "total_runtime_seconds": 4.535312804000569,
+    "valid_request_error_rate": 0.0
+  },
+  "requests_per_endpoint": 1000,
+  "snapshot_id": "a9a66ffa985edcf76b4be59ae2c6f5b1db889c38"
+}

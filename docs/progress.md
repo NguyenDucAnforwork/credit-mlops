@@ -1,6 +1,6 @@
 # Progress
 
-Last updated: 2026-07-26 15:39:35 Asia/Bangkok
+Last updated: 2026-07-26 15:44:40 Asia/Bangkok
 
 ## Phase Checklist
 
@@ -70,7 +70,9 @@ Last updated: 2026-07-26 15:39:35 Asia/Bangkok
 - Synthetic property drift monitoring: shifted area, price/m2, interval width, district missingness, and confidence; status `alert`; 4 alerting checks for `area_m2`, `price_per_m2`, `interval_width_ratio`, and `missing_feature_share`.
 - Monitoring tests plus full suite before drift run passed on the VM: 3 monitoring tests in 0.63 seconds and 129 total tests in 8.26 seconds.
 - Final full suite after monitoring docs/evidence passed on the VM: 129 passed in 8.15 seconds; wrapper runtime 10 seconds.
+- Warm API TestClient load benchmark: 1,000 AVM requests and 1,000 lending requests at concurrency 10; AVM p95 176.43 ms with 0% errors; lending p95 64.71 ms with 0% errors; scope is in-process VM TestClient, not Docker/uvicorn service.
+- Full suite after API load benchmark passed on the VM: 129 passed in 8.20 seconds; wrapper runtime 10 seconds.
 
 ## Next
 
-Run final verification for the monitoring milestone, commit and push it, then continue with delayed-label/cohort monitoring or warm API load reporting while Docker and GCP remain blocked.
+Commit and push the warm API load benchmark, then continue with delayed-label/cohort monitoring or uvicorn HTTP benchmarking while Docker and GCP remain blocked.
