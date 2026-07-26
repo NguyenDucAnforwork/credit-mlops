@@ -16,7 +16,7 @@ import os
 import time
 import threading
 from pathlib import Path
-from typing import Optional
+from typing import Any, Optional
 
 import joblib
 import mlflow
@@ -55,14 +55,15 @@ RELOAD_INTERVAL_S = 3600
 
 class ModelLoader:
     def __init__(self, alias: Optional[str] = None, source: str = "auto") -> None:
-        self._alias_override = alias   # None → use MLFLOW_MODEL_ALIAS env var
-        self._source = source          # "auto" | "local" | "dagshub"
-        self._model = None
-        self._pipeline = None
+        self._alias_override: str | None = alias   # None → use MLFLOW_MODEL_ALIAS env var
+        self._source: str = source          # "auto" | "local" | "dagshub"
+        self._model: Any = None
+        self._pipeline: Any = None
         self._version: str = "not_loaded"
         self._last_load: float = 0.0
         self._is_scorecard: bool = False  # True when serving the WOE scorecard
         self._reload_thread: threading.Thread | None = None
+        self._train_medians: np.ndarray | None = None
 
     def _active_alias(self) -> str:
         if self._alias_override:
@@ -164,7 +165,7 @@ class ModelLoader:
             self._pipeline   = tmp._pipeline
             self._version    = tmp._version
             self._is_scorecard = tmp._is_scorecard
-            if hasattr(tmp, "_train_medians"):
+            if tmp._train_medians is not None:
                 self._train_medians = tmp._train_medians
             self._last_load = time.monotonic()
             MODEL_RELOAD_SUCCESS.labels(alias=alias, source=self._source).inc()
@@ -195,10 +196,11 @@ class ModelLoader:
         knn = self._pipeline.pipeline_.named_steps.get("imputer")
         if knn is None or not hasattr(knn, "_fit_X"):
             return df
-        if not hasattr(self, "_train_medians"):
+        if self._train_medians is None:
             self._train_medians = np.nanmedian(knn._fit_X, axis=0)
+        train_medians = self._train_medians
         arr = df.values.astype(float)
-        for j, med in enumerate(self._train_medians):
+        for j, med in enumerate(train_medians):
             null_mask = np.isnan(arr[:, j])
             if null_mask.any():
                 arr[null_mask, j] = med
@@ -302,7 +304,7 @@ def get_loader(alias: Optional[str] = None, source: str = "auto") -> ModelLoader
     """
     if alias is None and source == "auto":
         return _loader
-    resolved_alias = alias or os.getenv("MLFLOW_MODEL_ALIAS", "champion")
+    resolved_alias: str = alias or os.getenv("MLFLOW_MODEL_ALIAS", "champion") or "champion"
     key = (resolved_alias, source)
     if key not in _loader_cache:
         ldr = ModelLoader(alias=resolved_alias, source=source)

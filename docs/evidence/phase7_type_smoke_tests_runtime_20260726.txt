@@ -1,0 +1,2 @@
+type_smoke_tests_exit=0
+runtime_seconds=13

@@ -1,6 +1,6 @@
 # AVM Model Card
 
-Last updated: 2026-07-26 21:18:02 Asia/Bangkok
+Last updated: 2026-07-26 21:29:41 Asia/Bangkok
 
 Status: non-GIS tabular baseline measured; production AVM not promoted.
 
@@ -31,6 +31,7 @@ Estimate listing-based residential market value and price per square meter for l
 - Training runtime: 26.40 seconds for artifact train/evaluation on VM; same-seed MdAPE delta 0.0 percentage points
 - Baseline runtime: 2 seconds on VM
 - The 2026-07-26 `httpx2` TestClient remediation was dependency-only. It changed dev test compatibility, not AVM features, training data, model artifact bytes, promotion status, or measured AVM metrics.
+- The 2026-07-26 type-check smoke phase changed annotations/guards and orchestration only. It did not retrain, repack, promote, or mutate the AVM artifact.
 
 ## Known Limitations
 

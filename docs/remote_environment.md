@@ -1,6 +1,6 @@
 # Remote Environment
 
-Last updated: 2026-07-26 21:18:02 Asia/Bangkok
+Last updated: 2026-07-26 21:29:41 Asia/Bangkok
 
 ## SSH
 
@@ -33,6 +33,7 @@ Last updated: 2026-07-26 21:18:02 Asia/Bangkok
 - Latest remote smoke reproduction: `make remote-reproduce-smoke` completed in 5 seconds with Ruff passing and 61 focused tests passing in 3.24 seconds.
 - Latest scoped coverage measurement: 81% total coverage for `api/*`, `src/*`, and `scripts/property_*.py`; wrapper runtime 19 seconds; evidence files `docs/evidence/phase7_coverage_report_20260726.txt`, `docs/evidence/phase7_coverage_stdout_20260726.txt`, and `reports/generated/phase7_coverage_20260726.json`.
 - Latest vulnerability audit: `make remote-vulnerability-smoke` completed in 41 seconds with `pip_audit_exit=0` and 0 known vulnerabilities after dependency and TestClient warning remediation.
+- Latest type-check smoke: `make remote-type-smoke` completed in 1 second with `mypy==1.18.2`; 19 source files checked, 0 issues.
 - Latest measured local VM HTTP benchmark: AVM p95 140.84 ms and lending p95 24.21 ms with 0% errors at 1,000 requests/concurrency 10.
 - Latest startup warm-up benchmark: property index startup 4.85 seconds, first comparable request after startup 10.99 ms.
 - Latest AVM artifact evidence: 2.37 MB remote-only joblib, load 87.13 ms, single prediction 21.32 ms, same-seed MdAPE delta 0.0 percentage points.

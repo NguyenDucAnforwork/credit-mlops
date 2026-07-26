@@ -1,6 +1,6 @@
 # Summary
 
-Last updated: 2026-07-26 21:18:02 Asia/Bangkok
+Last updated: 2026-07-26 21:29:41 Asia/Bangkok
 
 Status: Phase 7 non-cloud portfolio evidence is mostly complete, with remaining blockers for coordinate-backed GIS/PostGIS, Docker, and GCP deployment.
 
@@ -36,6 +36,7 @@ The project is being converted from a credit scoring MLOps demo into a Property 
 - Artifact-backed API uvicorn load: AVM p95 136.63 ms and lending p95 15.53 ms with 0% valid-request errors at 1,000 requests/concurrency 10.
 - Streamlit UI: property-lending workspace added with map reference input, property attributes, estimate/interval/comparables/factors, credit/LTV decision inputs, disclaimer, and three required scenarios.
 - Remote smoke reproduction: `make remote-reproduce-smoke` performs local secret/path scan, syncs to VM, compiles key modules, runs Ruff with 0 errors, runs 61 focused tests, and completes in 5 seconds while explicitly skipping Docker/GCP blockers.
+- Type check smoke: `make remote-type-smoke` runs pinned `mypy==1.18.2` on `src/property_intelligence`, `api`, and selected property scripts; it found 0 issues in 19 source files and completed in 1 second. Final source verification also passed Ruff and 139 warnings-enabled tests in 11.16 seconds.
 - Coverage measurement after TestClient warning remediation: `make remote-coverage-smoke` passed 139 tests in 15.91 seconds on the VM; scoped coverage for `api/*`, `src/*`, and `scripts/property_*.py` is 81% total, with weakest measured modules `src/data_prep.py` 31%, `src/scorecard.py` 48%, and `api/model_loader.py` 49%.
 - Vulnerability audit: initial `pip-audit` found 59 known vulnerabilities across 11 packages; after coordinated dependency remediation and the `httpx2` test-client fix, `make remote-vulnerability-smoke` completes in 41 seconds with `pip_audit_exit=0` and 0 known vulnerabilities.
 - Dependency remediation: updated pins/lock for MLflow 3.14.0, FastAPI 0.140.0, Starlette 1.3.1, Streamlit 1.54.0, vulnerable transitives, and dev-only `httpx2==2.9.1`; VM `uv sync --frozen --all-extras --dev` passed, Ruff passed, warnings-enabled full tests passed, coverage passed, API smoke passed, and `pip-audit` passed.

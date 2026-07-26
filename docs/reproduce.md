@@ -1,6 +1,6 @@
 # Reproduce
 
-Last updated: 2026-07-26 21:18:02 Asia/Bangkok
+Last updated: 2026-07-26 21:29:41 Asia/Bangkok
 
 All heavy work runs on the VM. Do not install project dependencies, run tests, train models, Docker, Terraform, or `gcloud` locally.
 
@@ -182,6 +182,7 @@ make remote-train-smoke
 make remote-reproduce-smoke
 make remote-coverage-smoke
 make remote-vulnerability-smoke
+make remote-type-smoke
 make remote-reproduce-full
 make remote-up
 make remote-cloud-smoke
@@ -204,6 +205,14 @@ make remote-vulnerability-smoke
 ```
 
 It completed evidence capture in 41 seconds and found 0 known vulnerabilities after dependency and TestClient warning remediation. See `docs/evidence/phase7_pip_audit_report_20260726.txt` and `reports/generated/phase7_pip_audit_summary_20260726.json`.
+
+The latest type-check smoke is reusable:
+
+```bash
+make remote-type-smoke
+```
+
+It completed in 1 second on the VM with `mypy==1.18.2` and found 0 issues in 19 source files. See `docs/evidence/phase7_type_smoke_stdout_20260726.txt`.
 
 Cloud reproduction is blocked until the VM service account has sufficient OAuth scopes/IAM for project `driven-reef-452414-b5`.
 

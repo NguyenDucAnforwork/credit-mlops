@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Protocol
 
 import joblib
 import numpy as np
@@ -49,6 +50,11 @@ class AvmMetrics:
     r2: float
     within_10pct: float
     within_20pct: float
+
+
+class PricePerM2Model(Protocol):
+    def predict(self, frame: pd.DataFrame) -> np.ndarray:
+        ...
 
 
 @dataclass
@@ -135,7 +141,7 @@ def evaluate_price_per_m2_baselines(gold: pd.DataFrame) -> dict:
     ].copy()
     splits = temporal_split(clean)
     train = splits["train"]
-    models = {
+    models: dict[str, PricePerM2Model] = {
         "global_median_price_per_m2": GlobalMedianPricePerM2().fit(train),
         "district_median_price_per_m2": GroupMedianPricePerM2(["province", "district"]).fit(train),
         "district_property_type_median_price_per_m2": GroupMedianPricePerM2(

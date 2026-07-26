@@ -1,6 +1,6 @@
 # Decisions
 
-Last updated: 2026-07-26 21:18:02 Asia/Bangkok
+Last updated: 2026-07-26 21:29:41 Asia/Bangkok
 
 ## ADR-0001: Local Source of Truth, VM Runtime Executor
 
@@ -79,3 +79,9 @@ Last updated: 2026-07-26 21:18:02 Asia/Bangkok
 - Decision: add `httpx2==2.9.1` to dev dependencies and lock the transitive `httpcore2` and `truststore` packages.
 - Rationale: Starlette 1.3.1 resolves its TestClient compatibility path through `httpx2`; adding it removes the deprecation warning without changing runtime API dependencies.
 - Consequence: Ruff and the warnings-enabled full suite pass on the VM with 139 tests in 11.20 seconds, coverage remains 81%, and `pip-audit` still reports 0 known vulnerabilities.
+
+## ADR-0014: Scope Type Checking To New Property/API Surface First
+
+- Decision: add `make remote-type-smoke` with pinned `mypy==1.18.2` for `src/property_intelligence`, `api`, and selected property scripts.
+- Rationale: the contract requires type-check evidence for new production modules, while the legacy project has no existing full-repository type-check configuration.
+- Consequence: the scoped VM type smoke passes with 0 issues in 19 source files and can be broadened later without blocking the current non-Docker/non-cloud evidence path.

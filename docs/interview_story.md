@@ -1,6 +1,6 @@
 # Interview Story
 
-Last updated: 2026-07-26 21:18:02 Asia/Bangkok
+Last updated: 2026-07-26 21:29:41 Asia/Bangkok
 
 ## Current 90-Second Story
 
@@ -30,6 +30,7 @@ I started with an existing credit scoring MLOps project and rebuilt its executio
 - Added a 5-second remote reproduction smoke path that runs syntax checks, Ruff lint, and 61 focused tests on the VM after local secret/path scanning.
 - Measured scoped API/source coverage on the VM after dependency and TestClient warning remediation: 139 tests passed in 15.91 seconds with 81% coverage across `api/*`, `src/*`, and property scripts.
 - Added and remediated a remote vulnerability evidence target; initial `pip-audit` found 59 known vulnerabilities, and the post-upgrade audit found 0 while the warnings-enabled suite stayed clean.
+- Added a scoped VM type-check smoke for the new property/API surface; after typing-only fixes, mypy found 0 issues in 19 source files with a 1-second wrapper runtime, and the full warnings-enabled suite passed 139 tests in 11.16 seconds.
 - Reworked the repository README and reproduction report into an evidence-led portfolio entrypoint with remote-only reproduction commands and explicit blocker status.
 - Not ready: GIS/spatial AVM metrics are not measured yet because coordinates are absent.
 - Not ready: cloud deployment metrics are not measured yet.

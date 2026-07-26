@@ -1,6 +1,6 @@
 # Results Summary
 
-Last updated: 2026-07-26 21:18:02 Asia/Bangkok
+Last updated: 2026-07-26 21:29:41 Asia/Bangkok
 
 All models trained on the same dataset: 16,000 train / 4,000 test (stratified 80/20 split, SHA256: `cac9de3c`). Default rate: 18.2%.
 
@@ -601,7 +601,21 @@ Full Hugging Face ingestion, row counts, checksums, ETL runtime, and peak RAM ar
 | GCP status | skipped, VM access token scope insufficient |
 | Evidence | `docs/evidence/remote_reproduce_smoke_20260726.txt` |
 | Final verification after report | 139 tests passed in 11.11 seconds; wrapper runtime 13 seconds |
-| Criterion status | smoke path <=15 minutes passes for non-Docker/non-cloud scope; full CI coverage/lint/type/vulnerability/Docker/Terraform checks remain incomplete |
+| Criterion status | smoke path <=15 minutes passes for non-Docker/non-cloud scope; full CI Docker/Terraform/cloud checks remain incomplete |
+
+### Remote Type-Check Smoke
+
+| Field | Value |
+|-------|-------|
+| Command | `make remote-type-smoke` |
+| Execution location | VM `lfm`, workspace `/home/ducan/credit-mlops-codex` |
+| Type checker | `mypy==1.18.2` |
+| Scope | `src/property_intelligence`, `api`, and selected property scripts |
+| Runtime | 1 second |
+| Result | `type_smoke_exit=0`; 0 issues found in 19 source files |
+| Final source verification | Ruff passed; 139 warnings-enabled tests passed in 11.16 seconds; wrapper runtime 13 seconds |
+| Evidence | `docs/evidence/phase7_type_smoke_stdout_20260726.txt`, `docs/evidence/phase7_type_smoke_runtime_20260726.txt`, `docs/evidence/phase7_type_smoke_tests_20260726.txt`, `docs/evidence/phase7_type_smoke_tests_runtime_20260726.txt` |
+| Criterion status | scoped type-check evidence passes for the new production property/API surface |
 
 ### Scoped Remote Coverage
 

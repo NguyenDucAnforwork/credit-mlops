@@ -252,7 +252,7 @@ def _normalize_record(record: dict) -> tuple[dict, str | None]:
 
 def _stable_number(value: object, digits: int = 2) -> str:
     try:
-        number = float(value)
+        number = float(str(value))
     except (TypeError, ValueError):
         return ""
     return f"{number:.{digits}f}"

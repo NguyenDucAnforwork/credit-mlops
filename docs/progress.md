@@ -1,6 +1,6 @@
 # Progress
 
-Last updated: 2026-07-26 21:18:02 Asia/Bangkok
+Last updated: 2026-07-26 21:29:41 Asia/Bangkok
 
 ## Phase Checklist
 
@@ -11,7 +11,7 @@ Last updated: 2026-07-26 21:18:02 Asia/Bangkok
 - Phase 4 APIs: scaffold endpoints implemented; local-on-VM uvicorn AVM/lending p95 criteria measured for fallback and artifact-backed service paths
 - Phase 5 MLOps and monitoring: AVM promotion gate dry-run, synthetic drift, and delayed-label monitoring implemented
 - Phase 6 Docker and GCP: cloud access blocked by VM OAuth scopes; local Docker baseline pending
-- Phase 7 UI, CI, portfolio: Property Intelligence UI, non-Docker remote smoke reproduction, Ruff smoke, scoped coverage measurement, vulnerability audit/remediation, TestClient warning remediation, and portfolio README/reproduction packaging implemented
+- Phase 7 UI, CI, portfolio: Property Intelligence UI, non-Docker remote smoke reproduction, Ruff smoke, scoped coverage measurement, type-check smoke, vulnerability audit/remediation, TestClient warning remediation, and portfolio README/reproduction packaging implemented
 
 ## Evidence
 
@@ -105,6 +105,7 @@ Last updated: 2026-07-26 21:18:02 Asia/Bangkok
 - Post-TestClient-remediation coverage: `make remote-coverage-smoke` passed 139 tests in 15.91 seconds; scoped coverage remained 81%; wrapper runtime 19 seconds.
 - Post-remediation property API smoke: comparables, AVM, and lending endpoints returned 200; wrapper runtime 5 seconds.
 - Post-TestClient-remediation vulnerability audit: `make remote-vulnerability-smoke` passed with `pip_audit_exit=0`, 0 known vulnerabilities, and 41-second runtime.
+- Type-check smoke added: `make remote-type-smoke` runs pinned `mypy==1.18.2` on `src/property_intelligence`, `api`, and selected property scripts; after typing-only fixes, it passed with 0 issues across 19 source files and 1-second wrapper runtime. Final source verification also passed Ruff and 139 warnings-enabled tests in 11.16 seconds; wrapper runtime 13 seconds.
 
 ## Next
 

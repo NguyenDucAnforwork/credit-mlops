@@ -58,9 +58,9 @@ def main() -> None:
     }
     reports_path = Path("reports/generated/property_api_smoke_20260726.json")
     evidence_path = Path("docs/evidence/property_api_smoke_20260726.json")
-    for path in (reports_path, evidence_path):
-        path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(json.dumps(report, indent=2, sort_keys=True), encoding="utf-8")
+    for output_path in (reports_path, evidence_path):
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        output_path.write_text(json.dumps(report, indent=2, sort_keys=True), encoding="utf-8")
     print(evidence_path.read_text(encoding="utf-8"))
 
 

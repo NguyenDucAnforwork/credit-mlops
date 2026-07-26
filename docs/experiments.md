@@ -578,3 +578,21 @@
 - Decision: keep `httpx2==2.9.1` in dev dependency groups.
 - Lesson learned: framework deprecation warnings should be closed through the documented compatibility package when possible, then verified with warnings enabled rather than suppressed.
 - Next experiment: remaining blocked done criteria require Docker socket/Compose access, GCP OAuth/IAM fixes, or legitimate coordinate enrichment.
+
+## EXP-0033: Remote Type-Check Smoke
+
+- Timestamp in Asia/Bangkok: 2026-07-26 21:29:41
+- Hypothesis: The new property intelligence modules, API code, and selected property scripts can pass a reproducible VM-only type-check smoke after narrow typing fixes.
+- Local Git commit or working-tree identifier: `a1d4e02` plus uncommitted type-smoke target, typing fixes, evidence, and docs.
+- Dataset snapshot ID and checksums: not applicable; type checking does not read datasets.
+- Exact remote command: `make remote-type-smoke`.
+- Configuration and seed: pinned `mypy==1.18.2`; options `--ignore-missing-imports --follow-imports=silent`; checked `src/property_intelligence`, `api`, `scripts/property_api_smoke.py`, `scripts/property_monitoring_drift.py`, and `scripts/property_avm_promotion_gate.py`.
+- VM hardware/environment: Ubuntu 24.04.4 LTS, 4 vCPU AMD EPYC 7B12, 15 GiB RAM, no GPU.
+- Runtime: type-smoke wrapper runtime 1 second; final Ruff + warnings-enabled full-suite wrapper runtime 13 seconds.
+- Peak RAM when available: not measured.
+- Metrics: `type_smoke_exit=0`; mypy found 0 issues in 19 source files; Ruff 0 errors; final warnings-enabled suite passed 139 tests in 11.16 seconds.
+- Baseline comparison: initial direct mypy probe failed with 14 errors across 4 files before type-only fixes.
+- Interpretation: type-check smoke now covers the new production API/property surface, but it is intentionally scoped and does not claim full-repository strict typing.
+- Decision: keep `make remote-type-smoke` as a reusable VM evidence path.
+- Lesson learned: scoped type checks can expose real optional-state and scalar-conversion bugs without requiring a disruptive full-repo typing migration.
+- Next experiment: remaining blocked done criteria require Docker socket/Compose access, GCP OAuth/IAM fixes, or legitimate coordinate enrichment.

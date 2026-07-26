@@ -22,7 +22,7 @@ Measured on 2026-07-26 from branch `feat/onemount-property-intelligence`.
 | Model artifact | VM-only HGB quantile joblib, 2.37 MB, load 87.13 ms, single prediction 21.32 ms |
 | Monitoring | Synthetic drift triggers 4 alerts; delayed-label fallback replay MdAPE 16.73% on 2,000 labels |
 | UI | Streamlit Property Intelligence workspace with three required demo scenarios and LTV decision flow |
-| Tests/quality | 139 tests pass under coverage in 15.91 seconds; scoped coverage 81%; Ruff and warnings-enabled full suite pass |
+| Tests/quality | 139 tests pass under coverage in 15.91 seconds; scoped coverage 81%; Ruff, warnings-enabled full suite, and mypy type smoke pass |
 | Security audit | After dependency remediation, `pip-audit` passes with 0 known vulnerabilities |
 
 ## Known Blockers
@@ -63,6 +63,7 @@ make remote-sync
 make remote-reproduce-smoke
 make remote-coverage-smoke
 make remote-vulnerability-smoke
+make remote-type-smoke
 ```
 
 Current measured targets:
@@ -70,6 +71,7 @@ Current measured targets:
 - `make remote-reproduce-smoke`: local secret/path scan, VM sync, syntax checks, Ruff, 61 focused tests; completed in 5 seconds.
 - `make remote-coverage-smoke`: full pytest under coverage on VM; 139 passed in 15.91 seconds, 81% scoped coverage, 19-second wrapper runtime.
 - `make remote-vulnerability-smoke`: dependency audit on VM; evidence capture completed in 41 seconds and found 0 known vulnerabilities after remediation.
+- `make remote-type-smoke`: pinned mypy on new property intelligence modules, API code, and selected property scripts; 19 source files checked with 0 issues in a 1-second wrapper runtime.
 
 Docker and cloud targets are intentionally blocked until VM Docker permissions and GCP OAuth scopes are fixed:
 
