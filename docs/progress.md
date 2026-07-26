@@ -1,6 +1,6 @@
 # Progress
 
-Last updated: 2026-07-26 23:00:30 Asia/Bangkok
+Last updated: 2026-07-26 23:06:44 Asia/Bangkok
 
 ## Phase Checklist
 
@@ -10,7 +10,7 @@ Last updated: 2026-07-26 23:00:30 Asia/Bangkok
 - Phase 3 AVM: non-GIS median/tabular baselines, three interval calibrations, and remote-only HGB quantile artifact packaging measured
 - Phase 4 APIs: scaffold endpoints implemented; local-on-VM uvicorn AVM/lending p95 criteria measured for fallback and artifact-backed service paths
 - Phase 5 MLOps and monitoring: AVM promotion gate dry-run, synthetic drift, and delayed-label monitoring implemented
-- Phase 6 Docker and GCP: Terraform source scaffold validates on VM; Docker image builds, plain-container API/UI/monitor smokes, and core Docker Compose API/UI/Postgres/Redis smoke pass on VM; live GCP deployment remains blocked
+- Phase 6 Docker and GCP: Terraform source scaffold validates on VM; Docker image builds, plain-container API/UI/monitor smokes, and core Docker Compose API/UI/Postgres/Redis smoke pass on VM; reusable read-only GCP smoke fails on disabled APIs/IAM, so live deployment remains blocked
 - Phase 7 UI, CI, portfolio: Property Intelligence UI, non-Docker remote smoke reproduction, Ruff smoke, scoped coverage measurement, type-check smoke, vulnerability audit/remediation, TestClient warning remediation, and portfolio README/reproduction packaging implemented
 
 ## Evidence
@@ -117,7 +117,8 @@ Last updated: 2026-07-26 23:00:30 Asia/Bangkok
 - Plain Docker container smokes passed without Compose: API `/health` returned `status=ok` and `model_version=fallback_local` with Docker health `healthy`; UI Streamlit `/_stcore/health` returned `ok` with Docker health `healthy`; monitoring image imported NannyML 0.13.1, Pandas 2.2.3, and LightGBM 4.5.0.
 - `make remote-compose-smoke` added and verified: user-level Docker Compose v5.3.1 installed/reused on VM, VM-only `.env` default created if missing, `docker compose config --quiet` passed, API/UI Compose builds passed, and isolated `postgres`, `redis`, `api`, and `ui` services all reached Docker health `healthy`.
 - Compose core stack HTTP smoke passed: API `/health` returned `status=ok` and `model_version=fallback_local`; UI health returned `ok`; isolated containers, network, and Postgres volume were removed by `docker compose down -v --remove-orphans`.
+- `make remote-cloud-smoke` now runs a reusable read-only GCP diagnostic and exits nonzero when prerequisites are blocked. Latest evidence: active account and project config pass; filtered Service Usage list passes; project describe, Artifact Registry, Cloud Run, and Scheduler checks fail because required APIs are disabled or inaccessible.
 
 ## Next
 
-Continue Docker/GCP work only on unblocked steps: core Compose service orchestration is available, while monitoring-profile Compose, Dockerized load tests, cloud image push, Terraform plan/apply, and live deployment still require GCP IAM/API fixes and cost-sensitive deployment approval. Legitimate coordinate enrichment is still required for GIS/PostGIS/H3 criteria.
+Continue Docker/GCP work only on unblocked steps: core Compose service orchestration is available, while monitoring-profile Compose and Dockerized load tests can proceed on the VM. Cloud image push, Terraform plan/apply, and live deployment still require GCP API/IAM fixes and cost-sensitive deployment approval. Legitimate coordinate enrichment is still required for GIS/PostGIS/H3 criteria.

@@ -1,6 +1,6 @@
 # AVM Model Card
 
-Last updated: 2026-07-26 23:00:30 Asia/Bangkok
+Last updated: 2026-07-26 23:06:44 Asia/Bangkok
 
 Status: non-GIS tabular baseline measured; production AVM not promoted.
 
@@ -37,6 +37,7 @@ Estimate listing-based residential market value and price per square meter for l
 - The 2026-07-26 container dependency alignment phase did not retrain, repack, promote, reload, or alter model artifacts or AVM metrics.
 - The 2026-07-26 Docker image build and plain-container smoke phase did not retrain, repack, promote, reload, or alter AVM metrics. API container `/health` verified the committed credit-scoring fallback model path only; property AVM artifact-backed service behavior remains measured by the prior VM uvicorn benchmark.
 - The 2026-07-26 Compose smoke verified core service wiring and API/UI health only. It did not run AVM load tests, retrain, promote, or change artifact-backed AVM metrics.
+- The 2026-07-26 read-only GCP smoke did not deploy, promote, reload, or change AVM serving behavior.
 
 ## Known Limitations
 

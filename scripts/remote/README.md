@@ -11,6 +11,7 @@ scripts/remote/reproduce_smoke.sh
 scripts/remote/type_smoke.sh
 scripts/remote/terraform_validate.sh
 scripts/remote/compose_smoke.sh
+scripts/remote/cloud_smoke.sh
 scripts/remote/fetch_artifacts.sh
 scripts/remote/reset_to_pushed_branch.sh
 ```
@@ -28,3 +29,5 @@ Runtime data, model artifacts, databases, Terraform state, credentials, and cach
 `terraform_validate.sh` ensures a user-level Terraform binary exists on the VM, syncs source, runs `terraform fmt -check`, `init -backend=false`, and `validate`, then fetches only the provider lock and small validation evidence. It never runs `plan` or `apply`.
 
 `compose_smoke.sh` ensures a user-level Docker Compose plugin exists on the VM, creates a VM-only empty/default `.env` if needed, uses an isolated Compose project name, builds and starts the core Postgres/Redis/API/UI services, checks HTTP health, records evidence, and tears down its own containers and volumes.
+
+`cloud_smoke.sh` runs read-only `gcloud` checks from the VM for authentication, configured project, required API visibility, Artifact Registry, Cloud Run, and Scheduler. It records failure evidence and exits nonzero when cloud prerequisites are still blocked. It never enables APIs, creates resources, pushes images, or runs Terraform.

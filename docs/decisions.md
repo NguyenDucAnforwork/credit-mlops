@@ -115,3 +115,9 @@ Last updated: 2026-07-26 21:52:20 Asia/Bangkok
 - Decision: add `make remote-compose-smoke` with a user-level Compose plugin, VM-only `.env` default, isolated project name, core Postgres/Redis/API/UI health checks, and teardown.
 - Rationale: Compose can now be verified without sudo, without syncing local secrets, and without leaving persistent database volumes from a smoke run.
 - Consequence: core Compose service wiring is measured; monitoring-profile jobs, Dockerized load tests, registry push, and Cloud Run deployment remain separate evidence requirements.
+
+## ADR-0020: Make Cloud Smoke Read-Only And Failure-Sensitive
+
+- Decision: replace the one-line `remote-cloud-smoke` target with `scripts/remote/cloud_smoke.sh`, a read-only prerequisite diagnostic that records command-level exit codes and returns nonzero while deployment APIs/IAM are blocked.
+- Rationale: `gcloud services list` can succeed even when Cloud Resource Manager, Artifact Registry, Cloud Run, and Scheduler are not usable.
+- Consequence: cloud readiness is no longer overstated; Terraform plan/apply, image push, API enablement, and deployment stay blocked until the diagnostic passes and cost-sensitive actions are approved.

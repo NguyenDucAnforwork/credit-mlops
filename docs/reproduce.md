@@ -226,6 +226,14 @@ It runs on the VM, uses Terraform 1.9.8 with backend disabled, initializes Googl
 
 Cloud reproduction is blocked until Cloud Resource Manager/IAM/API access is sufficient for project `driven-reef-452414-b5`.
 
+The reusable read-only cloud diagnostic is:
+
+```bash
+make remote-cloud-smoke
+```
+
+It runs from the VM, records evidence, and exits nonzero while cloud prerequisites are blocked. The latest run completed in 10 seconds with `gcp_readonly_smoke_exit=1`: auth/project config and Service Usage visibility passed, but Cloud Resource Manager, Artifact Registry, Cloud Run Admin, and Cloud Scheduler APIs are disabled or inaccessible. It does not enable APIs, create resources, push images, run Terraform, or deploy.
+
 Individual Docker image reproduction is now available on the VM:
 
 ```bash

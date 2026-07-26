@@ -1,6 +1,6 @@
 # Lessons Learned
 
-Last updated: 2026-07-26 23:00:30 Asia/Bangkok
+Last updated: 2026-07-26 23:06:44 Asia/Bangkok
 
 - Verify GCP from the VM before planning Terraform or Cloud Run work. The current VM account is present, but OAuth scopes are insufficient for Cloud Resource Manager and Service Usage.
 - Keep remote orchestration scripts allowlisted and sentinel-guarded so source synchronization cannot delete unrelated VM data.
@@ -42,3 +42,4 @@ Last updated: 2026-07-26 23:00:30 Asia/Bangkok
 - Treat Dockerfile lint/build-check tooling as environment-specific. `docker build --check` is not supported by the VM's legacy builder path, so the failed probe is evidence about tooling capability rather than image correctness.
 - Plain `docker run` smokes are useful when Compose is missing, but they do not replace multi-service evidence for Postgres, Redis, MLflow, or Cloud Run deployment.
 - A user-level Compose plugin is enough for VM verification when sudo is off limits. The helper should create only VM-local default env files, isolate the project name, and tear down its own containers and volumes.
+- A cloud smoke must fail when required APIs are disabled. Service Usage visibility alone is not deployment readiness; check Cloud Resource Manager, Artifact Registry, Cloud Run, and Scheduler before planning or pushing images.

@@ -691,6 +691,23 @@ Full Hugging Face ingestion, row counts, checksums, ETL runtime, and peak RAM ar
 | Evidence | `docs/evidence/phase6_compose_smoke_20260726.txt`, `docs/evidence/phase6_compose_smoke_runtime_20260726.txt` |
 | Criterion status | core Compose stack passes; monitoring profile, Dockerized load tests, image push, and Cloud Run remain incomplete |
 
+### Read-Only GCP Deployment Prerequisite Smoke
+
+| Field | Value |
+|-------|-------|
+| Command | `bash scripts/remote/cloud_smoke.sh` / `make remote-cloud-smoke` |
+| Execution location | VM `lfm`, workspace `/home/ducan/credit-mlops-codex` |
+| Runtime | 10 seconds |
+| Active account | `582914829900-compute@developer.gserviceaccount.com` |
+| Project | `driven-reef-452414-b5` |
+| Result | `gcp_readonly_smoke_exit=1` |
+| Passing checks | `auth_exit=0`, `project_config_exit=0`, `services_filter_exit=0`; filtered Service Usage output shows `serviceusage.googleapis.com` enabled |
+| Blocking checks | `project_describe_exit=1`, `artifact_repos_exit=1`, `cloud_run_services_exit=1`, `scheduler_jobs_exit=1` |
+| Blocking reasons | Cloud Resource Manager disabled/permissioned for consumer project `582914829900`; Artifact Registry, Cloud Run Admin, and Cloud Scheduler APIs disabled for `driven-reef-452414-b5` |
+| Mutations | none; no API enablement, Terraform plan/apply, image push, or deployment |
+| Evidence | `docs/evidence/phase6_gcp_readonly_smoke_20260726.txt`, `docs/evidence/phase6_gcp_readonly_smoke_runtime_20260726.txt` |
+| Criterion status | cloud deployment remains blocked by APIs/IAM; read-only diagnostic path is reusable and correctly fails |
+
 ### Scoped Remote Coverage
 
 | Field | Value |

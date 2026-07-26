@@ -1,0 +1,109 @@
+gcp_readonly_started=2026-07-26T16:06:44+00:00
+=== auth list ===
+                  Credentialed Accounts
+ACTIVE  ACCOUNT
+*       582914829900-compute@developer.gserviceaccount.com
+
+To set the active account, run:
+    $ gcloud config set account `ACCOUNT`
+
+auth_exit=0
+=== project config ===
+driven-reef-452414-b5
+project_config_exit=0
+=== services list cloudrun/artifactregistry/serviceusage/resource manager ===
+NAME                                                        TITLE  STATE
+projects/582914829900/services/serviceusage.googleapis.com         ENABLED
+services_filter_exit=0
+=== project describe ===
+API [cloudresourcemanager.googleapis.com] not enabled on project [582914829900].
+ Would you like to enable and retry (this will take a few minutes)? (y/N)?
+ERROR: (gcloud.projects.describe) [582914829900-compute@developer.gserviceaccount.com] does not have permission to access projects instance [driven-reef-452414-b5] (or it may not exist): Cloud Resource Manager API has not been used in project 582914829900 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/cloudresourcemanager.googleapis.com/overview?project=582914829900 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry. This command is authenticated as 582914829900-compute@developer.gserviceaccount.com which is the active account specified by the [core/account] property.
+Cloud Resource Manager API has not been used in project 582914829900 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/cloudresourcemanager.googleapis.com/overview?project=582914829900 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.
+Google developers console API activation
+https://console.developers.google.com/apis/api/cloudresourcemanager.googleapis.com/overview?project=582914829900
+- '@type': type.googleapis.com/google.rpc.ErrorInfo
+  domain: googleapis.com
+  metadata:
+    activationUrl: https://console.developers.google.com/apis/api/cloudresourcemanager.googleapis.com/overview?project=582914829900
+    consumer: projects/582914829900
+    containerInfo: '582914829900'
+    service: cloudresourcemanager.googleapis.com
+    serviceTitle: Cloud Resource Manager API
+  reason: SERVICE_DISABLED
+project_describe_exit=1
+=== artifact repos ===
+Listing items under project driven-reef-452414-b5, location asia-southeast1.
+
+ERROR: (gcloud.artifacts.repositories.list) {
+  "error": {
+    "code": 403,
+    "message": "Artifact Registry API has not been used in project driven-reef-452414-b5 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/artifactregistry.googleapis.com/overview?project=driven-reef-452414-b5 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.",
+    "status": "PERMISSION_DENIED",
+    "details": [
+      {
+        "@type": "type.googleapis.com/google.rpc.ErrorInfo",
+        "reason": "SERVICE_DISABLED",
+        "domain": "googleapis.com",
+        "metadata": {
+          "activationUrl": "https://console.developers.google.com/apis/api/artifactregistry.googleapis.com/overview?project=driven-reef-452414-b5",
+          "service": "artifactregistry.googleapis.com",
+          "consumer": "projects/driven-reef-452414-b5",
+          "containerInfo": "driven-reef-452414-b5",
+          "serviceTitle": "Artifact Registry API"
+        }
+      },
+      {
+        "@type": "type.googleapis.com/google.rpc.LocalizedMessage",
+        "locale": "en-US",
+        "message": "Artifact Registry API has not been used in project driven-reef-452414-b5 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/artifactregistry.googleapis.com/overview?project=driven-reef-452414-b5 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry."
+      },
+      {
+        "@type": "type.googleapis.com/google.rpc.Help",
+        "links": [
+          {
+            "description": "Google developers console API activation",
+            "url": "https://console.developers.google.com/apis/api/artifactregistry.googleapis.com/overview?project=driven-reef-452414-b5"
+          }
+        ]
+      }
+    ]
+  }
+}
+
+artifact_repos_exit=1
+=== cloud run services ===
+API [run.googleapis.com] not enabled on project [driven-reef-452414-b5]. Would
+you like to enable and retry (this will take a few minutes)? (y/N)?
+ERROR: (gcloud.run.services.list) [582914829900-compute@developer.gserviceaccount.com] does not have permission to access namespaces instance [driven-reef-452414-b5] (or it may not exist): Cloud Run Admin API has not been used in project driven-reef-452414-b5 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/run.googleapis.com/overview?project=driven-reef-452414-b5 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry. This command is authenticated as 582914829900-compute@developer.gserviceaccount.com which is the active account specified by the [core/account] property.
+Cloud Run Admin API has not been used in project driven-reef-452414-b5 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/run.googleapis.com/overview?project=driven-reef-452414-b5 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.
+Google developers console API activation
+https://console.developers.google.com/apis/api/run.googleapis.com/overview?project=driven-reef-452414-b5
+- '@type': type.googleapis.com/google.rpc.ErrorInfo
+  domain: googleapis.com
+  metadata:
+    activationUrl: https://console.developers.google.com/apis/api/run.googleapis.com/overview?project=driven-reef-452414-b5
+    consumer: projects/driven-reef-452414-b5
+    containerInfo: driven-reef-452414-b5
+    service: run.googleapis.com
+    serviceTitle: Cloud Run Admin API
+  reason: SERVICE_DISABLED
+cloud_run_services_exit=1
+=== scheduler jobs ===
+API [cloudscheduler.googleapis.com] not enabled on project
+[driven-reef-452414-b5]. Would you like to enable and retry (this will take a
+few minutes)? (y/N)?
+ERROR: (gcloud.scheduler.jobs.list) PERMISSION_DENIED: Cloud Scheduler API has not been used in project driven-reef-452414-b5 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/cloudscheduler.googleapis.com/overview?project=driven-reef-452414-b5 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry. This command is authenticated as 582914829900-compute@developer.gserviceaccount.com which is the active account specified by the [core/account] property.
+Cloud Scheduler API has not been used in project driven-reef-452414-b5 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/cloudscheduler.googleapis.com/overview?project=driven-reef-452414-b5 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.
+Google developers console API activation
+https://console.developers.google.com/apis/api/cloudscheduler.googleapis.com/overview?project=driven-reef-452414-b5
+- '@type': type.googleapis.com/google.rpc.ErrorInfo
+  domain: googleapis.com
+  metadata:
+    activationUrl: https://console.developers.google.com/apis/api/cloudscheduler.googleapis.com/overview?project=driven-reef-452414-b5
+    consumer: projects/driven-reef-452414-b5
+    containerInfo: driven-reef-452414-b5
+    service: cloudscheduler.googleapis.com
+    serviceTitle: Cloud Scheduler API
+  reason: SERVICE_DISABLED
+scheduler_jobs_exit=1

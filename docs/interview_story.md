@@ -1,6 +1,6 @@
 # Interview Story
 
-Last updated: 2026-07-26 23:00:30 Asia/Bangkok
+Last updated: 2026-07-26 23:06:44 Asia/Bangkok
 
 ## Current 90-Second Story
 
@@ -35,6 +35,7 @@ I started with an existing credit scoring MLOps project and rebuilt its executio
 - Hardened Docker packaging before build access was restored: added `.dockerignore`, removed baked `.env` copies, and verified the guard on the VM.
 - Built three Docker images on the VM after daemon access was restored: UI 837MB in 55s, API 3.01GB in 286s, and monitoring 3.64GB in 298s; API/UI container health smokes and monitoring import smoke passed without Compose.
 - Added a reusable remote Compose smoke that installs a user-level Compose plugin, starts isolated Postgres/Redis/API/UI services, reaches healthy status for all four, verifies API/UI HTTP health, and tears down containers/volume in 74 seconds.
+- Replaced a weak cloud smoke with a read-only GCP prerequisite diagnostic that correctly fails in 10 seconds when Cloud Resource Manager, Artifact Registry, Cloud Run Admin, and Scheduler APIs are disabled or inaccessible.
 - Aligned legacy main/UI container dependency pins with the remediated stack; main requirements audit passed, while monitoring remains blocked by a NannyML transitive LightGBM vulnerability.
 - Reworked the repository README and reproduction report into an evidence-led portfolio entrypoint with remote-only reproduction commands and explicit blocker status.
 - Not ready: GIS/spatial AVM metrics are not measured yet because coordinates are absent.

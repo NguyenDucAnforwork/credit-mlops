@@ -1,6 +1,6 @@
 # Remote Reproduction Report
 
-Last updated: 2026-07-26 23:00:30 Asia/Bangkok
+Last updated: 2026-07-26 23:06:44 Asia/Bangkok
 
 This project is reproduced from the local repository by executing runtime work on VM `lfm` in `/home/ducan/credit-mlops-codex`. Do not install dependencies, run tests, train models, build Docker images, run databases, execute Terraform, or deploy GCP resources locally.
 
@@ -20,7 +20,7 @@ This project is reproduced from the local repository by executing runtime work o
 | Container dependency alignment | partial; main requirements audit passes, monitoring requirements blocked by NannyML/LightGBM | `docs/evidence/phase6_container_dependency_alignment_20260726.txt` |
 | `make remote-reproduce-full` | blocked | monitoring-profile/cloud prerequisites |
 | `make remote-up` | partial | core Compose smoke passes; full long-running stack not left up |
-| `make remote-cloud-smoke` | blocked | VM GCP Cloud Resource Manager/IAM/API access |
+| `make remote-cloud-smoke` | blocked; diagnostic exits 1 in 10s | `docs/evidence/phase6_gcp_readonly_smoke_20260726.txt` |
 
 ## Exact Commands
 

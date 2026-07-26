@@ -1,6 +1,6 @@
 # Summary
 
-Last updated: 2026-07-26 23:00:30 Asia/Bangkok
+Last updated: 2026-07-26 23:06:44 Asia/Bangkok
 
 Status: Phase 6/7 non-cloud portfolio evidence is mostly complete, with Terraform source validation, Docker image builds, plain-container smokes, and core Docker Compose smoke added. Remaining blockers are coordinate-backed GIS/PostGIS, monitoring-profile/Dockerized load evidence, and live GCP deployment.
 
@@ -47,6 +47,7 @@ The project is being converted from a credit scoring MLOps demo into a Property 
 - Docker context guard: `.dockerignore` excludes `.env`, raw/silver/gold/quarantine data, remote model directories, Terraform state, and generated evidence/report paths; API and monitoring Dockerfiles no longer copy `.env`.
 - Docker build/runtime: daemon access now works for `ducan`; UI, API, and monitoring images built on the VM as `credit-mlops-*:codex-20260726`; API and UI health smokes passed with Docker health `healthy`; monitoring import smoke passed.
 - Docker Compose: `make remote-compose-smoke` installed/reused Compose v5.3.1 under the VM user, created a VM-only no-secret `.env` default if missing, passed `docker compose config --quiet`, built API/UI, started isolated Postgres/Redis/API/UI services, reached Docker health `healthy` for all four, verified API/UI HTTP health, and tore down containers/network/volume in 74 seconds.
+- Cloud smoke: `make remote-cloud-smoke` is now a reusable read-only diagnostic and currently fails as expected with `gcp_readonly_smoke_exit=1`; auth/project config pass, but Cloud Resource Manager, Artifact Registry, Cloud Run Admin, and Cloud Scheduler APIs are disabled or inaccessible.
 - Terraform deploy: source validates, but live plan/apply is blocked by VM GCP Cloud Resource Manager/IAM/API access plus image registry push/deployment prerequisites.
 - Monitoring container dependency audit: blocked by NannyML transitive LightGBM vulnerability until a compatible NannyML release or monitoring image redesign is available.
 - Deployment URL: not deployed.

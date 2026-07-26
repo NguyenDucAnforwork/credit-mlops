@@ -45,7 +45,7 @@ remote-up: remote-sync
 	$(REMOTE_RUN) 'docker compose up -d --build'
 
 remote-cloud-smoke:
-	$(REMOTE_RUN) 'gcloud services list --project driven-reef-452414-b5 --limit=5 >/dev/null'
+	bash scripts/remote/cloud_smoke.sh
 
 remote-fetch:
 	bash scripts/remote/fetch_artifacts.sh

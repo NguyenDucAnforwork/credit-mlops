@@ -1,6 +1,6 @@
 # GCP Deployment
 
-Last updated: 2026-07-26 23:00:30 Asia/Bangkok
+Last updated: 2026-07-26 23:06:44 Asia/Bangkok
 
 ## Target
 
@@ -14,6 +14,8 @@ Last updated: 2026-07-26 23:00:30 Asia/Bangkok
 Not deployed. Terraform source exists and validates on the VM, but no plan/apply or resource creation has been run.
 
 VM-originating GCP checks found active account `582914829900-compute@developer.gserviceaccount.com` and configured project `driven-reef-452414-b5`. `gcloud services list --project driven-reef-452414-b5 --limit=5` now succeeds. `gcloud projects describe driven-reef-452414-b5` still exits 1 because Cloud Resource Manager API is disabled/permissioned for consumer project `582914829900`.
+
+The reusable 2026-07-26 read-only cloud smoke now runs through `make remote-cloud-smoke` and exits nonzero while prerequisites are blocked. Latest result: `gcp_readonly_smoke_exit=1`, runtime 10 seconds. Auth and project config pass, and Service Usage visibility works. Project describe fails on Cloud Resource Manager access, Artifact Registry list fails because Artifact Registry API is disabled, Cloud Run services list fails because Cloud Run Admin API is disabled, and Scheduler jobs list fails because Cloud Scheduler API is disabled. No API enablement, resource creation, Terraform plan/apply, image push, or deployment was attempted.
 
 The 2026-07-26 AVM interval, comparable fallback, API scaffold, AVM promotion dry-run, monitoring, TestClient load, uvicorn HTTP load, startup warm-up, AVM artifact packaging, dependency remediation, `httpx2` TestClient warning remediation, type-check smoke, and Docker image build/smoke milestones did not execute Terraform plan/apply, image push, MLflow alias mutation, or deployments. GCP state remained unchanged during those milestones.
 

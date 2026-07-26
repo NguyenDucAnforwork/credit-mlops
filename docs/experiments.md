@@ -686,3 +686,21 @@
 - Decision: keep `make remote-compose-smoke` as the reusable VM Compose evidence path and keep `remote-up`/deployment claims separate.
 - Lesson learned: create VM-only runtime defaults instead of syncing local `.env`; isolated Compose project names make teardown safe and auditable.
 - Next experiment: extend Compose evidence to monitoring profile and/or Dockerized load tests, then proceed to Artifact Registry/Cloud Run only after GCP Cloud Resource Manager/IAM/API access is fixed.
+
+## EXP-0039: Read-Only GCP Deployment Prerequisite Smoke
+
+- Timestamp in Asia/Bangkok: 2026-07-26 23:06:44
+- Hypothesis: A reusable read-only cloud smoke can distinguish working VM authentication from missing project APIs/IAM before any Terraform plan/apply, image push, or deployment attempt.
+- Local Git commit or working-tree identifier: `85257f7` plus uncommitted `remote-cloud-smoke` script, GCP evidence, and documentation.
+- Dataset snapshot ID and checksums: not applicable; no data or model artifact was read, written, or moved.
+- Exact remote command: `bash scripts/remote/cloud_smoke.sh`.
+- Configuration and seed: project `driven-reef-452414-b5`, region `asia-southeast1`, VM active account `582914829900-compute@developer.gserviceaccount.com`; read-only `gcloud` list/describe commands only.
+- VM hardware/environment: Ubuntu 24.04.4 LTS, 4 vCPU AMD EPYC 7B12, 15 GiB RAM, no GPU.
+- Runtime: 10 seconds.
+- Peak RAM when available: not measured.
+- Metrics: `gcp_readonly_smoke_exit=1`; `auth_exit=0`; `project_config_exit=0`; filtered Service Usage list returned only `serviceusage.googleapis.com` enabled; `project_describe_exit=1` because Cloud Resource Manager API is disabled/permissioned for consumer project `582914829900`; `artifact_repos_exit=1` because Artifact Registry API is disabled for `driven-reef-452414-b5`; `cloud_run_services_exit=1` because Cloud Run Admin API is disabled for `driven-reef-452414-b5`; `scheduler_jobs_exit=1` because Cloud Scheduler API is disabled for `driven-reef-452414-b5`.
+- Baseline comparison: the previous `remote-cloud-smoke` only checked `gcloud services list` and could pass while deployment prerequisites were still blocked.
+- Interpretation: VM auth is present, but live deployment cannot proceed truthfully until required GCP APIs are enabled and IAM is granted.
+- Decision: make `make remote-cloud-smoke` call the reusable diagnostic script and exit nonzero when cloud prerequisites are blocked.
+- Lesson learned: a cloud smoke should check every deployment prerequisite explicitly; a single successful Service Usage list is not deployment readiness.
+- Next experiment: after APIs/IAM are fixed, rerun `make remote-cloud-smoke`, then run Terraform plan and image push/deploy only with cost-sensitive deployment approval.
