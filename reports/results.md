@@ -572,3 +572,19 @@ Full Hugging Face ingestion, row counts, checksums, ETL runtime, and peak RAM ar
 | Evidence | `docs/evidence/phase7_property_ui_pytest_20260726.txt` |
 | Final verification after report | 139 tests passed in 11.06 seconds; wrapper runtime 13 seconds |
 | Criterion status | UI source/test requirement partially met; live Streamlit/Docker smoke remains blocked by Docker runtime access |
+
+### Remote Reproduction Smoke
+
+| Field | Value |
+|-------|-------|
+| Target | `make remote-reproduce-smoke` |
+| Local precheck | secret/path scan over changed tracked and untracked files |
+| Remote sync | `scripts/remote/sync_to_vm.sh` |
+| Syntax check | `py_compile` for key API, property scripts, and UI modules |
+| Focused tests | 61 passed in 4.86 seconds |
+| End-to-end runtime | 8 seconds |
+| Docker status | skipped, VM Docker socket/Compose access blocked |
+| GCP status | skipped, VM access token scope insufficient |
+| Evidence | `docs/evidence/remote_reproduce_smoke_20260726.txt` |
+| Final verification after report | 139 tests passed in 12.15 seconds; wrapper runtime 14 seconds |
+| Criterion status | smoke path <=15 minutes passes for non-Docker/non-cloud scope; full CI coverage/lint/type/vulnerability/Docker/Terraform checks remain incomplete |

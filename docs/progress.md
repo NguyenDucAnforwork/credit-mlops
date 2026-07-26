@@ -1,6 +1,6 @@
 # Progress
 
-Last updated: 2026-07-26 16:26:10 Asia/Bangkok
+Last updated: 2026-07-26 20:09:20 Asia/Bangkok
 
 ## Phase Checklist
 
@@ -11,7 +11,7 @@ Last updated: 2026-07-26 16:26:10 Asia/Bangkok
 - Phase 4 APIs: scaffold endpoints implemented; local-on-VM uvicorn AVM/lending p95 criteria measured for fallback and artifact-backed service paths
 - Phase 5 MLOps and monitoring: AVM promotion gate dry-run, synthetic drift, and delayed-label monitoring implemented
 - Phase 6 Docker and GCP: cloud access blocked by VM OAuth scopes; local Docker baseline pending
-- Phase 7 UI, CI, portfolio: Property Intelligence UI started; CI/portfolio packaging pending
+- Phase 7 UI, CI, portfolio: Property Intelligence UI and non-Docker remote smoke reproduction implemented; portfolio packaging pending
 
 ## Evidence
 
@@ -87,7 +87,10 @@ Last updated: 2026-07-26 16:26:10 Asia/Bangkok
 - Streamlit Property Intelligence workspace added: map reference input, property attributes, estimate/interval/comparables/factors display, credit decision + requested-loan input, LTV policy decision, disclaimer, and scenarios for Hà Nội apartment, Hồ Chí Minh City house, and low-support manual review.
 - UI helper tests passed on the VM: 4 passed in 0.04 seconds; `ui/streamlit_app.py` and `ui/property_workflow.py` compiled successfully.
 - Final full suite after UI work passed on the VM: 139 passed in 11.06 seconds; wrapper runtime 13 seconds.
+- `make remote-reproduce-smoke` added as a reusable non-Docker smoke path. It ran local secret/path scans, synced to the VM, compiled key API/script/UI modules, ran 61 focused tests in 4.86 seconds, and completed in 8 seconds.
+- Smoke reproduction explicitly reported Docker skipped because VM socket/Compose access is blocked and GCP skipped because VM access token scope is insufficient.
+- Final full suite after remote smoke work passed on the VM: 139 passed in 12.15 seconds; wrapper runtime 14 seconds.
 
 ## Next
 
-Commit and push Property Intelligence UI, then continue with CI/reproduction smoke while Docker, GCP, and coordinate-backed GIS remain blocked.
+Commit and push remote smoke reproduction, then continue with portfolio documentation and unblockable CI checks while Docker, GCP, and coordinate-backed GIS remain blocked.

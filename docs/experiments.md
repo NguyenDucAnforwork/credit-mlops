@@ -452,3 +452,21 @@
 - Decision: keep UI helpers separate from Streamlit runtime code for testability; Dockerfile now copies both UI modules.
 - Lesson learned: UI contract checks can be covered with pure helpers while VM Docker remains blocked.
 - Next experiment: implement CI/reproduction smoke commands or portfolio documentation while Docker/GCP and coordinate-backed GIS remain blocked.
+
+## EXP-0026: Remote Reproduction Smoke Target
+
+- Timestamp in Asia/Bangkok: 2026-07-26 20:09:20
+- Hypothesis: A reusable non-Docker smoke path can verify source syntax and focused product contracts on the VM in under 15 minutes without requiring live cloud credentials.
+- Local Git commit or working-tree identifier: `09c2d16` plus uncommitted smoke target source/docs.
+- Dataset snapshot ID and checksums: focused tests use fixtures and existing VM gold artifacts as needed; no new dataset download.
+- Exact remote command: `make remote-reproduce-smoke`.
+- Configuration and seed: local secret/path scan, `scripts/remote/sync_to_vm.sh`, VM `py_compile` for key API/script/UI modules, focused pytest set for ETL/HF/contracts/comparables/AVM/lifecycle/monitoring/API/UI.
+- VM hardware/environment: Ubuntu 24.04.4 LTS, 4 vCPU AMD EPYC 7B12, 15 GiB RAM, no GPU.
+- Runtime: end-to-end smoke 8 seconds; focused pytest 61 tests in 4.86 seconds; final full suite 139 tests in 12.15 seconds.
+- Peak RAM when available: not measured.
+- Metrics: smoke exit 0; Docker explicitly skipped because VM Docker socket/Compose access remains blocked; GCP explicitly skipped because VM access token scope remains insufficient.
+- Baseline comparison: prior `remote-reproduce-smoke` was an alias for full pytest only and did not record evidence or blocker status. The new target is a measured CI-style smoke path.
+- Interpretation: smoke CI path duration criterion passes for the non-Docker/non-cloud scope. Docker build, Terraform validation, vulnerability scan, coverage, and Cloud Run smoke remain incomplete.
+- Decision: keep this as the PR/portfolio smoke path until Docker/GCP permissions are fixed.
+- Lesson learned: reproduction targets should be explicit about what they prove and what they skip.
+- Next experiment: add coverage/type/lint/vulnerability checks if dependencies are available or document precise tooling blockers without installing locally.

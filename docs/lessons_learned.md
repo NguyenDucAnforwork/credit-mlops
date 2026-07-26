@@ -1,6 +1,6 @@
 # Lessons Learned
 
-Last updated: 2026-07-26 16:26:10 Asia/Bangkok
+Last updated: 2026-07-26 20:09:20 Asia/Bangkok
 
 - Verify GCP from the VM before planning Terraform or Cloud Run work. The current VM account is present, but OAuth scopes are insufficient for Cloud Resource Manager and Service Usage.
 - Keep remote orchestration scripts allowlisted and sentinel-guarded so source synchronization cannot delete unrelated VM data.
@@ -29,3 +29,4 @@ Last updated: 2026-07-26 16:26:10 Asia/Bangkok
 - Move predictable index construction into startup. The comparable request path dropped from 2.64 seconds cold to 10.99 ms after lifespan warm-up, at the cost of a measured 4.85-second startup.
 - Keep model binaries remote-only and commit only size/load/performance evidence. The HGB quantile artifact is 2.37 MB and passes the artifact-size criterion, but its interval width still blocks promotion.
 - UI scenario helpers should stay importable without Streamlit so required demo scenarios and LTV payload logic can be tested in the normal Python suite.
+- A useful CI smoke path should mark external blockers explicitly instead of failing on known missing Docker/GCP permissions. The current smoke proves source, syntax, and focused contracts in 8 seconds while preserving the blocked status of container/cloud checks.

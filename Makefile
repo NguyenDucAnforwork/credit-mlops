@@ -20,7 +20,8 @@ remote-etl-smoke: remote-sync
 remote-train-smoke: remote-sync
 	$(REMOTE_RUN) 'uv run python src/pipeline.py --skip-data-prep --skip-feature-fit'
 
-remote-reproduce-smoke: remote-verify
+remote-reproduce-smoke:
+	scripts/remote/reproduce_smoke.sh
 
 remote-reproduce-full: remote-sync
 	$(REMOTE_RUN) 'uv run pytest -q && docker compose build && docker compose up -d'

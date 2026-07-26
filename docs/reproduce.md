@@ -1,6 +1,6 @@
 # Reproduce
 
-Last updated: 2026-07-26 16:26:10 Asia/Bangkok
+Last updated: 2026-07-26 20:09:20 Asia/Bangkok
 
 All heavy work runs on the VM. Do not install project dependencies, run tests, train models, Docker, Terraform, or `gcloud` locally.
 
@@ -10,6 +10,7 @@ make remote-doctor
 make remote-bootstrap
 make remote-sync
 make remote-verify
+make remote-reproduce-smoke
 ```
 
 Phase 1 ETL fixture verification:
@@ -183,6 +184,8 @@ make remote-reproduce-full
 make remote-up
 make remote-cloud-smoke
 ```
+
+`make remote-reproduce-smoke` is the current non-Docker smoke path. It performs a local secret/path scan, syncs source to `/home/ducan/credit-mlops-codex`, compiles key modules, runs focused API/ETL/AVM/monitoring/UI tests on the VM, writes `docs/evidence/remote_reproduce_smoke_20260726.txt`, and fetches evidence back locally.
 
 Cloud reproduction is blocked until the VM service account has sufficient OAuth scopes/IAM for project `driven-reef-452414-b5`.
 

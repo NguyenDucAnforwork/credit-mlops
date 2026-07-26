@@ -1,6 +1,6 @@
 # Interview Story
 
-Last updated: 2026-07-26 16:26:10 Asia/Bangkok
+Last updated: 2026-07-26 20:09:20 Asia/Bangkok
 
 ## Current 90-Second Story
 
@@ -27,6 +27,7 @@ I started with an existing credit scoring MLOps project and rebuilt its executio
 - Moved property index construction into FastAPI startup, reducing the first comparable request after startup to 10.99 ms while making the 4.85-second startup cost explicit.
 - Packaged the HGB quantile AVM as a VM-only 2.37 MB artifact, proved same-seed MdAPE delta 0.0 points, and measured artifact-backed uvicorn p95 at 136.63 ms for AVM requests.
 - Added a Streamlit Property Intelligence workspace covering map reference input, AVM estimate/interval, comparables, factors, credit/LTV decisioning, disclaimers, and the three required demo scenarios.
+- Added an 8-second remote reproduction smoke path that runs syntax checks and 61 focused tests on the VM after local secret/path scanning.
 - Not ready: GIS/spatial AVM metrics are not measured yet because coordinates are absent.
 - Not ready: cloud deployment metrics are not measured yet.
 
