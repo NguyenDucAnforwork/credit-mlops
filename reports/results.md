@@ -594,10 +594,10 @@ Full Hugging Face ingestion, row counts, checksums, ETL runtime, and peak RAM ar
 
 | Field | Value |
 |-------|-------|
-| Command | `coverage run -m pytest -q`; `coverage report --include="api/*,src/*,scripts/property_*.py"` |
+| Command | `make remote-coverage-smoke` |
 | Execution location | VM `lfm`, workspace `/home/ducan/credit-mlops-codex` |
-| Tests under coverage | 139 passed in 16.21 seconds |
-| Wrapper runtime | 20 seconds |
+| Tests under coverage | 139 passed in 16.29 seconds |
+| Wrapper runtime | 19 seconds |
 | Total scoped coverage | 81% |
 | Weakest modules | `src/data_prep.py` 31%, `src/scorecard.py` 48%, `api/model_loader.py` 49% |
 | Evidence | `docs/evidence/phase7_coverage_stdout_20260726.txt`, `docs/evidence/phase7_coverage_report_20260726.txt`, `reports/generated/phase7_coverage_20260726.json` |

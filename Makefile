@@ -1,6 +1,6 @@
 REMOTE_RUN := scripts/remote/run.sh
 
-.PHONY: remote-doctor remote-bootstrap remote-sync remote-verify remote-etl-smoke remote-train-smoke remote-reproduce-smoke remote-reproduce-full remote-up remote-cloud-smoke remote-fetch
+.PHONY: remote-doctor remote-bootstrap remote-sync remote-verify remote-etl-smoke remote-train-smoke remote-reproduce-smoke remote-coverage-smoke remote-reproduce-full remote-up remote-cloud-smoke remote-fetch
 
 remote-doctor:
 	scripts/remote/doctor.sh
@@ -22,6 +22,9 @@ remote-train-smoke: remote-sync
 
 remote-reproduce-smoke:
 	scripts/remote/reproduce_smoke.sh
+
+remote-coverage-smoke:
+	scripts/remote/coverage_smoke.sh
 
 remote-reproduce-full: remote-sync
 	$(REMOTE_RUN) 'uv run pytest -q && docker compose build && docker compose up -d'

@@ -28,7 +28,7 @@ I started with an existing credit scoring MLOps project and rebuilt its executio
 - Packaged the HGB quantile AVM as a VM-only 2.37 MB artifact, proved same-seed MdAPE delta 0.0 points, and measured artifact-backed uvicorn p95 at 136.63 ms for AVM requests.
 - Added a Streamlit Property Intelligence workspace covering map reference input, AVM estimate/interval, comparables, factors, credit/LTV decisioning, disclaimers, and the three required demo scenarios.
 - Added a 5-second remote reproduction smoke path that runs syntax checks, Ruff lint, and 61 focused tests on the VM after local secret/path scanning.
-- Measured scoped API/source coverage on the VM: 139 tests passed in 16.21 seconds with 81% coverage across `api/*`, `src/*`, and property scripts.
+- Measured scoped API/source coverage on the VM: 139 tests passed in 16.29 seconds with 81% coverage across `api/*`, `src/*`, and property scripts.
 - Not ready: GIS/spatial AVM metrics are not measured yet because coordinates are absent.
 - Not ready: cloud deployment metrics are not measured yet.
 
