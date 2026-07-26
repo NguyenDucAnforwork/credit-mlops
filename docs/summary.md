@@ -1,6 +1,6 @@
 # Summary
 
-Last updated: 2026-07-26 15:55:40 Asia/Bangkok
+Last updated: 2026-07-26 16:00:50 Asia/Bangkok
 
 Status: Phase 1 data contracts complete with blockers for GIS/GCP/Docker.
 
@@ -14,7 +14,7 @@ The project is being converted from a credit scoring MLOps demo into a Property 
 - GCP access: blocked by `ACCESS_TOKEN_SCOPE_INSUFFICIENT`.
 - Remote workspace: created as rsync-backed after VM Git clone failed on local SSH alias `github-nguyenducan`.
 - Baseline tests: 76 passed in 7.42 seconds on the VM.
-- Current tests: 130 passed in 8.20 seconds on the VM after delayed-label monitoring.
+- Current tests: 132 passed in 10.73 seconds on the VM after API startup warm-up.
 - Baseline data split: version `cac9de3c`, 16,000 train rows, 4,000 test rows.
 - ETL fixture: 1,000 inserts, 100 duplicates, identical rerun 0 inserts.
 - HF dataset metadata: revision `a9a66ffa985edcf76b4be59ae2c6f5b1db889c38`, 5 Parquet shards, last modified `2026-04-08T06:51:21.000Z`.
@@ -31,10 +31,11 @@ The project is being converted from a credit scoring MLOps demo into a Property 
 - Monitoring: synthetic property drift shifts at least three features and triggers 4 alerts across area, price/m2, interval width, and missingness.
 - Delayed-label monitoring: 2,000 December labels show fallback comparable MdAPE 16.73%, within 20% 56.55%, 0 cohort alerts above +5 MdAPE points, and 0% distance availability because coordinates are absent.
 - Warm uvicorn HTTP load: AVM p95 140.84 ms and lending p95 24.21 ms with 0% errors at 1,000 requests/concurrency 10; Docker and Cloud Run p95 remain unmeasured.
+- API startup warm-up: first comparable request after startup is 10.99 ms after moving the 4.85s index load into lifespan startup.
 - Engineering test-count criterion: 126 passing tests meets the >=125 numeric floor.
 - Docker smoke: blocked because `ducan` cannot access Docker socket and `docker compose` is unavailable.
 - Deployment URL: not deployed.
 
 ## Next Step
 
-Commit and push delayed-label monitoring, then continue with API startup warm-up or model artifact packaging.
+Commit and push API startup warm-up, then continue with HGB/quantile artifact packaging or UI/portfolio work.

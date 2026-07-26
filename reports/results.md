@@ -513,3 +513,21 @@ Full Hugging Face ingestion, row counts, checksums, ETL runtime, and peak RAM ar
 | Runtime | 22 seconds |
 | Evidence | `docs/evidence/property_delayed_label_monitoring_20260726.json` |
 | Final verification after report | 130 tests passed in 8.20 seconds; wrapper runtime 10 seconds |
+
+### Property API Startup Warm-Up
+
+| Field | Value |
+|-------|-------|
+| Change | Warm non-GIS comparable index during FastAPI lifespan startup |
+| Startup latency | 4,849.08 ms |
+| First comparable request after startup | 10.99 ms, status 200 |
+| Previous comparable cold request | 2,640.39 ms |
+| Post-startup comparable latency reduction | 99.58% |
+| AVM HTTP p95 after warm-up | 137.81 ms |
+| AVM valid-request error rate | 0% |
+| Lending HTTP p95 after warm-up | 13.56 ms |
+| Lending valid-request error rate | 0% |
+| Lingering service process | none; only the `pgrep` check matched itself |
+| Evidence | `docs/evidence/property_api_http_warmup_benchmark_20260726.json` |
+| Final verification after report | 132 tests passed in 10.73 seconds; wrapper runtime 13 seconds |
+| Criterion status | local VM uvicorn service warm path remains under AVM/lending p95 targets; Docker and Cloud Run criteria remain unmeasured |

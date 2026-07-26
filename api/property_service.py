@@ -19,6 +19,15 @@ FEATURE_VERSION = "property_non_gis_v1"
 DATA_SNAPSHOT_ID = "a9a66ffa985edcf76b4be59ae2c6f5b1db889c38"
 
 
+def warm_property_index() -> dict:
+    index = _get_comparable_index()
+    return {
+        "status": "ok",
+        "gold_path": str(_gold_path()),
+        "listing_rows": len(index.listings),
+    }
+
+
 def make_comparable_query(payload) -> ComparableQuery:
     return ComparableQuery(
         listing_id=getattr(payload, "listing_id", None),

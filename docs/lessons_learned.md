@@ -1,6 +1,6 @@
 # Lessons Learned
 
-Last updated: 2026-07-26 15:55:40 Asia/Bangkok
+Last updated: 2026-07-26 16:00:50 Asia/Bangkok
 
 - Verify GCP from the VM before planning Terraform or Cloud Run work. The current VM account is present, but OAuth scopes are insufficient for Cloud Resource Manager and Service Usage.
 - Keep remote orchestration scripts allowlisted and sentinel-guarded so source synchronization cannot delete unrelated VM data.
@@ -26,3 +26,4 @@ Last updated: 2026-07-26 15:55:40 Asia/Bangkok
 - Warm TestClient load can validate endpoint logic cheaply, but it is not a substitute for uvicorn/Docker service evidence. Keep scope labels explicit when p95 targets pass in-process.
 - Uvicorn service benchmarking can proceed without Docker and gives stronger local-on-VM evidence. The remaining performance gap is containerized service and Cloud Run, not the Python HTTP path.
 - Delayed-label monitoring needs to identify prediction source and sample scope. The fallback comparable replay is useful operational evidence, but it is not the same as a promoted model's production feedback loop.
+- Move predictable index construction into startup. The comparable request path dropped from 2.64 seconds cold to 10.99 ms after lifespan warm-up, at the cost of a measured 4.85-second startup.

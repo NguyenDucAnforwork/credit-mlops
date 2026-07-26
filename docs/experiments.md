@@ -397,3 +397,21 @@
 - Decision: keep delayed-label monitoring; do not treat it as the final AVM promotion cohort-regression report because the promoted model is still absent.
 - Lesson learned: delayed-label monitoring can be useful before production labels exist by replaying held-out listing labels, but it must identify the prediction source and sample scope.
 - Next experiment: add API startup warm-up or artifact packaging for the HGB/quantile model.
+
+## EXP-0023: Property API Startup Warm-Up
+
+- Timestamp in Asia/Bangkok: 2026-07-26 16:00:33
+- Hypothesis: Warming the property comparable index during FastAPI startup moves the cold parquet/index load out of the first user request while preserving VM uvicorn p95 targets.
+- Local Git commit or working-tree identifier: `a653899` plus uncommitted startup warm-up source/tests/docs.
+- Dataset snapshot ID and checksums: API reads gold revision `a9a66ffa985edcf76b4be59ae2c6f5b1db889c38`; raw SHA256 manifest in `reports/generated/hf_vietnam_real_estates_snapshot_manifest_20260726.json`.
+- Exact remote command: `scripts/remote/run.sh 'uv run python scripts/property_api_http_benchmark.py'`.
+- Configuration and seed: `uvicorn main:app` on a random VM localhost port; `PROPERTY_GOLD_PATH` set to VM gold parquet; startup calls `warm_property_index`; one post-startup comparable warm request; 1,000 AVM HTTP requests and 1,000 lending HTTP requests at concurrency 10.
+- VM hardware/environment: Ubuntu 24.04.4 LTS, 4 vCPU AMD EPYC 7B12, 15 GiB RAM, no GPU.
+- Runtime: HTTP benchmark script 18 seconds; focused API tests passed in 1.98 seconds; final full suite passed with 132 tests in 10.73 seconds.
+- Peak RAM when available: not measured.
+- Metrics: startup latency 4,849.08 ms; first comparable request after startup 10.99 ms with status 200; AVM p95 137.81 ms with 0% errors; lending p95 13.56 ms with 0% errors; no lingering uvicorn process after benchmark.
+- Baseline comparison: prior uvicorn benchmark had first comparable request 2,640.39 ms because index build happened on the request path. Startup warm-up reduced post-startup comparable latency by 99.58% while keeping AVM p95 essentially unchanged.
+- Interpretation: local VM service should be warmed before demos/load tests; the startup cost is explicit and measurable.
+- Decision: keep startup warm-up as non-fatal; missing property data degrades property endpoints but does not break `/health`.
+- Lesson learned: startup warm-up is a better place for predictable parquet/index initialization than the first customer request.
+- Next experiment: package/load the trained HGB/quantile AVM artifact or continue UI/portfolio work while Docker and GCP remain blocked.

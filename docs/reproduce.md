@@ -1,6 +1,6 @@
 # Reproduce
 
-Last updated: 2026-07-26 15:55:40 Asia/Bangkok
+Last updated: 2026-07-26 16:00:50 Asia/Bangkok
 
 All heavy work runs on the VM. Do not install project dependencies, run tests, train models, Docker, Terraform, or `gcloud` locally.
 
@@ -142,6 +142,8 @@ make remote-sync
 scripts/remote/run.sh 'uv run python scripts/property_api_http_benchmark.py'
 scripts/remote/fetch_artifacts.sh
 ```
+
+The same benchmark records startup warm-up evidence after the property index warm-up change.
 
 Delayed-label AVM monitoring:
 

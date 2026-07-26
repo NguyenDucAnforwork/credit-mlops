@@ -25,10 +25,12 @@ async def main() -> None:
     repo_root = Path.cwd()
     gold_path = (repo_root / "data/gold" / metadata.revision / "listings_gold.parquet").resolve()
     port = _free_port()
+    server_start = perf_counter()
     process = _start_server(repo_root, gold_path, port)
     try:
         base_url = f"http://{HOST}:{port}"
         await _wait_for_server(base_url)
+        startup_latency_ms = (perf_counter() - server_start) * 1000
         property_payload = {
             "published_at": "2025-12-15T00:00:00Z",
             "province": "Hà Nội",
@@ -56,6 +58,7 @@ async def main() -> None:
                     "host": HOST,
                     "port": port,
                     "startup_status": "ok",
+                    "startup_latency_ms": startup_latency_ms,
                     "warmup_status_code": warm_response.status_code,
                     "warmup_latency_ms": warm_latency_ms,
                 },
@@ -76,8 +79,8 @@ async def main() -> None:
     finally:
         _stop_server(process)
 
-    reports_path = Path("reports/generated/property_api_http_benchmark_20260726.json")
-    evidence_path = Path("docs/evidence/property_api_http_benchmark_20260726.json")
+    reports_path = Path("reports/generated/property_api_http_warmup_benchmark_20260726.json")
+    evidence_path = Path("docs/evidence/property_api_http_warmup_benchmark_20260726.json")
     for path in (reports_path, evidence_path):
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(json.dumps(report, indent=2, sort_keys=True), encoding="utf-8")

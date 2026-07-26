@@ -1,6 +1,6 @@
 # Remote Environment
 
-Last updated: 2026-07-26 15:55:40 Asia/Bangkok
+Last updated: 2026-07-26 16:00:50 Asia/Bangkok
 
 ## SSH
 
@@ -28,8 +28,9 @@ Last updated: 2026-07-26 15:55:40 Asia/Bangkok
 - Docker client: 29.1.3
 - Docker server access: blocked for user `ducan`
 - Docker Compose: `docker compose` unavailable
-- Latest measured Python suite: 130 tests passed in 8.20 seconds on the VM after delayed-label monitoring.
+- Latest measured Python suite: 132 tests passed in 10.73 seconds on the VM after API startup warm-up.
 - Latest measured local VM HTTP benchmark: AVM p95 140.84 ms and lending p95 24.21 ms with 0% errors at 1,000 requests/concurrency 10.
+- Latest startup warm-up benchmark: property index startup 4.85 seconds, first comparable request after startup 10.99 ms.
 
 ## Docker Access
 

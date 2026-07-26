@@ -1,6 +1,6 @@
 # AVM Model Card
 
-Last updated: 2026-07-26 15:55:40 Asia/Bangkok
+Last updated: 2026-07-26 16:00:50 Asia/Bangkok
 
 Status: non-GIS tabular baseline measured; production AVM not promoted.
 
@@ -24,6 +24,7 @@ Estimate listing-based residential market value and price per square meter for l
 - Monitoring: synthetic drift shifted at least three features and triggered 4 alerts
 - Delayed-label monitoring: 2,000-label fallback replay MdAPE 16.73%, 0 cohort alerts above +5 points
 - Warm API uvicorn HTTP load: AVM p95 140.84 ms with 0% errors at concurrency 10
+- Startup warm-up: first comparable request after startup 10.99 ms after 4.85s index warm-up during lifespan
 - Artifact size: not measured
 - Training runtime: 9 seconds for HGB baseline train/evaluation on VM
 - Baseline runtime: 2 seconds on VM

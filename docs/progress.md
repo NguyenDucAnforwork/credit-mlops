@@ -1,6 +1,6 @@
 # Progress
 
-Last updated: 2026-07-26 15:55:40 Asia/Bangkok
+Last updated: 2026-07-26 16:00:50 Asia/Bangkok
 
 ## Phase Checklist
 
@@ -77,7 +77,10 @@ Last updated: 2026-07-26 15:55:40 Asia/Bangkok
 - Delayed-label AVM monitoring: 2,000 December labels; fallback comparable MdAPE 16.73%, MAE 5.30B VND, within 20% 56.55%, median comparable count 10, distance availability 0%.
 - District/property-type bias monitoring: 10 cohorts with >=50 rows; 0 alerts above +5 MdAPE points; worst cohort Bình Thạnh house MdAPE 20.56%, +3.83 points vs overall.
 - Final full suite after delayed-label monitoring passed on the VM: 130 passed in 8.20 seconds; wrapper runtime 10 seconds.
+- API startup warm-up: property comparable index now warms during FastAPI lifespan; startup latency 4,849.08 ms; first comparable request after startup 10.99 ms versus prior 2,640.39 ms cold request.
+- Warm uvicorn HTTP benchmark after startup warm-up: AVM p95 137.81 ms with 0% errors; lending p95 13.56 ms with 0% errors; no lingering uvicorn process remained.
+- Final full suite after startup warm-up passed on the VM: 132 passed in 10.73 seconds; wrapper runtime 13 seconds.
 
 ## Next
 
-Commit and push delayed-label monitoring, then continue with API startup warm-up or HGB/quantile artifact packaging while Docker and GCP remain blocked.
+Commit and push API startup warm-up, then continue with HGB/quantile artifact packaging or UI/portfolio work while Docker and GCP remain blocked.

@@ -23,7 +23,13 @@ load_dotenv()
 
 from decision import make_decision
 from model_loader import get_loader
-from property_service import make_comparable_query, make_lending_decision, predict_avm, _get_comparable_index
+from property_service import (
+    _get_comparable_index,
+    make_comparable_query,
+    make_lending_decision,
+    predict_avm,
+    warm_property_index,
+)
 from schemas import (
     AvmPredictResponse,
     ComparableResponse,
@@ -198,6 +204,11 @@ async def lifespan(app: FastAPI):
         _get_engine()
     except Exception as exc:
         print(f"[startup] DB init failed (non-fatal): {exc}")
+    try:
+        warm_info = warm_property_index()
+        print(f"[startup] property index warmed: {warm_info}")
+    except Exception as exc:
+        print(f"[startup] property index warm-up failed (non-fatal): {exc}")
     yield
 
 

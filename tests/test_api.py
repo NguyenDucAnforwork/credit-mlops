@@ -59,6 +59,35 @@ def test_health_ok(client):
     assert "uptime_s" in data
 
 
+def test_lifespan_tolerates_property_warmup_failure(monkeypatch):
+    import main as main_mod
+    import property_service
+
+    monkeypatch.setattr(property_service, "warm_property_index", lambda: (_ for _ in ()).throw(FileNotFoundError("missing")))
+    monkeypatch.setattr(main_mod, "warm_property_index", property_service.warm_property_index)
+
+    with TestClient(main_mod.app, raise_server_exceptions=False) as lifespan_client:
+        resp = lifespan_client.get("/health")
+
+    assert resp.status_code == 200
+
+
+def test_warm_property_index_reports_cached_rows(monkeypatch):
+    import property_service
+
+    class FakeIndex:
+        listings = [1, 2, 3]
+
+    monkeypatch.setattr(property_service, "_get_comparable_index", lambda: FakeIndex())
+    monkeypatch.setattr(property_service, "_gold_path", lambda: Path("gold.parquet"))
+
+    assert property_service.warm_property_index() == {
+        "status": "ok",
+        "gold_path": "gold.parquet",
+        "listing_rows": 3,
+    }
+
+
 def test_predict_returns_200(client, valid_predict_payload):
     resp = client.post("/predict", json=valid_predict_payload)
     assert resp.status_code == 200
