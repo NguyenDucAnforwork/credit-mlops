@@ -1,6 +1,6 @@
 # Reproduce
 
-Last updated: 2026-07-26 20:33:58 Asia/Bangkok
+Last updated: 2026-07-26 20:51:13 Asia/Bangkok
 
 All heavy work runs on the VM. Do not install project dependencies, run tests, train models, Docker, Terraform, or `gcloud` locally.
 
@@ -195,7 +195,7 @@ The latest scoped coverage measurement is also a reusable VM target:
 make remote-coverage-smoke
 ```
 
-It passed 139 tests in 16.29 seconds with 81% scoped coverage and completed in 19 seconds. The coverage report and JSON evidence are committed under `docs/evidence/phase7_coverage_report_20260726.txt` and `reports/generated/phase7_coverage_20260726.json`.
+It passed 139 tests in 18.58 seconds with 81% scoped coverage and completed in 23 seconds after dependency remediation. The coverage report and JSON evidence are committed under `docs/evidence/phase7_coverage_report_20260726.txt` and `reports/generated/phase7_coverage_20260726.json`.
 
 The latest vulnerability audit is also reusable:
 
@@ -203,7 +203,7 @@ The latest vulnerability audit is also reusable:
 make remote-vulnerability-smoke
 ```
 
-It completed evidence capture in 33 seconds and found 59 known vulnerabilities across 11 packages. This is a failing security result; see `docs/evidence/phase7_pip_audit_report_20260726.txt` and `reports/generated/phase7_pip_audit_summary_20260726.json`.
+It completed evidence capture in 33 seconds and found 0 known vulnerabilities after dependency remediation. See `docs/evidence/phase7_pip_audit_report_20260726.txt` and `reports/generated/phase7_pip_audit_summary_20260726.json`.
 
 Cloud reproduction is blocked until the VM service account has sufficient OAuth scopes/IAM for project `driven-reef-452414-b5`.
 

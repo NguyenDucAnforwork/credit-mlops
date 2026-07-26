@@ -1,6 +1,6 @@
 # Remote Reproduction Report
 
-Last updated: 2026-07-26 20:42:23 Asia/Bangkok
+Last updated: 2026-07-26 20:51:13 Asia/Bangkok
 
 This project is reproduced from the local repository by executing runtime work on VM `lfm` in `/home/ducan/credit-mlops-codex`. Do not install dependencies, run tests, train models, build Docker images, run databases, execute Terraform, or deploy GCP resources locally.
 
@@ -9,8 +9,8 @@ This project is reproduced from the local repository by executing runtime work o
 | Target | Status | Evidence |
 |--------|--------|----------|
 | `make remote-reproduce-smoke` | pass; 61 focused tests in 3.24s, end-to-end 5s, Ruff 0 errors | `docs/evidence/remote_reproduce_smoke_20260726.txt` |
-| `make remote-coverage-smoke` | pass; 139 tests in 16.29s, 81% scoped coverage, end-to-end 19s | `docs/evidence/phase7_coverage_report_20260726.txt` |
-| `make remote-vulnerability-smoke` | executed; `pip-audit` found 59 vulnerabilities in 11 packages, so security gate fails | `docs/evidence/phase7_pip_audit_report_20260726.txt` |
+| `make remote-coverage-smoke` | pass; 139 tests in 18.58s, 81% scoped coverage, end-to-end 23s | `docs/evidence/phase7_coverage_report_20260726.txt` |
+| `make remote-vulnerability-smoke` | pass; `pip-audit` found 0 known vulnerabilities after dependency remediation | `docs/evidence/phase7_pip_audit_report_20260726.txt` |
 | `make remote-reproduce-full` | blocked | VM Docker socket/Compose access |
 | `make remote-up` | blocked | VM Docker socket/Compose access |
 | `make remote-cloud-smoke` | blocked | VM GCP OAuth scope/IAM |

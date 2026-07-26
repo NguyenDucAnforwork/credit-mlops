@@ -1,6 +1,6 @@
 # Remote Environment
 
-Last updated: 2026-07-26 20:33:58 Asia/Bangkok
+Last updated: 2026-07-26 20:51:13 Asia/Bangkok
 
 ## SSH
 
@@ -29,10 +29,10 @@ Last updated: 2026-07-26 20:33:58 Asia/Bangkok
 - Docker client: 29.1.3
 - Docker server access: blocked for user `ducan`
 - Docker Compose: `docker compose` unavailable
-- Latest measured Python suite: 139 tests passed in 16.29 seconds under `make remote-coverage-smoke`; previous non-coverage suite was 139 passed in 11.11 seconds after remote smoke reproduction and Ruff smoke work.
+- Latest measured Python suite: 139 tests passed in 18.58 seconds under `make remote-coverage-smoke`; post-remediation non-coverage suite was 139 passed in 22.96 seconds with Ruff passing.
 - Latest remote smoke reproduction: `make remote-reproduce-smoke` completed in 5 seconds with Ruff passing and 61 focused tests passing in 3.24 seconds.
-- Latest scoped coverage measurement: 81% total coverage for `api/*`, `src/*`, and `scripts/property_*.py`; wrapper runtime 19 seconds; evidence files `docs/evidence/phase7_coverage_report_20260726.txt`, `docs/evidence/phase7_coverage_stdout_20260726.txt`, and `reports/generated/phase7_coverage_20260726.json`.
-- Latest vulnerability audit: `make remote-vulnerability-smoke` completed in 33 seconds; `pip-audit` found 59 known vulnerabilities across 11 packages, so the vulnerability gate fails pending dependency remediation.
+- Latest scoped coverage measurement: 81% total coverage for `api/*`, `src/*`, and `scripts/property_*.py`; wrapper runtime 23 seconds; evidence files `docs/evidence/phase7_coverage_report_20260726.txt`, `docs/evidence/phase7_coverage_stdout_20260726.txt`, and `reports/generated/phase7_coverage_20260726.json`.
+- Latest vulnerability audit: `make remote-vulnerability-smoke` completed in 33 seconds with `pip_audit_exit=0` and 0 known vulnerabilities after dependency remediation.
 - Latest measured local VM HTTP benchmark: AVM p95 140.84 ms and lending p95 24.21 ms with 0% errors at 1,000 requests/concurrency 10.
 - Latest startup warm-up benchmark: property index startup 4.85 seconds, first comparable request after startup 10.99 ms.
 - Latest AVM artifact evidence: 2.37 MB remote-only joblib, load 87.13 ms, single prediction 21.32 ms, same-seed MdAPE delta 0.0 percentage points.

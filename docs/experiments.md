@@ -542,3 +542,21 @@
 - Decision: do not apply the broad dependency update in this probe commit.
 - Lesson learned: security remediation can be constrained by model lifecycle frameworks; resolver success is not enough evidence for production readiness.
 - Next experiment: apply the broad update in a controlled VM-backed source change, run `uv lock`, `uv sync --frozen --all-extras --dev`, Ruff, full tests, coverage, API smoke, and `pip-audit`.
+
+## EXP-0031: Dependency Remediation Compatibility Run
+
+- Timestamp in Asia/Bangkok: 2026-07-26 20:51:13
+- Hypothesis: The broad resolver-compatible dependency update clears `pip-audit` findings while preserving non-Docker API/test behavior on the VM.
+- Local Git commit or working-tree identifier: `9ad8a38` plus uncommitted dependency pins, lockfile, evidence, and docs.
+- Dataset snapshot ID and checksums: property API smoke uses existing VM gold snapshot revision `a9a66ffa985edcf76b4be59ae2c6f5b1db889c38`; no new dataset download.
+- Exact remote commands: `uv lock --upgrade`; `uv sync --frozen --all-extras --dev`; `uvx ruff check . --output-format=concise && uv run pytest -q`; `make remote-coverage-smoke`; `uv run python scripts/property_api_smoke.py`; `make remote-vulnerability-smoke`.
+- Configuration and seed: direct pins updated for MLflow 3.14.0, FastAPI 0.140.0, python-dotenv 1.2.2, Streamlit 1.54.0, and security constraints for `aiohttp`, `cryptography`, `gitpython`, `nltk`, `pillow`, `pyasn1`, `starlette`, `tornado`, and `ujson`.
+- VM hardware/environment: Ubuntu 24.04.4 LTS, 4 vCPU AMD EPYC 7B12, 15 GiB RAM, no GPU.
+- Runtime: lock 1 second; sync 6 seconds; Ruff + full pytest wrapper 27 seconds; coverage wrapper 23 seconds; API smoke wrapper 5 seconds; vulnerability audit wrapper 33 seconds.
+- Peak RAM when available: not measured.
+- Metrics: Ruff 0 errors; 139 tests passed in 22.96 seconds with 1 FastAPI/Starlette TestClient deprecation warning; coverage 81% with 139 tests in 18.58 seconds; property API smoke returned 200 for comparables, AVM, and lending; `pip_audit_exit=0`, 0 known vulnerabilities.
+- Baseline comparison: previous `pip-audit` found 59 known vulnerabilities across 11 packages.
+- Interpretation: dependency security gate now passes for the non-Docker VM scope. The deprecation warning is not a functional failure but should be tracked.
+- Decision: keep the dependency pin and lockfile update.
+- Lesson learned: broad security upgrades need both resolver evidence and product smoke evidence; the successful audit alone would not have been enough.
+- Next experiment: handle the FastAPI/Starlette `httpx`/`httpx2` TestClient deprecation warning or continue with remaining Docker/GCP/GIS blockers.

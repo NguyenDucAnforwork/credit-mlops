@@ -607,8 +607,8 @@ Full Hugging Face ingestion, row counts, checksums, ETL runtime, and peak RAM ar
 |-------|-------|
 | Command | `make remote-coverage-smoke` |
 | Execution location | VM `lfm`, workspace `/home/ducan/credit-mlops-codex` |
-| Tests under coverage | 139 passed in 16.29 seconds |
-| Wrapper runtime | 19 seconds |
+| Tests under coverage | 139 passed in 18.58 seconds |
+| Wrapper runtime | 23 seconds |
 | Total scoped coverage | 81% |
 | Weakest modules | `src/data_prep.py` 31%, `src/scorecard.py` 48%, `api/model_loader.py` 49% |
 | Evidence | `docs/evidence/phase7_coverage_stdout_20260726.txt`, `docs/evidence/phase7_coverage_report_20260726.txt`, `reports/generated/phase7_coverage_20260726.json` |
@@ -621,12 +621,12 @@ Full Hugging Face ingestion, row counts, checksums, ETL runtime, and peak RAM ar
 | Command | `make remote-vulnerability-smoke` |
 | Execution location | VM `lfm`, workspace `/home/ducan/credit-mlops-codex` |
 | Runtime | 33 seconds |
-| Audit status | `pip_audit_exit=1`, `pip_audit_text_exit=1` |
-| Vulnerability count | 59 known vulnerabilities in 11 packages |
-| Affected packages | `aiohttp`, `cryptography`, `gitpython`, `python-dotenv`, `starlette`, `nltk`, `pillow`, `pyasn1`, `streamlit`, `tornado`, `ujson` |
+| Audit status | `pip_audit_exit=0`, `pip_audit_text_exit=0` |
+| Vulnerability count | 0 known vulnerabilities after dependency remediation |
+| Affected packages | none in latest audit |
 | Skipped package | `credit-mlops` 0.1.0, local package not found on PyPI |
 | Evidence | `docs/evidence/phase7_pip_audit_report_20260726.txt`, `docs/evidence/phase7_pip_audit_runtime_20260726.txt`, `reports/generated/phase7_pip_audit_summary_20260726.json` |
-| Criterion status | vulnerability audit measured; security gate fails pending dependency remediation |
+| Criterion status | vulnerability audit measured; security gate passes |
 
 ### Portfolio Documentation Packaging
 
@@ -647,3 +647,18 @@ Full Hugging Face ingestion, row counts, checksums, ETL runtime, and peak RAM ar
 | Required broad upgrades | `mlflow 3.14.0`, `fastapi 0.140.0`, `starlette 1.3.1`, `streamlit 1.54.0`, `pillow 12.3.0`, `nltk 3.10.0`, plus transitives |
 | Evidence | `docs/evidence/phase7_dep_remediation_probe1_20260726.txt`, `docs/evidence/phase7_dep_remediation_probe2_20260726.txt` |
 | Criterion status | remediation path identified; no pins changed until VM compatibility tests run |
+
+### Dependency Remediation Compatibility
+
+| Field | Value |
+|-------|-------|
+| Lock generation | `uv lock --upgrade` passed in 1 second |
+| VM dependency sync | `uv sync --frozen --all-extras --dev` passed in 6 seconds |
+| Updated direct pins | `mlflow 3.14.0`, `fastapi 0.140.0`, `python-dotenv 1.2.2`, `streamlit 1.54.0`, plus security constraints for affected transitives |
+| Ruff/full tests | Ruff passed; 139 tests passed in 22.96 seconds |
+| Coverage after remediation | 139 tests passed in 18.58 seconds; scoped coverage 81%; wrapper runtime 23 seconds |
+| API smoke after remediation | comparables, AVM, and lending endpoints returned 200; wrapper runtime 5 seconds |
+| Vulnerability audit after remediation | `pip_audit_exit=0`, 0 known vulnerabilities, runtime 33 seconds |
+| Warning | FastAPI/Starlette TestClient deprecation warning: install/use `httpx2` in a future compatibility pass |
+| Evidence | `docs/evidence/phase7_dep_remediation_lock_20260726.txt`, `docs/evidence/phase7_dep_remediation_sync_20260726.txt`, `docs/evidence/phase7_dep_remediation_tests_20260726.txt`, `reports/generated/phase7_dep_remediation_api_smoke_summary_20260726.json`, `docs/evidence/phase7_pip_audit_report_20260726.txt` |
+| Criterion status | dependency security remediation passes non-Docker VM compatibility checks |

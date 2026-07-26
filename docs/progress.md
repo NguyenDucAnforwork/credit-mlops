@@ -1,6 +1,6 @@
 # Progress
 
-Last updated: 2026-07-26 20:45:07 Asia/Bangkok
+Last updated: 2026-07-26 20:51:13 Asia/Bangkok
 
 ## Phase Checklist
 
@@ -11,7 +11,7 @@ Last updated: 2026-07-26 20:45:07 Asia/Bangkok
 - Phase 4 APIs: scaffold endpoints implemented; local-on-VM uvicorn AVM/lending p95 criteria measured for fallback and artifact-backed service paths
 - Phase 5 MLOps and monitoring: AVM promotion gate dry-run, synthetic drift, and delayed-label monitoring implemented
 - Phase 6 Docker and GCP: cloud access blocked by VM OAuth scopes; local Docker baseline pending
-- Phase 7 UI, CI, portfolio: Property Intelligence UI, non-Docker remote smoke reproduction, Ruff smoke, scoped coverage measurement, vulnerability audit evidence, and portfolio README/reproduction packaging implemented; vulnerability gate fails
+- Phase 7 UI, CI, portfolio: Property Intelligence UI, non-Docker remote smoke reproduction, Ruff smoke, scoped coverage measurement, vulnerability audit/remediation, and portfolio README/reproduction packaging implemented
 
 ## Evidence
 
@@ -93,12 +93,17 @@ Last updated: 2026-07-26 20:45:07 Asia/Bangkok
 - `make remote-coverage-smoke` added as a reusable VM coverage path. It ran the full test suite under coverage, passed 139 tests in 16.29 seconds, completed in 19 seconds, and measured 81% total coverage for `api/*`, `src/*`, and `scripts/property_*.py`.
 - Weakest measured coverage areas: `src/data_prep.py` 31%, `src/scorecard.py` 48%, and `api/model_loader.py` 49%; this is evidence, not a threshold gate yet.
 - `make remote-vulnerability-smoke` added as a reusable VM dependency audit path. It exported resolved dependencies on the VM, ran `pip-audit`, completed in 33 seconds, and wrote JSON/text evidence.
-- Vulnerability audit result: `pip_audit_exit=1`; 59 known vulnerabilities in 11 packages (`aiohttp`, `cryptography`, `gitpython`, `python-dotenv`, `starlette`, `nltk`, `pillow`, `pyasn1`, `streamlit`, `tornado`, `ujson`); local package `credit-mlops` was skipped because it is not on PyPI.
+- Initial vulnerability audit result: `pip_audit_exit=1`; 59 known vulnerabilities in 11 packages (`aiohttp`, `cryptography`, `gitpython`, `python-dotenv`, `starlette`, `nltk`, `pillow`, `pyasn1`, `streamlit`, `tornado`, `ujson`). Post-remediation audit result: `pip_audit_exit=0`, 0 known vulnerabilities; local package `credit-mlops` remains skipped because it is not on PyPI.
 - README rewritten as the current Property Intelligence & Lending MLOps portfolio entrypoint with measured evidence, remote reproduction commands, API surface, documentation map, and blocker table.
 - `reports/reproduce.md` replaced with a remote-first reproduction report pointing to the verified smoke, coverage, and vulnerability targets.
 - Dependency remediation probe 1 failed: pinning `cryptography==48.0.1` is unsatisfiable while `mlflow==3.12.0` requires `cryptography<47`.
 - Dependency remediation probe 2 succeeded as a dry-run only after allowing a broad upgrade set including `mlflow 3.14.0`, `fastapi 0.140.0`, `starlette 1.3.1`, `streamlit 1.54.0`, `pillow 12.3.0`, `nltk 3.10.0`, and related transitives.
+- Dependency remediation applied: `uv lock --upgrade` succeeded in 1 second and `uv sync --frozen --all-extras --dev` succeeded in 6 seconds on the VM.
+- Post-remediation compatibility: Ruff passed; full suite passed with 139 tests in 22.96 seconds and 1 FastAPI/Starlette TestClient deprecation warning.
+- Post-remediation coverage: `make remote-coverage-smoke` passed 139 tests in 18.58 seconds; scoped coverage remained 81%; wrapper runtime 23 seconds.
+- Post-remediation property API smoke: comparables, AVM, and lending endpoints returned 200; wrapper runtime 5 seconds.
+- Post-remediation vulnerability audit: `make remote-vulnerability-smoke` passed with `pip_audit_exit=0`, 0 known vulnerabilities, and 33-second runtime.
 
 ## Next
 
-Commit and push dependency remediation probe evidence, then run compatibility-tested dependency remediation on the VM while Docker, GCP, and coordinate-backed GIS remain blocked.
+Commit and push dependency remediation, then track the FastAPI/Starlette TestClient deprecation warning while Docker, GCP, and coordinate-backed GIS remain blocked.

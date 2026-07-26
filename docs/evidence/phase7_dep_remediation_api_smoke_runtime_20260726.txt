@@ -1,0 +1,2 @@
+dep_remediation_api_smoke_exit=0
+runtime_seconds=5

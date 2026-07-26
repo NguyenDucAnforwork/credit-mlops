@@ -1,8 +1,8 @@
 {
   "endpoint_latency_ms": {
-    "avm": 13.126728998031467,
-    "comparables": 2624.4803790032165,
-    "lending": 2.6321500045014545
+    "avm": 15.20691899349913,
+    "comparables": 2561.8991579976864,
+    "lending": 2.800660004140809
   },
   "gold_path_exists": true,
   "responses": {
@@ -177,7 +177,7 @@
         "estimated_value_vnd": 4950000000.0,
         "feature_version": "property_non_gis_v1",
         "interval_width_ratio": 0.15656565656565646,
-        "latency_ms": 8.7,
+        "latency_ms": 10.41,
         "lower_value_vnd": 4245000000.0000005,
         "model_version": "non_gis_comparable_fallback_experimental_20260726",
         "top_factors": [
@@ -186,7 +186,7 @@
           "area tolerance",
           "listing recency"
         ],
-        "trace_id": "b543be0b-9139-4b8a-aafc-bc225008396e",
+        "trace_id": "80e13fc2-9f02-4253-ac7c-160b408063a8",
         "upper_value_vnd": 5020000000.0,
         "warnings": [
           "source dataset lacks latitude/longitude; comparable distance and radius fallback unavailable"

@@ -1,6 +1,6 @@
 # Decisions
 
-Last updated: 2026-07-26 20:45:07 Asia/Bangkok
+Last updated: 2026-07-26 20:51:13 Asia/Bangkok
 
 ## ADR-0001: Local Source of Truth, VM Runtime Executor
 
@@ -60,10 +60,16 @@ Last updated: 2026-07-26 20:45:07 Asia/Bangkok
 
 - Decision: keep the `pip-audit` failure as evidence and do not blind-upgrade vulnerable dependencies in the audit commit.
 - Rationale: the scan found 59 vulnerabilities across 11 packages, including transitive framework dependencies whose fixed versions may require coordinated FastAPI/Streamlit/MLflow compatibility checks.
-- Consequence: vulnerability gate remains failed until dependency upgrades are tested on the VM and followed by Ruff, coverage, full tests, API smoke, and a clean or improved audit.
+- Consequence: this was resolved by a later compatibility-tested dependency remediation; keep the failed audit as historical evidence.
 
 ## ADR-0011: Do Not Apply Broad Dependency Upgrade From Resolver Probe Alone
 
 - Decision: keep the successful broad dependency resolver dry-run as planning evidence only.
 - Rationale: the narrow fix is blocked by MLflow's `cryptography<47` constraint, and the resolver-level solution upgrades MLflow, FastAPI, Starlette, Streamlit, Pillow, NLTK, and many transitives.
 - Consequence: the next remediation attempt must update pins and lockfile in source, then verify compatibility on the VM before commit.
+
+## ADR-0012: Apply Coordinated Dependency Remediation After VM Compatibility Checks
+
+- Decision: update dependency pins and `uv.lock` for the broad resolver-compatible remediation set.
+- Rationale: VM verification passed `uv sync --frozen --all-extras --dev`, Ruff, full pytest, coverage, property API smoke, and `pip-audit`.
+- Consequence: vulnerability gate now passes with 0 known vulnerabilities; the FastAPI/Starlette TestClient deprecation warning remains a follow-up.

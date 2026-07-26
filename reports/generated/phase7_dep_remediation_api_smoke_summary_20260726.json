@@ -1,0 +1,18 @@
+{
+  "api_smoke_status": "pass",
+  "snapshot_id": "a9a66ffa985edcf76b4be59ae2c6f5b1db889c38",
+  "endpoint_latency_ms": {
+    "avm": 15.20691899349913,
+    "comparables": 2561.8991579976864,
+    "lending": 2.800660004140809
+  },
+  "status_codes": {
+    "avm": 200,
+    "comparables": 200,
+    "lending": 200
+  },
+  "comparables_count": 10,
+  "distance_status": "not_available_missing_coordinates",
+  "lending_decision": "approve",
+  "conservative_ltv": 0.75
+}
