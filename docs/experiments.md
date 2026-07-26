@@ -361,3 +361,21 @@
 - Decision: keep as scoped warm TestClient evidence; do not mark Docker/service or Cloud Run load criteria complete.
 - Lesson learned: warm index reuse makes the fallback AVM endpoint fast enough in-process; service startup and Docker blockers still need separate evidence.
 - Next experiment: run uvicorn/HTTP load benchmark on the VM if allowed without Docker, or continue delayed-label monitoring.
+
+## EXP-0021: Warm Property API Uvicorn HTTP Benchmark
+
+- Timestamp in Asia/Bangkok: 2026-07-26 15:49:26
+- Hypothesis: The Phase 4 property endpoints can satisfy local-on-VM warm HTTP p95 targets through an actual `uvicorn` service without requiring Docker.
+- Local Git commit or working-tree identifier: `d902c15` plus uncommitted HTTP benchmark script/docs.
+- Dataset snapshot ID and checksums: API reads gold revision `a9a66ffa985edcf76b4be59ae2c6f5b1db889c38`; raw SHA256 manifest in `reports/generated/hf_vietnam_real_estates_snapshot_manifest_20260726.json`.
+- Exact remote command: `scripts/remote/run.sh 'uv run python scripts/property_api_http_benchmark.py'`.
+- Configuration and seed: `uvicorn main:app` bound to a random localhost port on the VM; `PROPERTY_GOLD_PATH` set to VM gold parquet; one warm comparable request; 1,000 AVM HTTP requests and 1,000 lending HTTP requests; concurrency 10 via `httpx.AsyncClient`.
+- VM hardware/environment: Ubuntu 24.04.4 LTS, 4 vCPU AMD EPYC 7B12, 15 GiB RAM, no GPU.
+- Runtime: HTTP benchmark script 19 seconds; final pytest after benchmark passed with 129 tests in 8.24 seconds.
+- Peak RAM when available: not measured.
+- Metrics: AVM endpoint status codes `[200]`, 0% valid-request error rate, p95 140.84 ms, p99 173.39 ms, max 242.26 ms, throughput 98.38 rps. Lending endpoint status codes `[200]`, 0% valid-request error rate, p95 24.21 ms, p99 224.35 ms, max 354.39 ms, throughput 649.09 rps. Comparable warmup status 200 and latency 2,640.39 ms.
+- Baseline comparison: TestClient benchmark had AVM p95 176.43 ms and lending p95 64.71 ms. Uvicorn HTTP benchmark improves both p95s and provides service-level VM evidence outside Docker.
+- Interpretation: local-on-VM warm AVM and lending API p95/error targets pass for the experimental fallback service. Docker and Cloud Run performance remain unmeasured.
+- Decision: keep as local-on-VM HTTP service evidence; do not mark Docker build, Compose, or Cloud Run criteria complete.
+- Lesson learned: service-level HTTP overhead is acceptable after warm-up; first comparable request is still dominated by index load and should be warmed at startup before demos.
+- Next experiment: warm index at API startup or continue delayed-label/cohort monitoring.

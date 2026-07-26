@@ -1,0 +1,43 @@
+{
+  "avm": {
+    "latency_ms": {
+      "max": 242.25591399590485,
+      "median": 99.05284849810414,
+      "p95": 140.83714304579186,
+      "p99": 173.3922718041866
+    },
+    "status_codes": [
+      200
+    ],
+    "throughput_rps": 98.3770169967588,
+    "total_runtime_seconds": 10.16497583000455,
+    "valid_request_error_rate": 0.0
+  },
+  "concurrency": 10,
+  "criterion_scope": "vm_uvicorn_http_service_non_docker",
+  "execution": "uvicorn_httpx_async",
+  "gold_path_exists": true,
+  "lending": {
+    "latency_ms": {
+      "max": 354.3890450091567,
+      "median": 10.522463999222964,
+      "p95": 24.209995508863276,
+      "p99": 224.34893429352078
+    },
+    "status_codes": [
+      200
+    ],
+    "throughput_rps": 649.0943780367587,
+    "total_runtime_seconds": 1.5406080130051123,
+    "valid_request_error_rate": 0.0
+  },
+  "requests_per_endpoint": 1000,
+  "server": {
+    "host": "127.0.0.1",
+    "port": 55497,
+    "startup_status": "ok",
+    "warmup_latency_ms": 2640.389756008517,
+    "warmup_status_code": 200
+  },
+  "snapshot_id": "a9a66ffa985edcf76b4be59ae2c6f5b1db889c38"
+}

@@ -467,3 +467,28 @@ Full Hugging Face ingestion, row counts, checksums, ETL runtime, and peak RAM ar
 | Evidence | `docs/evidence/property_api_load_benchmark_20260726.json` |
 | Final verification after benchmark | 129 tests passed in 8.20 seconds; wrapper runtime 10 seconds |
 | Criterion status | passes p95/error targets only for in-process TestClient scope; service and Cloud Run criteria remain unmeasured |
+
+### Warm Property API Uvicorn HTTP Benchmark
+
+| Field | Value |
+|-------|-------|
+| Execution scope | VM uvicorn HTTP service, non-Docker |
+| Requests | 1,000 AVM requests and 1,000 lending requests |
+| Concurrency | 10 |
+| Warmup | `/v1/comparables` status 200, 2,640.39 ms cold index-build latency |
+| AVM status codes | `[200]` |
+| AVM valid-request error rate | 0% |
+| AVM p95 latency | 140.84 ms |
+| AVM p99 latency | 173.39 ms |
+| AVM max latency | 242.26 ms |
+| AVM throughput | 98.38 rps |
+| Lending status codes | `[200]` |
+| Lending valid-request error rate | 0% |
+| Lending p95 latency | 24.21 ms |
+| Lending p99 latency | 224.35 ms |
+| Lending max latency | 354.39 ms |
+| Lending throughput | 649.09 rps |
+| Runtime | 19 seconds |
+| Evidence | `docs/evidence/property_api_http_benchmark_20260726.json` |
+| Final verification after benchmark | 129 tests passed in 8.24 seconds; wrapper runtime 10 seconds |
+| Criterion status | local-on-VM AVM and lending HTTP service p95/error targets pass for fallback service; Docker and Cloud Run criteria remain unmeasured |

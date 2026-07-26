@@ -1,6 +1,6 @@
 # AVM Model Card
 
-Last updated: 2026-07-26 15:44:40 Asia/Bangkok
+Last updated: 2026-07-26 15:49:40 Asia/Bangkok
 
 Status: non-GIS tabular baseline measured; production AVM not promoted.
 
@@ -22,7 +22,7 @@ Estimate listing-based residential market value and price per square meter for l
 - API scaffold smoke: `/v1/avm/predict` returned 200 with high confidence and 13.13 ms latency after comparable index build
 - Promotion gate: dry-run decision `reject`; interval width, spatial holdout, major cohort regression, and warm API p95 evidence block promotion
 - Monitoring: synthetic drift shifted at least three features and triggered 4 alerts
-- Warm API TestClient load: AVM p95 176.43 ms with 0% errors at concurrency 10
+- Warm API uvicorn HTTP load: AVM p95 140.84 ms with 0% errors at concurrency 10
 - Artifact size: not measured
 - Training runtime: 9 seconds for HGB baseline train/evaluation on VM
 - Baseline runtime: 2 seconds on VM
@@ -38,4 +38,4 @@ Estimate listing-based residential market value and price per square meter for l
 - API scaffold currently serves an experimental fallback estimate, not the trained HGB quantile model artifact.
 - No `property_avm@champion` alias is promoted yet.
 - Monitoring currently covers synthetic drift only; delayed-label production monitoring is not implemented yet.
-- Warm API evidence is in-process TestClient only; service and Cloud Run p95 are not measured.
+- Warm local VM service p95 is measured with uvicorn; Docker and Cloud Run p95 are not measured.

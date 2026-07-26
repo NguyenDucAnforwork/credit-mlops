@@ -1,6 +1,6 @@
 # GCP Deployment
 
-Last updated: 2026-07-26 15:44:40 Asia/Bangkok
+Last updated: 2026-07-26 15:49:40 Asia/Bangkok
 
 ## Target
 
@@ -15,7 +15,7 @@ Not deployed.
 
 VM-originating GCP checks found active account `582914829900-compute@developer.gserviceaccount.com`, but project describe and service listing are blocked by `ACCESS_TOKEN_SCOPE_INSUFFICIENT`.
 
-The 2026-07-26 AVM interval, comparable fallback, API scaffold, AVM promotion dry-run, synthetic monitoring, and warm TestClient load milestones did not execute Terraform, `gcloud`, Docker builds, MLflow alias mutation, or deployments. GCP state remains unchanged.
+The 2026-07-26 AVM interval, comparable fallback, API scaffold, AVM promotion dry-run, synthetic monitoring, TestClient load, and uvicorn HTTP load milestones did not execute Terraform, `gcloud`, Docker builds, MLflow alias mutation, or deployments. GCP state remains unchanged.
 
 ## Required Fix
 

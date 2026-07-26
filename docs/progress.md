@@ -1,6 +1,6 @@
 # Progress
 
-Last updated: 2026-07-26 15:44:40 Asia/Bangkok
+Last updated: 2026-07-26 15:49:40 Asia/Bangkok
 
 ## Phase Checklist
 
@@ -8,7 +8,7 @@ Last updated: 2026-07-26 15:44:40 Asia/Bangkok
 - Phase 1 ETL: raw snapshot, silver/gold ETL, and data contracts complete with coordinate blocker documented
 - Phase 2 PostGIS and GIS: PostGIS/GIS blocked by missing coordinates; non-GIS comparable fallback measured
 - Phase 3 AVM: non-GIS median/tabular baselines and three interval calibrations measured
-- Phase 4 APIs: scaffold endpoints implemented and smoked with fallback AVM/comparables; load criteria not measured
+- Phase 4 APIs: scaffold endpoints implemented; local-on-VM uvicorn AVM/lending p95 criteria measured for fallback service
 - Phase 5 MLOps and monitoring: AVM promotion gate dry-run and synthetic drift monitoring implemented
 - Phase 6 Docker and GCP: cloud access blocked by VM OAuth scopes; local Docker baseline pending
 - Phase 7 UI, CI, portfolio: not started
@@ -72,7 +72,9 @@ Last updated: 2026-07-26 15:44:40 Asia/Bangkok
 - Final full suite after monitoring docs/evidence passed on the VM: 129 passed in 8.15 seconds; wrapper runtime 10 seconds.
 - Warm API TestClient load benchmark: 1,000 AVM requests and 1,000 lending requests at concurrency 10; AVM p95 176.43 ms with 0% errors; lending p95 64.71 ms with 0% errors; scope is in-process VM TestClient, not Docker/uvicorn service.
 - Full suite after API load benchmark passed on the VM: 129 passed in 8.20 seconds; wrapper runtime 10 seconds.
+- Warm uvicorn HTTP API benchmark: 1,000 AVM requests and 1,000 lending requests at concurrency 10; AVM p95 140.84 ms with 0% errors; lending p95 24.21 ms with 0% errors; scope is VM uvicorn service, not Docker or Cloud Run.
+- No lingering uvicorn process remained after the benchmark; final full suite passed on the VM: 129 passed in 8.24 seconds; wrapper runtime 10 seconds.
 
 ## Next
 
-Commit and push the warm API load benchmark, then continue with delayed-label/cohort monitoring or uvicorn HTTP benchmarking while Docker and GCP remain blocked.
+Commit and push the uvicorn HTTP benchmark, then continue with delayed-label/cohort monitoring or API startup warm-up while Docker and GCP remain blocked.
