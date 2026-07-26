@@ -1,6 +1,6 @@
 # Lessons Learned
 
-Last updated: 2026-07-26 14:05:41 Asia/Bangkok
+Last updated: 2026-07-26 14:27:30 Asia/Bangkok
 
 - Verify GCP from the VM before planning Terraform or Cloud Run work. The current VM account is present, but OAuth scopes are insufficient for Cloud Resource Manager and Service Usage.
 - Keep remote orchestration scripts allowlisted and sentinel-guarded so source synchronization cannot delete unrelated VM data.
@@ -10,3 +10,4 @@ Last updated: 2026-07-26 14:05:41 Asia/Bangkok
 - Keep fixture ETL evidence separate from full dataset claims. The current Phase 1 evidence proves incremental semantics, not full Hugging Face row counts or runtime.
 - Add new production packages to `pyproject.toml`; after adding `src/property_intelligence`, standalone VM imports work without `PYTHONPATH`.
 - Capture Hugging Face dataset revision metadata before downloading shards; row counts and checksums should always point back to a stable revision.
+- Use Parquet footer range reads to verify row counts cheaply. Keep the evidence label precise: footer-derived row counts and HF ETags are not full-content SHA256 checksums.

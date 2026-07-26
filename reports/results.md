@@ -204,3 +204,17 @@ Full Hugging Face ingestion, row counts, checksums, ETL runtime, and peak RAM ar
 | Parquet shard count | 5 |
 | Metadata evidence | `reports/generated/hf_vietnam_real_estates_metadata_20260726.json` |
 | Full suite after metadata module | 89 passed in 7.36 seconds; wrapper runtime 9 seconds |
+
+### HF Shard Footer Manifest
+
+| Field | Value |
+|-------|-------|
+| Total rows from Parquet footers | 1,000,000 |
+| Rows per shard | 200,000 |
+| Columns per shard | 19 |
+| Total remote object size | 469,122,864 bytes |
+| Shard count | 5 |
+| ETags | captured in `reports/generated/hf_vietnam_real_estates_shard_manifest_20260726.json` |
+| Full SHA256 | not measured |
+| Footer summary evidence | `docs/evidence/hf_shard_footer_summary_20260726.json` |
+| Full suite after shard manifest module | 93 passed in 7.31 seconds; wrapper runtime 9 seconds |

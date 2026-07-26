@@ -1,11 +1,11 @@
 # Progress
 
-Last updated: 2026-07-26 14:05:41 Asia/Bangkok
+Last updated: 2026-07-26 14:27:30 Asia/Bangkok
 
 ## Phase Checklist
 
 - Phase 0 audit and remote baseline: partially complete; tests pass, Docker smoke blocked
-- Phase 1 ETL: fixture-backed foundation and HF metadata capture complete; full HF ingestion not started
+- Phase 1 ETL: fixture-backed foundation and HF footer manifest complete; full content download/ETL not started
 - Phase 2 PostGIS and GIS: not started
 - Phase 3 AVM: not started
 - Phase 4 APIs: not started
@@ -31,7 +31,9 @@ Last updated: 2026-07-26 14:05:41 Asia/Bangkok
 - Incremental fixture evidence: first run inserted exactly 1,000 rows and found exactly 100 duplicates; identical rerun inserted 0 rows.
 - Hugging Face metadata captured on the VM for `vduydong/vietnam-real-estates`: revision `a9a66ffa985edcf76b4be59ae2c6f5b1db889c38`, 5 Parquet shards, last modified `2026-04-08T06:51:21.000Z`.
 - Full suite after HF metadata source module passed on the VM: 89 passed in 7.36 seconds; wrapper runtime 9 seconds.
+- HF shard footer manifest measured on the VM without full downloads: 5 shards, 1,000,000 total rows, 19 columns, 469,122,864 total bytes, ETags captured.
+- Full suite after shard manifest module passed on the VM: 93 passed in 7.31 seconds; wrapper runtime 9 seconds.
 
 ## Next
 
-Commit and push the verified Phase 1 ETL foundation, then continue toward HF snapshot ingestion, schema normalization, and data contracts.
+Commit and push the verified shard manifest milestone, then continue toward full remote snapshot download, SHA256 checksums, schema normalization, and data contracts.

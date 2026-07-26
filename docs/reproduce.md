@@ -1,6 +1,6 @@
 # Reproduce
 
-Last updated: 2026-07-26 14:05:41 Asia/Bangkok
+Last updated: 2026-07-26 14:27:30 Asia/Bangkok
 
 All heavy work runs on the VM. Do not install project dependencies, run tests, train models, Docker, Terraform, or `gcloud` locally.
 
@@ -23,6 +23,12 @@ HF metadata capture is VM-only:
 
 ```bash
 scripts/remote/run.sh 'uv run python -c "from property_intelligence.sources import fetch_hf_dataset_metadata; print(fetch_hf_dataset_metadata())"'
+```
+
+HF footer manifest smoke:
+
+```bash
+scripts/remote/run.sh 'uv run python -c "from property_intelligence.sources import fetch_hf_dataset_metadata, build_hf_shard_manifest; print(build_hf_shard_manifest(fetch_hf_dataset_metadata(), measure_footers=True))"'
 ```
 
 Additional targets required by the contract:

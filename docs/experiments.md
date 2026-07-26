@@ -109,3 +109,21 @@
 - Decision: keep.
 - Lesson learned: capture dataset revision before shard download so later row counts and checksums have a stable source identity.
 - Next experiment: remote shard checksum/row-count smoke and then full ingestion when disk/runtime constraints are confirmed.
+
+## EXP-0007: HF Parquet Footer Manifest
+
+- Timestamp in Asia/Bangkok: 2026-07-26 14:27:24
+- Hypothesis: The VM can measure Parquet shard row counts and object sizes using HTTP headers and footer range reads without downloading full shard bodies.
+- Local Git commit or working-tree identifier: `e47f3eb` plus uncommitted shard manifest source/tests/docs.
+- Dataset snapshot ID and checksums: revision `a9a66ffa985edcf76b4be59ae2c6f5b1db889c38`; HF ETags captured; full content SHA256 not measured.
+- Exact remote command: `scripts/remote/run.sh 'uv run python ... build_hf_shard_manifest(metadata, measure_footers=True)'`.
+- Configuration and seed: Hugging Face resolved URLs pinned to revision `a9a66ffa985edcf76b4be59ae2c6f5b1db889c38`; no random seed.
+- VM hardware/environment: Ubuntu 24.04.4 LTS, 4 vCPU AMD EPYC 7B12, 15 GiB RAM, no GPU.
+- Runtime: manifest generation completed in under one minute; final pytest reported 7.31 seconds with 9-second wrapper runtime.
+- Peak RAM when available: not measured.
+- Metrics: 5 Parquet shards; each shard 200,000 rows; total rows 1,000,000; 19 columns; total remote object size 469,122,864 bytes; footer bytes per shard ranged from 10,514 to 11,517.
+- Baseline comparison: previous metadata-only module had 89 passing tests; shard manifest adds 4 passing tests for 93 total.
+- Interpretation: expected dataset scale is confirmed from Parquet footers without local data or full VM downloads.
+- Decision: keep.
+- Lesson learned: Parquet footers are enough to verify row counts and schema width cheaply, but they are not a substitute for full-content SHA256.
+- Next experiment: full remote snapshot download with SHA256 and immutable bronze metadata, bounded by VM disk and runtime.
