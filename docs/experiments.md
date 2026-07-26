@@ -722,3 +722,15 @@
 - Decision: keep the Compose API data mount and external benchmark helper.
 - Lesson learned: container health does not prove domain endpoint readiness. Property endpoints need their VM-only data mount declared explicitly, and benchmarks should fail on 4xx/5xx responses.
 - Next experiment: run monitoring-profile Compose smoke and address monitoring image vulnerability separately; cloud deployment remains blocked by GCP API/IAM prerequisites.
+
+## EXP-0041: GCP Deployer Smoke And Terraform Plan
+
+- Timestamp in Asia/Bangkok: 2026-07-27 00:05:00
+- Exact remote commands: `make remote-cloud-smoke`; `terraform -chdir=infra/terraform init -no-color`; `terraform -chdir=infra/terraform plan -no-color` on `lfm` in `/home/ducan/credit-mlops-codex`.
+- Configuration: project `driven-reef-452414-b5`, region `asia-southeast1`, Terraform 1.9.8, Google provider 6.50.0, `enable_cloud_sql=false`, placeholder API/job image tags.
+- Runtime: cloud smoke 10 seconds; init plus plan 3 seconds; no data or model artifact was moved.
+- Metrics: cloud smoke exit 0; project, API, Artifact Registry, Cloud Run, and Scheduler read-only checks exit 0; Terraform plan `30 to add, 0 to change, 0 to destroy`; Terraform exit 0.
+- Interpretation: read-only GCP access and planning are verified, but no deployment evidence exists. Image push, apply, Cloud Run/scheduler smoke, and rollback remain unmeasured.
+- Cost: no numeric monthly estimate is derivable from Terraform plan without approved storage, query, image, request, CPU/memory, job-runtime, and scheduler assumptions; Cloud SQL is disabled.
+- Decision: stop before `terraform apply`; require immutable image tags, approved secret population, apply-time IAM, cost approval, and post-deploy verification.
+- Evidence: `docs/evidence/phase6_gcp_readonly_smoke_20260726.txt`, `docs/evidence/phase6_terraform_init_plan_20260727.txt`, and their runtime files.

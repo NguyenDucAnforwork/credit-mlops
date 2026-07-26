@@ -1,6 +1,8 @@
 # AVM Model Card
 
-Last updated: 2026-07-26 23:16:14 Asia/Bangkok
+Infrastructure update 2026-07-27: Terraform plan passed remotely with 30 additions and Cloud SQL disabled, but no Cloud Run service or model deployment was created. AVM performance and latency claims remain VM/Docker evidence only.
+
+Last updated: 2026-07-27 00:05:00 Asia/Bangkok
 
 Status: non-GIS tabular baseline measured; production AVM not promoted.
 

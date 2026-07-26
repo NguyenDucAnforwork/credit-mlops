@@ -22,7 +22,7 @@ Measured on 2026-07-26 from branch `feat/onemount-property-intelligence`.
 | Model artifact | VM-only HGB quantile joblib, 2.37 MB, load 87.13 ms, single prediction 21.32 ms |
 | Monitoring | Synthetic drift triggers 4 alerts; delayed-label fallback replay MdAPE 16.73% on 2,000 labels |
 | UI | Streamlit Property Intelligence workspace with three required demo scenarios and LTV decision flow |
-| Terraform | GCP source scaffold validates on VM with Terraform 1.9.8 and Google provider 6.50.0; no plan/apply run |
+| Terraform | VM `terraform init` and `terraform plan` pass with Terraform 1.9.8/provider 6.50.0; plan is 30 add, 0 change, 0 destroy; no apply |
 | Docker packaging | `.dockerignore` excludes secrets/raw data/model directories; Dockerfiles no longer copy `.env`; Docker build still blocked |
 | Tests/quality | 139 tests pass under coverage in 15.91 seconds; scoped coverage 81%; Ruff, warnings-enabled full suite, and mypy type smoke pass |
 | Security audit | Project lock/main requirements audit clean; monitoring container requirements still blocked by NannyML `lightgbm` 4.5.0 vulnerability |
@@ -33,7 +33,7 @@ Measured on 2026-07-26 from branch `feat/onemount-property-intelligence`.
 |---------|------------------|
 | GIS/PostGIS/H3 | Primary source has no coordinate columns, so spatial holdout, distance, radius, and H3 criteria are not claimed |
 | Docker/Compose on VM | Docker daemon, image builds, plain smokes, core Compose stack, and Dockerized API load pass; monitoring profile not measured |
-| GCP deployment | VM account and Service Usage visibility work; Cloud Resource Manager, Artifact Registry, Cloud Run Admin, and Scheduler APIs are disabled or inaccessible |
+| GCP deployment | deployer account and read-only API/resource smoke pass; image push, apply-time IAM, cost approval, and Cloud Run verification remain |
 | AVM promotion | Dry-run gate rejects candidate because interval width, spatial holdout, cohort regression, and production service evidence are incomplete |
 | Dependency security | Latest audit is clean; FastAPI/Starlette TestClient warning resolved by adding `httpx2==2.9.1` to dev dependencies |
 | Monitoring container audit | `requirements-monitor.txt` resolves vulnerable `lightgbm 4.5.0`; fixed `lightgbm 4.6.0` conflicts with available NannyML releases |
@@ -77,9 +77,10 @@ Current measured targets:
 - `make remote-vulnerability-smoke`: dependency audit on VM; evidence capture completed in 41 seconds and found 0 known vulnerabilities after remediation.
 - `make remote-type-smoke`: pinned mypy on new property intelligence modules, API code, and selected property scripts; 19 source files checked with 0 issues in a 1-second wrapper runtime.
 - `make remote-terraform-validate`: GCP Terraform scaffold fmt/init/validate on VM; completed in 2 seconds with `terraform_validate_exit=0`.
+- `scripts/remote/run.sh 'terraform -chdir=infra/terraform init -no-color && terraform -chdir=infra/terraform plan -no-color'`: remote init/plan passed; evidence is in `docs/evidence/phase6_terraform_init_plan_20260727.txt`.
 - `make remote-compose-smoke`: installs/reuses user-level Compose on the VM, starts isolated Postgres/Redis/API/UI, reaches healthy status for all four, verifies API/UI HTTP health, and tears down in 74 seconds.
 - `make remote-compose-load-smoke`: Dockerized API load test; 1,000 AVM and 1,000 lending requests at concurrency 10 pass with 0% errors, AVM p95 283.01 ms, and lending p95 33.93 ms.
-- `make remote-cloud-smoke`: read-only GCP prerequisite diagnostic; currently exits nonzero in 10 seconds because required deployment APIs/IAM are blocked.
+- `make remote-cloud-smoke`: read-only GCP prerequisite diagnostic; latest run exits 0 in 10 seconds with the deployer account and required resource checks passing.
 - Docker image builds: UI/API/monitor images build on the VM and pass plain-container smokes.
 - Container dependency alignment: UI deps import and main `requirements.txt` audit passes; monitoring requirements audit remains blocked by `PYSEC-2024-231` in transitive `lightgbm 4.5.0`.
 

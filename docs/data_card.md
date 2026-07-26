@@ -1,6 +1,8 @@
 # Data Card
 
-Last updated: 2026-07-26 23:16:14 Asia/Bangkok
+Infrastructure update 2026-07-27: GCP read-only smoke and Terraform plan passed remotely, but no cloud bucket, BigQuery dataset, or ETL job was created. Row counts and coordinate limitations remain VM-only evidence.
+
+Last updated: 2026-07-27 00:05:00 Asia/Bangkok
 
 ## Primary Dataset
 

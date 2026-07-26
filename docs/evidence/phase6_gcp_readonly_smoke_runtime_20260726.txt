@@ -1,2 +1,2 @@
-gcp_readonly_smoke_exit=1
+gcp_readonly_smoke_exit=0
 runtime_seconds=10

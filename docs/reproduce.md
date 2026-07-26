@@ -1,6 +1,6 @@
 # Reproduce
 
-Last updated: 2026-07-26 21:52:20 Asia/Bangkok
+Last updated: 2026-07-27 00:05:00 Asia/Bangkok
 
 All heavy work runs on the VM. Do not install project dependencies, run tests, train models, Docker, Terraform, or `gcloud` locally.
 
@@ -225,7 +225,7 @@ make remote-terraform-validate
 
 It runs on the VM, uses Terraform 1.9.8 with backend disabled, initializes Google provider 6.50.0, passes `fmt` and `validate`, and completed in 2 seconds. See `docs/evidence/phase6_terraform_validate_20260726.txt`.
 
-Cloud reproduction is blocked until Cloud Resource Manager/IAM/API access is sufficient for project `driven-reef-452414-b5`.
+Cloud read-only reproduction and Terraform planning are now available after the deployer service account/API bootstrap. Cloud creation remains intentionally unexecuted.
 
 The reusable read-only cloud diagnostic is:
 
@@ -233,7 +233,9 @@ The reusable read-only cloud diagnostic is:
 make remote-cloud-smoke
 ```
 
-It runs from the VM, records evidence, and exits nonzero while cloud prerequisites are blocked. The latest run completed in 10 seconds with `gcp_readonly_smoke_exit=1`: auth/project config and Service Usage visibility passed, but Cloud Resource Manager, Artifact Registry, Cloud Run Admin, and Cloud Scheduler APIs are disabled or inaccessible. It does not enable APIs, create resources, push images, run Terraform, or deploy.
+It runs from the VM and latest completed in 10 seconds with `gcp_readonly_smoke_exit=0`: deployer authentication, project describe, Artifact Registry, Cloud Run, and Scheduler checks passed. It does not enable APIs, create resources, push images, run Terraform, or deploy.
+
+The 2026-07-27 remote Terraform init and plan passed with 30 resources to add, 0 to change, and 0 to destroy. Stop before `terraform apply`; the plan uses placeholder image tags and has no numeric cost estimate without approved usage assumptions. Evidence: `docs/evidence/phase6_terraform_init_plan_20260727.txt`.
 
 Individual Docker image reproduction is now available on the VM:
 

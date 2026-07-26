@@ -1,6 +1,6 @@
 # GCP Deployment
 
-Last updated: 2026-07-26 23:16:14 Asia/Bangkok
+Last updated: 2026-07-27 00:05:00 Asia/Bangkok
 
 ## Target
 
@@ -11,23 +11,27 @@ Last updated: 2026-07-26 23:16:14 Asia/Bangkok
 
 ## Current Status
 
-Not deployed. Terraform source exists and validates on the VM, but no plan/apply or resource creation has been run.
+Not deployed. Terraform initialization and planning now pass on the VM; no apply, image push, or resource creation has been run.
 
-VM-originating GCP checks found active account `582914829900-compute@developer.gserviceaccount.com` and configured project `driven-reef-452414-b5`. `gcloud services list --project driven-reef-452414-b5 --limit=5` now succeeds. `gcloud projects describe driven-reef-452414-b5` still exits 1 because Cloud Resource Manager API is disabled/permissioned for consumer project `582914829900`.
+VM-originating GCP checks now use active account `credit-mlops-deployer@driven-reef-452414-b5.iam.gserviceaccount.com` and configured project `driven-reef-452414-b5`. Project describe, Artifact Registry list, Cloud Run service list, and Scheduler job list all pass in the read-only smoke.
 
-The reusable 2026-07-26 read-only cloud smoke now runs through `make remote-cloud-smoke` and exits nonzero while prerequisites are blocked. Latest result: `gcp_readonly_smoke_exit=1`, runtime 10 seconds. Auth and project config pass, and Service Usage visibility works. Project describe fails on Cloud Resource Manager access, Artifact Registry list fails because Artifact Registry API is disabled, Cloud Run services list fails because Cloud Run Admin API is disabled, and Scheduler jobs list fails because Cloud Scheduler API is disabled. No API enablement, resource creation, Terraform plan/apply, image push, or deployment was attempted.
+The 2026-07-27 read-only cloud smoke runs through `make remote-cloud-smoke` and passes: `gcp_readonly_smoke_exit=0`, runtime 10 seconds. Required API visibility and read-only resource checks pass. Evidence: `docs/evidence/phase6_gcp_readonly_smoke_20260726.txt` and `docs/evidence/phase6_gcp_readonly_smoke_runtime_20260726.txt`.
 
 The 2026-07-26 AVM interval, comparable fallback, API scaffold, AVM promotion dry-run, monitoring, TestClient load, uvicorn HTTP load, startup warm-up, AVM artifact packaging, dependency remediation, `httpx2` TestClient warning remediation, type-check smoke, and Docker image build/smoke milestones did not execute Terraform plan/apply, image push, MLflow alias mutation, or deployments. GCP state remained unchanged during those milestones.
 
-The 2026-07-26 Terraform scaffold milestone added `infra/terraform` with project APIs, Artifact Registry, GCS, BigQuery, Secret Manager placeholder, Cloud Run service, Cloud Run ETL job, Scheduler, IAM service accounts, and optional disabled-by-default Cloud SQL/PostGIS resources. VM validation used Terraform 1.9.8 and Google provider 6.50.0 with `init -backend=false`; `terraform_validate_exit=0`, runtime 2 seconds. No `terraform plan`, `terraform apply`, `gcloud`, Docker build, image push, or cloud deployment was run.
+The 2026-07-27 remote Terraform phase used Terraform 1.9.8 and Google provider 6.50.0. `terraform init` and `terraform plan` both passed in 3 seconds. The plan is `30 to add, 0 to change, 0 to destroy`; Cloud SQL remains disabled. Evidence: `docs/evidence/phase6_terraform_init_plan_20260727.txt` and `docs/evidence/phase6_terraform_init_plan_runtime_20260727.txt`.
 
-## Required Fix
+## Remaining Deployment Blockers
 
-Enable/authorize Cloud Resource Manager for the VM service account/consumer project path and grant sufficient IAM for project inspection, Artifact Registry, GCS, BigQuery, Cloud Run, Scheduler, Secret Manager, Cloud SQL, logging, monitoring, and Terraform-managed resources. Do not create downloaded long-lived service-account keys.
+- Terraform plan uses placeholder image tags `property-api:pending` and `property-job:pending`; build/tag/push of deployable images is still required.
+- The plan has not been applied, so there is no Cloud Run URL, ETL execution, API smoke, scheduler execution, or rollback evidence.
+- The deployer can perform the read-only smoke, but apply-time IAM for every planned resource and cost approval still need confirmation.
+- MLflow tracking URI and runtime secret values are not provisioned; no secret was created or committed.
+- Do not create downloaded long-lived service-account keys.
 
 ## Cost
 
-Not measured. No GCP resources were created by this phase.
+No exact monthly estimate is derivable from `terraform plan` alone. The plan creates usage-priced GCS, BigQuery, Artifact Registry, Secret Manager, Cloud Run, and Scheduler resources; Cloud SQL is disabled, and Cloud Run is configured with min instances 0. A numeric estimate requires approved storage, query, image-retention, request, CPU/memory, job-runtime, and scheduler-volume assumptions. No GCP resources were created by this phase and no cost was incurred by apply.
 
 ## Docker Prerequisite
 

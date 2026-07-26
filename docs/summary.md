@@ -1,6 +1,6 @@
 # Summary
 
-Last updated: 2026-07-26 23:16:14 Asia/Bangkok
+Last updated: 2026-07-27 00:05:00 Asia/Bangkok
 
 Status: Phase 6/7 non-cloud portfolio evidence is mostly complete, with Terraform source validation, Docker image builds, plain-container smokes, core Docker Compose smoke, and Dockerized API load evidence added. Remaining blockers are coordinate-backed GIS/PostGIS, monitoring-profile evidence, and live GCP deployment.
 
@@ -11,7 +11,7 @@ The project is being converted from a credit scoring MLOps demo into a Property 
 - SSH to `lfm`: working.
 - Feature branch: `feat/onemount-property-intelligence`.
 - VM resources: 4 vCPU, 15 GiB RAM, 66 GiB free disk, no GPU.
-- GCP access: service listing works for `driven-reef-452414-b5`; project describe is blocked because Cloud Resource Manager API is disabled/permissioned for consumer project `582914829900`.
+- GCP access: deployer account `credit-mlops-deployer@driven-reef-452414-b5.iam.gserviceaccount.com` passes project, Artifact Registry, Cloud Run, and Scheduler read-only checks for `driven-reef-452414-b5`.
 - Remote workspace: created as rsync-backed after VM Git clone failed on local SSH alias `github-nguyenducan`.
 - Baseline tests: 76 passed in 7.42 seconds on the VM.
 - Current tests: 139 passed in 15.91 seconds under `make remote-coverage-smoke`; latest warnings-enabled Ruff/full suite passed with 139 tests in 11.20 seconds and no TestClient warning summary.
@@ -48,10 +48,10 @@ The project is being converted from a credit scoring MLOps demo into a Property 
 - Docker build/runtime: daemon access now works for `ducan`; UI, API, and monitoring images built on the VM as `credit-mlops-*:codex-20260726`; API and UI health smokes passed with Docker health `healthy`; monitoring import smoke passed.
 - Docker Compose: `make remote-compose-smoke` installed/reused Compose v5.3.1 under the VM user, created a VM-only no-secret `.env` default if missing, passed `docker compose config --quiet`, built API/UI, started isolated Postgres/Redis/API/UI services, reached Docker health `healthy` for all four, verified API/UI HTTP health, and tore down containers/network/volume in 74 seconds.
 - Dockerized API load: `make remote-compose-load-smoke` passed after adding the API read-only property data mount; 1,000 AVM and 1,000 lending requests at concurrency 10 returned status 200 with 0% errors, AVM p95 283.01 ms, and lending p95 33.93 ms.
-- Cloud smoke: `make remote-cloud-smoke` is now a reusable read-only diagnostic and currently fails as expected with `gcp_readonly_smoke_exit=1`; auth/project config pass, but Cloud Resource Manager, Artifact Registry, Cloud Run Admin, and Cloud Scheduler APIs are disabled or inaccessible.
-- Terraform deploy: source validates, but live plan/apply is blocked by VM GCP Cloud Resource Manager/IAM/API access plus image registry push/deployment prerequisites.
+- Cloud smoke: `make remote-cloud-smoke` is now a reusable read-only diagnostic and latest passes with `gcp_readonly_smoke_exit=0`; deployer auth, project describe, Artifact Registry, Cloud Run, and Scheduler checks pass.
+- Terraform deploy: remote init/plan passes with 30 to add, 0 to change, 0 to destroy; live apply is blocked by placeholder image tags, secret population, apply-time IAM, cost approval, and missing post-deploy evidence.
 - Monitoring container dependency audit: blocked by NannyML transitive LightGBM vulnerability until a compatible NannyML release or monitoring image redesign is available.
-- Deployment URL: not deployed.
+- Deployment URL: not deployed; no resources were created by the plan phase.
 
 ## Next Step
 

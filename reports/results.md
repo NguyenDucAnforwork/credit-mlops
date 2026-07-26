@@ -801,3 +801,16 @@ Full Hugging Face ingestion, row counts, checksums, ETL runtime, and peak RAM ar
 | Vulnerability audit after remediation | `pip_audit_exit=0`, 0 known vulnerabilities, runtime 41 seconds |
 | Evidence | `docs/evidence/phase7_httpx2_lock_20260726.txt`, `docs/evidence/phase7_httpx2_sync_20260726.txt`, `docs/evidence/phase7_httpx2_tests_20260726.txt`, `docs/evidence/phase7_coverage_stdout_20260726.txt`, `docs/evidence/phase7_pip_audit_report_20260726.txt` |
 | Criterion status | TestClient deprecation warning resolved for the VM test path; Docker, GCP, and coordinate-backed GIS remain blocked |
+
+### GCP Deployer Smoke And Terraform Plan
+
+| Field | Value |
+|-------|-------|
+| Execution location | VM `lfm`, workspace `/home/ducan/credit-mlops-codex` |
+| Cloud smoke | exit 0 in 10 seconds with deployer account `credit-mlops-deployer@driven-reef-452414-b5.iam.gserviceaccount.com` |
+| Terraform | Terraform 1.9.8/provider 6.50.0; init and plan exit 0 in 3 seconds |
+| Plan | 30 to add, 0 to change, 0 to destroy; Cloud SQL disabled |
+| Cost | Not numerically estimated: plan has no provider cost model and approved usage assumptions are absent; no resources were created |
+| Remaining blockers | Placeholder image tags, image push, MLflow secret population, apply-time IAM/cost approval, apply, Cloud Run/API/scheduler smoke, and rollback evidence |
+| Evidence | `docs/evidence/phase6_gcp_readonly_smoke_20260726.txt`, `docs/evidence/phase6_terraform_init_plan_20260727.txt` |
+| Criterion status | Remote GCP prerequisite and Terraform plan gates pass; no apply was run |

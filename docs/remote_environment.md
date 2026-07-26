@@ -1,6 +1,6 @@
 # Remote Environment
 
-Last updated: 2026-07-26 23:16:14 Asia/Bangkok
+Last updated: 2026-07-27 00:05:00 Asia/Bangkok
 
 ## SSH
 
@@ -42,7 +42,8 @@ Last updated: 2026-07-26 23:16:14 Asia/Bangkok
 - Latest plain container smokes: API `/health` returned `status=ok` with fallback local model and Docker health `healthy`; UI Streamlit health returned `ok` and Docker health `healthy`; monitoring image import check passed.
 - Latest Compose smoke: `make remote-compose-smoke` completed in 74 seconds; Postgres, Redis, API, and UI reached Docker health `healthy`; API/UI HTTP health passed; isolated containers, network, and Postgres volume were removed.
 - Latest Dockerized API load: `make remote-compose-load-smoke` completed in 78 seconds; 1,000 AVM and 1,000 lending requests at concurrency 10 returned status 200 with 0% errors; AVM p95 283.01 ms; lending p95 33.93 ms.
-- Latest cloud smoke: `make remote-cloud-smoke` completed in 10 seconds with `gcp_readonly_smoke_exit=1`; auth/project config and filtered Service Usage list passed, while Cloud Resource Manager, Artifact Registry, Cloud Run Admin, and Cloud Scheduler checks failed because APIs are disabled or inaccessible.
+- Latest cloud smoke: `make remote-cloud-smoke` completed in 10 seconds with `gcp_readonly_smoke_exit=0`; deployer authentication, project describe, Artifact Registry, Cloud Run, and Scheduler read-only checks passed.
+- Latest Terraform plan: remote `terraform init` and `terraform plan` passed in 3 seconds with Terraform 1.9.8 and Google provider 6.50.0; plan is 30 to add, 0 to change, 0 to destroy. No apply ran.
 - Latest measured local VM HTTP benchmark: AVM p95 140.84 ms and lending p95 24.21 ms with 0% errors at 1,000 requests/concurrency 10.
 - Latest startup warm-up benchmark: property index startup 4.85 seconds, first comparable request after startup 10.99 ms.
 - Latest AVM artifact evidence: 2.37 MB remote-only joblib, load 87.13 ms, single prediction 21.32 ms, same-seed MdAPE delta 0.0 percentage points.
@@ -58,12 +59,12 @@ Last updated: 2026-07-26 23:16:14 Asia/Bangkok
 
 ## GCP Access
 
-- Active account: `582914829900-compute@developer.gserviceaccount.com`
+- Active account: `credit-mlops-deployer@driven-reef-452414-b5.iam.gserviceaccount.com`
 - Configured project: `driven-reef-452414-b5`
-- Project describe: blocked because Cloud Resource Manager API is disabled/permissioned for consumer project `582914829900`
-- Service Usage list: now succeeds for project `driven-reef-452414-b5`
-- Artifact Registry list: blocked because Artifact Registry API is disabled for `driven-reef-452414-b5`
-- Cloud Run services list: blocked because Cloud Run Admin API is disabled for `driven-reef-452414-b5`
-- Scheduler jobs list: blocked because Cloud Scheduler API is disabled for `driven-reef-452414-b5`
+- Project describe: passes for project `driven-reef-452414-b5`
+- Service Usage list: passes for required APIs
+- Artifact Registry list: passes for `asia-southeast1`
+- Cloud Run services list: passes
+- Scheduler jobs list: passes
 
-Minimum blocker for cloud phases: enable/authorize Cloud Resource Manager access for the VM service account/consumer project path and grant IAM needed for Artifact Registry, Cloud Run, Scheduler, Secret Manager, GCS, BigQuery, logging, monitoring, and Terraform-managed resources. No long-lived service account key should be downloaded as a workaround.
+Remaining cloud blockers: push deployable images instead of Terraform's placeholder tags, confirm apply-time IAM and cost approval, populate the MLflow secret through an approved secret flow, then apply and smoke Cloud Run. No long-lived service account key should be downloaded as a workaround.

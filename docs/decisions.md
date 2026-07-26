@@ -1,6 +1,6 @@
 # Decisions
 
-Last updated: 2026-07-26 21:52:20 Asia/Bangkok
+Last updated: 2026-07-27 00:05:00 Asia/Bangkok
 
 ## ADR-0001: Local Source of Truth, VM Runtime Executor
 
@@ -90,6 +90,13 @@ Last updated: 2026-07-26 21:52:20 Asia/Bangkok
 
 - Decision: add `infra/terraform` and `make remote-terraform-validate`, using backend-disabled init and validation only.
 - Rationale: GCP IAM/OAuth and Docker image prerequisites are blocked, but source architecture can still be checked safely without creating or changing resources.
+
+## ADR-0022: Stop After Passing Terraform Plan
+
+- Decision: run GCP smoke, Terraform init, and Terraform plan remotely after the deployer bootstrap, then stop before apply.
+- Evidence: cloud smoke exit 0 in 10 seconds; plan exit 0 in 3 seconds with 30 add, 0 change, 0 destroy; Cloud SQL disabled.
+- Rationale: read-only readiness is measured, but Terraform still references placeholder images and an unpopulated MLflow secret. Apply requires explicit cost/IAM approval and creates billable resources.
+- Consequence: no deployment URL, resource runtime, cost, image push, scheduler execution, or rollback metrics are claimed.
 - Consequence: Terraform source now validates on the VM; deployment remains blocked until project scopes/IAM, Docker build/push, and cost-sensitive apply approval are available.
 
 ## ADR-0016: Keep Secrets Out Of Docker Images

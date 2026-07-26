@@ -1,6 +1,6 @@
 # Progress
 
-Last updated: 2026-07-26 23:16:14 Asia/Bangkok
+Last updated: 2026-07-27 00:05:00 Asia/Bangkok
 
 ## Phase Checklist
 
@@ -10,7 +10,7 @@ Last updated: 2026-07-26 23:16:14 Asia/Bangkok
 - Phase 3 AVM: non-GIS median/tabular baselines, three interval calibrations, and remote-only HGB quantile artifact packaging measured
 - Phase 4 APIs: scaffold endpoints implemented; local-on-VM uvicorn AVM/lending p95 criteria measured for fallback and artifact-backed service paths
 - Phase 5 MLOps and monitoring: AVM promotion gate dry-run, synthetic drift, and delayed-label monitoring implemented
-- Phase 6 Docker and GCP: Terraform source scaffold validates on VM; Docker image builds, plain-container API/UI/monitor smokes, core Docker Compose API/UI/Postgres/Redis smoke, and Dockerized API load smoke pass on VM; reusable read-only GCP smoke fails on disabled APIs/IAM, so live deployment remains blocked
+- Phase 6 Docker and GCP: Terraform source scaffold validates and plans on VM; Docker image builds, plain-container API/UI/monitor smokes, core Docker Compose API/UI/Postgres/Redis smoke, and Dockerized API load smoke pass on VM; reusable read-only GCP smoke passes, while live deployment remains intentionally unexecuted
 - Phase 7 UI, CI, portfolio: Property Intelligence UI, non-Docker remote smoke reproduction, Ruff smoke, scoped coverage measurement, type-check smoke, vulnerability audit/remediation, TestClient warning remediation, and portfolio README/reproduction packaging implemented
 
 ## Evidence
@@ -19,7 +19,7 @@ Last updated: 2026-07-26 23:16:14 Asia/Bangkok
 - Local GitHub dry-run push returned `Everything up-to-date` before feature branch creation.
 - Feature branch created locally: `feat/onemount-property-intelligence`.
 - VM inventory captured in `docs/remote_environment.md`.
-- GCP access has improved: Service Usage list works for `driven-reef-452414-b5`, but Cloud Resource Manager project describe remains blocked for consumer project `582914829900`.
+- GCP access is now verified with the deployer account: project describe, Artifact Registry, Cloud Run, and Scheduler read-only checks pass for `driven-reef-452414-b5`.
 - Initial remote bootstrap created the dedicated workspace/sentinel but could not clone with local SSH alias `github-nguyenducan`; the workspace is treated as rsync-backed until the feature branch is pushed.
 - Initial remote bootstrap stopped because `uv` was not installed; bootstrap now attempts a user-level `uv` install without sudo.
 - `uv sync --frozen --all-extras --dev` completed on the VM and installed 168 packages.
@@ -121,6 +121,14 @@ Last updated: 2026-07-26 23:16:14 Asia/Bangkok
 - Dockerized Compose API load: the first attempt returned AVM 503 because the API container did not have an explicit mounted property gold path. Compose now mounts `./data:/app/data:ro` for API and sets `PROPERTY_GOLD_PATH` to the VM gold parquet.
 - Dockerized Compose API load after the fix passed: 1,000 AVM requests and 1,000 lending requests at concurrency 10 against the Dockerized API; AVM p95 283.01 ms and lending p95 33.93 ms with 0% valid-request errors; wrapper runtime 78 seconds.
 
+## 2026-07-27 GCP Plan Update
+
+- Deployer service account/API bootstrap passed on `lfm`: project describe, Artifact Registry, Cloud Run, and Scheduler read-only checks pass.
+- Terraform init and plan passed remotely with Terraform 1.9.8/provider 6.50.0 in 3 seconds.
+- Measured plan: 30 resources to add, 0 to change, 0 to destroy; Cloud SQL disabled.
+- No GCP resources, image push, secret population, apply, Cloud Run smoke, scheduler execution, or rollback test ran.
+- Numeric monthly cost is not available from Terraform plan; approved usage assumptions are required.
+
 ## Next
 
-Continue Docker/GCP work only on unblocked steps: monitoring-profile Compose can proceed on the VM. Cloud image push, Terraform plan/apply, and live deployment still require GCP API/IAM fixes and cost-sensitive deployment approval. Legitimate coordinate enrichment is still required for GIS/PostGIS/H3 criteria.
+Continue Docker/GCP work only on unblocked steps: monitoring-profile Compose can proceed on the VM. Cloud image push, Terraform apply, and live deployment still require immutable image tags, approved secret population, apply-time IAM, cost approval, and post-deploy verification. Legitimate coordinate enrichment is still required for GIS/PostGIS/H3 criteria.
