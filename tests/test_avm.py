@@ -6,6 +6,7 @@ import pandas as pd
 from property_intelligence.avm import (
     compute_avm_metrics,
     evaluate_price_per_m2_baselines,
+    evaluate_tabular_hgb_cohort_intervals,
     evaluate_tabular_hgb_intervals,
     evaluate_tabular_hgb_avm,
     make_tabular_hgb_pipeline,
@@ -188,6 +189,22 @@ def test_tabular_hgb_intervals_reports_coverage_and_width():
     assert 0.0 <= report["interval_metrics"]["coverage"] <= 1.0
     assert report["interval_metrics"]["median_interval_width_ratio"] >= 0.0
     assert report["point_metrics"]["split_name"] == "test"
+
+
+def test_tabular_hgb_cohort_intervals_reports_fallback_usage():
+    report = evaluate_tabular_hgb_cohort_intervals(
+        _gold_frame(),
+        cohort_columns=("property_type",),
+        min_cohort_rows=1,
+        random_state=7,
+    )
+
+    assert report["interval"] == "validation_log_residual_q10_q90_by_cohort"
+    assert report["cohort_config"]["columns"] == ["property_type"]
+    assert report["cohort_config"]["qualified_cohorts"] == 1
+    assert report["cohort_config"]["test_rows_using_global_fallback"] == 2
+    assert 0.0 <= report["interval_metrics"]["coverage"] <= 1.0
+    assert report["interval_metrics"]["median_interval_width_ratio"] >= 0.0
 
 
 def test_make_tabular_hgb_pipeline_has_preprocess_and_model_steps():

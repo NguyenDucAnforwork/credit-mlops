@@ -323,3 +323,26 @@ Full Hugging Face ingestion, row counts, checksums, ETL runtime, and peak RAM ar
 | Runtime | 9 seconds |
 | Evidence | `docs/evidence/avm_tabular_hgb_intervals_20260726.json` |
 | Full suite after intervals | 108 passed in 7.73 seconds; wrapper runtime 10 seconds |
+
+### AVM Experiment 4: Cohort Residual Intervals
+
+| Field | Value |
+|-------|-------|
+| Interval method | validation log-residual q10/q90 by province/property-type cohort, with global fallback |
+| Target coverage | 80% |
+| Qualified validation cohorts | 6 |
+| Test rows using cohort band | 107,356 |
+| Test rows using global fallback | 980 |
+| Global fallback share | 0.90% |
+| Empirical test coverage | 79.29% |
+| Median interval-width ratio | 82.32% |
+| p90 interval-width ratio | 107.48% |
+| High-confidence share | 0% |
+| Medium-confidence share | 21.63% |
+| Low-confidence share | 78.37% |
+| Coverage decision | pass |
+| Width decision | fail, target <=50% |
+| Runtime | 9 seconds |
+| Evidence | `docs/evidence/avm_tabular_hgb_cohort_intervals_20260726.json` |
+| Verification before experiment | 7 AVM tests passed in 0.90 seconds; 109 total tests passed in 7.81 seconds |
+| Final verification after docs/evidence | 109 tests passed in 9.44 seconds; wrapper runtime 12 seconds |

@@ -235,3 +235,21 @@
 - Decision: retry/tune; keep as failed-width uncertainty experiment.
 - Lesson learned: global residual intervals are blunt and produce uniformly low confidence; cohort- or quantile-model intervals are needed.
 - Next experiment: reduce interval width through cohort calibration or quantile models while maintaining coverage.
+
+## EXP-0014: Cohort-Calibrated 80% Intervals
+
+- Timestamp in Asia/Bangkok: 2026-07-26 15:05:25
+- Hypothesis: Province/property-type validation residual cohorts can reduce interval width while keeping December empirical coverage inside the 75%-85% target band.
+- Local Git commit or working-tree identifier: `0e7ebd4` plus uncommitted cohort interval source/tests/docs.
+- Dataset snapshot ID and checksums: gold layer from revision `a9a66ffa985edcf76b4be59ae2c6f5b1db889c38`; raw SHA256 manifest in `reports/generated/hf_vietnam_real_estates_snapshot_manifest_20260726.json`.
+- Exact remote command: `scripts/remote/run.sh 'uv run python scripts/property_avm_cohort_intervals.py'`.
+- Configuration and seed: HistGradientBoostingRegressor `random_state=42`; cohort columns `province, property_type`; minimum 500 validation rows per cohort; global q10/q90 residual fallback.
+- VM hardware/environment: Ubuntu 24.04.4 LTS, 4 vCPU AMD EPYC 7B12, 15 GiB RAM, no GPU.
+- Runtime: cohort interval script 9 seconds; targeted AVM tests plus full suite passed before experiment, 7 AVM tests in 0.90 seconds and 109 total tests in 7.81 seconds.
+- Peak RAM when available: not measured.
+- Metrics: 6 qualified cohorts; 107,356 test rows used cohort residual bands; 980 test rows used global fallback; fallback share 0.90%; test coverage 79.29%; median interval-width ratio 82.32%; p90 interval-width ratio 107.48%; medium-confidence share 21.63%; low-confidence share 78.37%; point MdAPE 19.16%; RMSLE 0.3850.
+- Baseline comparison: global residual interval coverage was 79.61% with 83.79% median width and 100% low-confidence share. Cohort calibration slightly reduced median width and created a medium-confidence segment, but p90 width worsened and the <=50% median width target still fails.
+- Interpretation: coarse listing cohorts do not solve uncertainty usefulness without true spatial/location features or a more direct quantile objective.
+- Decision: keep as failed-width uncertainty experiment; do not promote confidence policy.
+- Lesson learned: segmenting residuals by province/property type can identify relatively tighter cohorts, but listing residual variance remains too large for narrow 80% bands.
+- Next experiment: try quantile HGB or conformalized quantile regression, while continuing to treat GIS features as blocked until coordinates are legitimately enriched.

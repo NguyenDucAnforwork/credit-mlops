@@ -1,13 +1,13 @@
 # Progress
 
-Last updated: 2026-07-26 15:00:15 Asia/Bangkok
+Last updated: 2026-07-26 15:05:30 Asia/Bangkok
 
 ## Phase Checklist
 
 - Phase 0 audit and remote baseline: partially complete; tests pass, Docker smoke blocked
 - Phase 1 ETL: raw snapshot, silver/gold ETL, and data contracts complete with coordinate blocker documented
 - Phase 2 PostGIS and GIS: not started
-- Phase 3 AVM: non-GIS median/tabular baselines and first interval calibration measured
+- Phase 3 AVM: non-GIS median/tabular baselines and two interval calibrations measured
 - Phase 4 APIs: not started
 - Phase 5 MLOps and monitoring: not started
 - Phase 6 Docker and GCP: cloud access blocked by VM OAuth scopes; local Docker baseline pending
@@ -50,7 +50,10 @@ Last updated: 2026-07-26 15:00:15 Asia/Bangkok
 - Full suite after tabular AVM passed on the VM: 107 passed in 7.69 seconds; wrapper runtime 9 seconds.
 - First interval calibration: empirical 80% interval coverage 79.61%, median interval width ratio 83.79%, p90 width ratio 83.79%; coverage passes but width fails the <=50% target.
 - Full suite after interval calibration passed on the VM: 108 passed in 7.73 seconds; wrapper runtime 10 seconds.
+- Cohort interval calibration using province/property-type residual bands: empirical 80% interval coverage 79.29%, median interval width ratio 82.32%, p90 width ratio 107.48%; 6 qualified cohorts; 0.90% global fallback; medium-confidence share 21.63%; width still fails the <=50% target.
+- Targeted AVM tests plus full suite before cohort experiment passed on the VM: 7 AVM tests in 0.90 seconds and 109 total tests in 7.81 seconds.
+- Final full suite after cohort docs/evidence passed on the VM: 109 passed in 9.44 seconds; wrapper runtime 12 seconds.
 
 ## Next
 
-Commit and push the verified interval calibration experiment, then retry uncertainty width reduction and add cohort metrics while coordinate enrichment remains unresolved.
+Commit and push the verified cohort interval experiment, then try quantile-based uncertainty while coordinate enrichment remains unresolved.

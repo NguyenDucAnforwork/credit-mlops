@@ -1,0 +1,46 @@
+{
+  "cohort_config": {
+    "columns": [
+      "province",
+      "property_type"
+    ],
+    "min_validation_rows": 500,
+    "qualified_cohorts": 6,
+    "test_global_fallback_share": 0.009045931177078718,
+    "test_rows_using_cohort": 107356,
+    "test_rows_using_global_fallback": 980
+  },
+  "global_residual_quantiles": {
+    "q10": -0.38068980411789816,
+    "q90": 0.41957244141834193
+  },
+  "interval": "validation_log_residual_q10_q90_by_cohort",
+  "interval_metrics": {
+    "coverage": 0.7929220203810368,
+    "high_confidence_share": 0.0,
+    "low_confidence_share": 0.7837099394476443,
+    "median_interval_width_ratio": 0.8232212460995408,
+    "medium_confidence_share": 0.21629006055235564,
+    "p90_interval_width_ratio": 1.0747538408404385
+  },
+  "model": "hist_gradient_boosting_log_price_per_m2",
+  "point_metrics": {
+    "mae_vnd": 18658887867.577744,
+    "mdape": 0.19161180559358712,
+    "median_absolute_error_vnd": 1576760601.8607616,
+    "model_name": "hist_gradient_boosting_log_price_per_m2",
+    "r2": 0.313374388574968,
+    "rmsle": 0.384952119043617,
+    "rows": 108336,
+    "split_name": "test",
+    "within_10pct": 0.27666703588834735,
+    "within_20pct": 0.5179072515138089
+  },
+  "random_state": 42,
+  "split_rows": {
+    "test": 108336,
+    "train": 429682,
+    "validation": 100105
+  },
+  "target_coverage": 0.8
+}
