@@ -492,3 +492,24 @@ Full Hugging Face ingestion, row counts, checksums, ETL runtime, and peak RAM ar
 | Evidence | `docs/evidence/property_api_http_benchmark_20260726.json` |
 | Final verification after benchmark | 129 tests passed in 8.24 seconds; wrapper runtime 10 seconds |
 | Criterion status | local-on-VM AVM and lending HTTP service p95/error targets pass for fallback service; Docker and Cloud Run criteria remain unmeasured |
+
+### Delayed-Label AVM Monitoring
+
+| Field | Value |
+|-------|-------|
+| Prediction source | non-GIS comparable fallback |
+| Label sample | 2,000 December 2025 gold listings, `random_state=42` |
+| Overall MAE | 5.30B VND |
+| Overall median absolute error | 1.4225B VND |
+| Overall MdAPE | 16.73% |
+| Within 10% | 36.10% |
+| Within 20% | 56.55% |
+| Median comparable count | 10 |
+| Distance availability | 0%, source coordinates absent |
+| Cohort groups | district + property type |
+| Monitored cohorts | 10 cohorts with at least 50 rows |
+| Cohort alerts | 0 above +5 MdAPE points vs overall |
+| Worst monitored cohort | Bình Thạnh house, 85 rows, MdAPE 20.56%, +3.83 points vs overall |
+| Runtime | 22 seconds |
+| Evidence | `docs/evidence/property_delayed_label_monitoring_20260726.json` |
+| Final verification after report | 130 tests passed in 8.20 seconds; wrapper runtime 10 seconds |

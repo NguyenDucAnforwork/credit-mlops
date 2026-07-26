@@ -1,6 +1,6 @@
 # Interview Story
 
-Last updated: 2026-07-26 15:49:40 Asia/Bangkok
+Last updated: 2026-07-26 15:55:40 Asia/Bangkok
 
 ## Current 90-Second Story
 
@@ -23,6 +23,7 @@ I started with an existing credit scoring MLOps project and rebuilt its executio
 - Added an AVM promotion dry-run gate that raised the suite to 126 passing tests and correctly rejected the current candidate despite 16.14% MdAPE improvement because interval width and spatial/API evidence are not ready.
 - Added deterministic property monitoring drift checks; synthetic drift shifted 5 inputs and triggered 4 alerts while raising the remote suite to 129 passing tests.
 - Benchmarked warmed property APIs through uvicorn on the VM: 1,000 AVM HTTP requests at concurrency 10 reached p95 140.84 ms with 0% errors, and 1,000 lending HTTP requests reached p95 24.21 ms.
+- Added delayed-label monitoring on 2,000 December listings: fallback comparable replay reached 16.73% MdAPE and found no district/property-type cohort above the +5 MdAPE point alert threshold.
 - Not ready: GIS/spatial AVM metrics are not measured yet because coordinates are absent.
 - Not ready: cloud deployment metrics are not measured yet.
 

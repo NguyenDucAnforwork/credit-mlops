@@ -1,6 +1,6 @@
 # Reproduce
 
-Last updated: 2026-07-26 15:49:40 Asia/Bangkok
+Last updated: 2026-07-26 15:55:40 Asia/Bangkok
 
 All heavy work runs on the VM. Do not install project dependencies, run tests, train models, Docker, Terraform, or `gcloud` locally.
 
@@ -140,6 +140,14 @@ Warm property API uvicorn HTTP load benchmark:
 ```bash
 make remote-sync
 scripts/remote/run.sh 'uv run python scripts/property_api_http_benchmark.py'
+scripts/remote/fetch_artifacts.sh
+```
+
+Delayed-label AVM monitoring:
+
+```bash
+make remote-sync
+scripts/remote/run.sh 'uv run python scripts/property_delayed_label_monitoring.py'
 scripts/remote/fetch_artifacts.sh
 ```
 

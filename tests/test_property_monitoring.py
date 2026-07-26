@@ -4,6 +4,7 @@ import pandas as pd
 
 from property_intelligence.monitoring import (
     build_property_monitoring_frame,
+    evaluate_delayed_label_monitoring,
     evaluate_property_drift,
     inject_synthetic_property_drift,
 )
@@ -45,3 +46,29 @@ def test_no_drift_returns_ok():
 
     assert report["status"] == "ok"
     assert report["alert_count"] == 0
+
+
+def test_delayed_label_monitoring_reports_overall_and_cohort_alerts():
+    predictions = pd.DataFrame(
+        {
+            "district": ["A", "A", "B", "B"],
+            "property_type": ["apartment", "apartment", "house", "house"],
+            "actual_value_vnd": [100.0, 100.0, 100.0, 100.0],
+            "predicted_value_vnd": [100.0, 105.0, 170.0, 180.0],
+            "comparable_count": [10, 10, 3, 3],
+            "distance_status": ["not_available_missing_coordinates"] * 4,
+        }
+    )
+
+    report = evaluate_delayed_label_monitoring(
+        predictions,
+        group_columns=("district", "property_type"),
+        min_cohort_rows=2,
+        cohort_mdape_alert_delta=0.10,
+    )
+
+    assert report["status"] == "alert"
+    assert report["overall"]["rows"] == 4
+    assert report["overall"]["distance_available_share"] == 0.0
+    assert report["cohort_count"] == 2
+    assert report["alerts"][0]["cohort"] == {"district": "B", "property_type": "house"}

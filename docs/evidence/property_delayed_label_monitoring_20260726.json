@@ -1,0 +1,161 @@
+{
+  "alert_count": 0,
+  "alerts": [],
+  "cohort_count": 10,
+  "cohort_mdape_alert_delta": 0.05,
+  "group_columns": [
+    "district",
+    "property_type"
+  ],
+  "label_sample": {
+    "prediction_source": "non_gis_comparable_fallback",
+    "random_state": 42,
+    "rows": 2000,
+    "split": "published_at >= 2025-12-01"
+  },
+  "min_cohort_rows": 50,
+  "overall": {
+    "distance_available_share": 0.0,
+    "mae_vnd": 5304052902.273322,
+    "mdape": 0.16733333333333333,
+    "median_absolute_error_vnd": 1422500000.0,
+    "median_comparable_count": 10.0,
+    "rows": 2000,
+    "within_10pct": 0.361,
+    "within_20pct": 0.5655
+  },
+  "snapshot_id": "a9a66ffa985edcf76b4be59ae2c6f5b1db889c38",
+  "status": "ok",
+  "worst_cohorts_by_mdape": [
+    {
+      "alert": false,
+      "cohort": {
+        "district": "B\u00ecnh Th\u1ea1nh",
+        "property_type": "house"
+      },
+      "mae_vnd": 4304314569.725983,
+      "mdape": 0.20564488421631283,
+      "mdape_delta_vs_overall": 0.038311550882979495,
+      "median_comparable_count": 10.0,
+      "rows": 85,
+      "within_20pct": 0.49411764705882355
+    },
+    {
+      "alert": false,
+      "cohort": {
+        "district": "C\u1ea7u Gi\u1ea5y",
+        "property_type": "house"
+      },
+      "mae_vnd": 9456189055.14892,
+      "mdape": 0.20296352583586624,
+      "mdape_delta_vs_overall": 0.03563019250253291,
+      "median_comparable_count": 10.0,
+      "rows": 58,
+      "within_20pct": 0.5
+    },
+    {
+      "alert": false,
+      "cohort": {
+        "district": "Th\u1ee7 \u0110\u1ee9c",
+        "property_type": "house"
+      },
+      "mae_vnd": 9013860086.36929,
+      "mdape": 0.20253164556962025,
+      "mdape_delta_vs_overall": 0.035198312236286916,
+      "median_comparable_count": 10.0,
+      "rows": 103,
+      "within_20pct": 0.49514563106796117
+    },
+    {
+      "alert": false,
+      "cohort": {
+        "district": "Th\u1ee7 \u0110\u1ee9c",
+        "property_type": "land"
+      },
+      "mae_vnd": 18148675826.290768,
+      "mdape": 0.19696969696969696,
+      "mdape_delta_vs_overall": 0.029636363636363627,
+      "median_comparable_count": 10.0,
+      "rows": 53,
+      "within_20pct": 0.5094339622641509
+    },
+    {
+      "alert": false,
+      "cohort": {
+        "district": "T\u00e2n B\u00ecnh",
+        "property_type": "house"
+      },
+      "mae_vnd": 4252397067.3530326,
+      "mdape": 0.18617021276595744,
+      "mdape_delta_vs_overall": 0.018836879432624104,
+      "median_comparable_count": 10.0,
+      "rows": 67,
+      "within_20pct": 0.5373134328358209
+    },
+    {
+      "alert": false,
+      "cohort": {
+        "district": "\u0110\u1ed1ng \u0110a",
+        "property_type": "house"
+      },
+      "mae_vnd": 6395291774.212726,
+      "mdape": 0.18297595841455488,
+      "mdape_delta_vs_overall": 0.01564262508122155,
+      "median_comparable_count": 10.0,
+      "rows": 62,
+      "within_20pct": 0.5161290322580645
+    },
+    {
+      "alert": false,
+      "cohort": {
+        "district": "G\u00f2 V\u1ea5p",
+        "property_type": "house"
+      },
+      "mae_vnd": 2334498726.393265,
+      "mdape": 0.17315573770491804,
+      "mdape_delta_vs_overall": 0.005822404371584711,
+      "median_comparable_count": 10.0,
+      "rows": 73,
+      "within_20pct": 0.6164383561643836
+    },
+    {
+      "alert": false,
+      "cohort": {
+        "district": "7",
+        "property_type": "apartment"
+      },
+      "mae_vnd": 1661936664.2383938,
+      "mdape": 0.16017338995046004,
+      "mdape_delta_vs_overall": -0.007159943382873291,
+      "median_comparable_count": 10.0,
+      "rows": 54,
+      "within_20pct": 0.6481481481481481
+    },
+    {
+      "alert": false,
+      "cohort": {
+        "district": "T\u00e2n Ph\u00fa",
+        "property_type": "house"
+      },
+      "mae_vnd": 2420363108.748293,
+      "mdape": 0.1506578947368421,
+      "mdape_delta_vs_overall": -0.016675438596491232,
+      "median_comparable_count": 10.0,
+      "rows": 63,
+      "within_20pct": 0.6984126984126984
+    },
+    {
+      "alert": false,
+      "cohort": {
+        "district": "B\u00ecnh T\u00e2n",
+        "property_type": "house"
+      },
+      "mae_vnd": 1277361908.049416,
+      "mdape": 0.14545454545454545,
+      "mdape_delta_vs_overall": -0.021878787878787886,
+      "median_comparable_count": 10.0,
+      "rows": 59,
+      "within_20pct": 0.6271186440677966
+    }
+  ]
+}

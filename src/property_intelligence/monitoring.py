@@ -63,6 +63,49 @@ def evaluate_property_drift(
     }
 
 
+def evaluate_delayed_label_monitoring(
+    predictions: pd.DataFrame,
+    group_columns: tuple[str, ...] = ("district", "property_type"),
+    min_cohort_rows: int = 50,
+    cohort_mdape_alert_delta: float = 0.05,
+) -> dict:
+    frame = predictions.loc[
+        (predictions["actual_value_vnd"] > 0)
+        & (predictions["predicted_value_vnd"] > 0)
+    ].copy()
+    frame["absolute_error_vnd"] = (frame["predicted_value_vnd"] - frame["actual_value_vnd"]).abs()
+    frame["absolute_percentage_error"] = frame["absolute_error_vnd"] / frame["actual_value_vnd"]
+    overall = {
+        "rows": len(frame),
+        "mae_vnd": float(frame["absolute_error_vnd"].mean()),
+        "median_absolute_error_vnd": float(frame["absolute_error_vnd"].median()),
+        "mdape": float(frame["absolute_percentage_error"].median()),
+        "within_10pct": float((frame["absolute_percentage_error"] <= 0.10).mean()),
+        "within_20pct": float((frame["absolute_percentage_error"] <= 0.20).mean()),
+        "median_comparable_count": float(frame.get("comparable_count", pd.Series(dtype=float)).median()),
+        "distance_available_share": _distance_available_share(frame),
+    }
+    cohorts = _cohort_label_metrics(
+        frame,
+        group_columns=group_columns,
+        min_cohort_rows=min_cohort_rows,
+        overall_mdape=overall["mdape"],
+        cohort_mdape_alert_delta=cohort_mdape_alert_delta,
+    )
+    alerts = [cohort for cohort in cohorts if cohort["alert"]]
+    return {
+        "status": "alert" if alerts else "ok",
+        "overall": overall,
+        "group_columns": list(group_columns),
+        "min_cohort_rows": min_cohort_rows,
+        "cohort_mdape_alert_delta": cohort_mdape_alert_delta,
+        "cohort_count": len(cohorts),
+        "alert_count": len(alerts),
+        "alerts": alerts,
+        "worst_cohorts_by_mdape": sorted(cohorts, key=lambda item: item["mdape"], reverse=True)[:10],
+    }
+
+
 def write_monitoring_report(report: dict, output_path: Path) -> Path:
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(json.dumps(report, indent=2, sort_keys=True), encoding="utf-8")
@@ -101,3 +144,36 @@ def _evaluate_rule(rule: DriftRule, reference: pd.DataFrame, current: pd.DataFra
 
 def _shifted_feature_count(checks: list[dict]) -> int:
     return int(np.sum([check["alert"] for check in checks]))
+
+
+def _cohort_label_metrics(
+    frame: pd.DataFrame,
+    group_columns: tuple[str, ...],
+    min_cohort_rows: int,
+    overall_mdape: float,
+    cohort_mdape_alert_delta: float,
+) -> list[dict]:
+    cohorts: list[dict] = []
+    for key, group in frame.groupby(list(group_columns), dropna=False):
+        if len(group) < min_cohort_rows:
+            continue
+        normalized_key = key if isinstance(key, tuple) else (key,)
+        mdape = float(group["absolute_percentage_error"].median())
+        cohort = {
+            "cohort": {column: value for column, value in zip(group_columns, normalized_key, strict=True)},
+            "rows": int(len(group)),
+            "mae_vnd": float(group["absolute_error_vnd"].mean()),
+            "mdape": mdape,
+            "mdape_delta_vs_overall": float(mdape - overall_mdape),
+            "within_20pct": float((group["absolute_percentage_error"] <= 0.20).mean()),
+            "median_comparable_count": float(group.get("comparable_count", pd.Series(dtype=float)).median()),
+            "alert": bool(mdape - overall_mdape > cohort_mdape_alert_delta),
+        }
+        cohorts.append(cohort)
+    return cohorts
+
+
+def _distance_available_share(frame: pd.DataFrame) -> float:
+    if "distance_status" not in frame.columns:
+        return 0.0
+    return float((frame["distance_status"] == "available").mean())

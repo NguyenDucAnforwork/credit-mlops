@@ -1,6 +1,6 @@
 # Progress
 
-Last updated: 2026-07-26 15:49:40 Asia/Bangkok
+Last updated: 2026-07-26 15:55:40 Asia/Bangkok
 
 ## Phase Checklist
 
@@ -9,7 +9,7 @@ Last updated: 2026-07-26 15:49:40 Asia/Bangkok
 - Phase 2 PostGIS and GIS: PostGIS/GIS blocked by missing coordinates; non-GIS comparable fallback measured
 - Phase 3 AVM: non-GIS median/tabular baselines and three interval calibrations measured
 - Phase 4 APIs: scaffold endpoints implemented; local-on-VM uvicorn AVM/lending p95 criteria measured for fallback service
-- Phase 5 MLOps and monitoring: AVM promotion gate dry-run and synthetic drift monitoring implemented
+- Phase 5 MLOps and monitoring: AVM promotion gate dry-run, synthetic drift, and delayed-label monitoring implemented
 - Phase 6 Docker and GCP: cloud access blocked by VM OAuth scopes; local Docker baseline pending
 - Phase 7 UI, CI, portfolio: not started
 
@@ -74,7 +74,10 @@ Last updated: 2026-07-26 15:49:40 Asia/Bangkok
 - Full suite after API load benchmark passed on the VM: 129 passed in 8.20 seconds; wrapper runtime 10 seconds.
 - Warm uvicorn HTTP API benchmark: 1,000 AVM requests and 1,000 lending requests at concurrency 10; AVM p95 140.84 ms with 0% errors; lending p95 24.21 ms with 0% errors; scope is VM uvicorn service, not Docker or Cloud Run.
 - No lingering uvicorn process remained after the benchmark; final full suite passed on the VM: 129 passed in 8.24 seconds; wrapper runtime 10 seconds.
+- Delayed-label AVM monitoring: 2,000 December labels; fallback comparable MdAPE 16.73%, MAE 5.30B VND, within 20% 56.55%, median comparable count 10, distance availability 0%.
+- District/property-type bias monitoring: 10 cohorts with >=50 rows; 0 alerts above +5 MdAPE points; worst cohort Bình Thạnh house MdAPE 20.56%, +3.83 points vs overall.
+- Final full suite after delayed-label monitoring passed on the VM: 130 passed in 8.20 seconds; wrapper runtime 10 seconds.
 
 ## Next
 
-Commit and push the uvicorn HTTP benchmark, then continue with delayed-label/cohort monitoring or API startup warm-up while Docker and GCP remain blocked.
+Commit and push delayed-label monitoring, then continue with API startup warm-up or HGB/quantile artifact packaging while Docker and GCP remain blocked.

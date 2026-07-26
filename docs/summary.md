@@ -1,6 +1,6 @@
 # Summary
 
-Last updated: 2026-07-26 15:49:40 Asia/Bangkok
+Last updated: 2026-07-26 15:55:40 Asia/Bangkok
 
 Status: Phase 1 data contracts complete with blockers for GIS/GCP/Docker.
 
@@ -14,7 +14,7 @@ The project is being converted from a credit scoring MLOps demo into a Property 
 - GCP access: blocked by `ACCESS_TOKEN_SCOPE_INSUFFICIENT`.
 - Remote workspace: created as rsync-backed after VM Git clone failed on local SSH alias `github-nguyenducan`.
 - Baseline tests: 76 passed in 7.42 seconds on the VM.
-- Current tests: 129 passed in 8.24 seconds on the VM after warm uvicorn HTTP benchmark.
+- Current tests: 130 passed in 8.20 seconds on the VM after delayed-label monitoring.
 - Baseline data split: version `cac9de3c`, 16,000 train rows, 4,000 test rows.
 - ETL fixture: 1,000 inserts, 100 duplicates, identical rerun 0 inserts.
 - HF dataset metadata: revision `a9a66ffa985edcf76b4be59ae2c6f5b1db889c38`, 5 Parquet shards, last modified `2026-04-08T06:51:21.000Z`.
@@ -29,6 +29,7 @@ The project is being converted from a credit scoring MLOps demo into a Property 
 - APIs: `POST /v1/avm/predict`, `GET /v1/comparables`, and `POST /v1/lending/decision` are implemented and smoked with real VM gold data.
 - AVM lifecycle: dry-run promotion gate rejects current candidate; temporal improvement and coverage pass, but interval width, spatial holdout, cohort regression, and warm API p95 evidence block promotion.
 - Monitoring: synthetic property drift shifts at least three features and triggers 4 alerts across area, price/m2, interval width, and missingness.
+- Delayed-label monitoring: 2,000 December labels show fallback comparable MdAPE 16.73%, within 20% 56.55%, 0 cohort alerts above +5 MdAPE points, and 0% distance availability because coordinates are absent.
 - Warm uvicorn HTTP load: AVM p95 140.84 ms and lending p95 24.21 ms with 0% errors at 1,000 requests/concurrency 10; Docker and Cloud Run p95 remain unmeasured.
 - Engineering test-count criterion: 126 passing tests meets the >=125 numeric floor.
 - Docker smoke: blocked because `ducan` cannot access Docker socket and `docker compose` is unavailable.
@@ -36,4 +37,4 @@ The project is being converted from a credit scoring MLOps demo into a Property 
 
 ## Next Step
 
-Commit and push the uvicorn HTTP benchmark, then continue with delayed-label/cohort monitoring or API startup warm-up.
+Commit and push delayed-label monitoring, then continue with API startup warm-up or model artifact packaging.

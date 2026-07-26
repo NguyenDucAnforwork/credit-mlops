@@ -379,3 +379,21 @@
 - Decision: keep as local-on-VM HTTP service evidence; do not mark Docker build, Compose, or Cloud Run criteria complete.
 - Lesson learned: service-level HTTP overhead is acceptable after warm-up; first comparable request is still dominated by index load and should be warmed at startup before demos.
 - Next experiment: warm index at API startup or continue delayed-label/cohort monitoring.
+
+## EXP-0022: Delayed-Label AVM Monitoring
+
+- Timestamp in Asia/Bangkok: 2026-07-26 15:55:24
+- Hypothesis: The non-GIS comparable fallback can produce delayed-label MAE/MdAPE and district/property-type cohort bias monitoring evidence on a December label sample.
+- Local Git commit or working-tree identifier: `131a0c5` plus uncommitted delayed-label monitoring source/tests/docs.
+- Dataset snapshot ID and checksums: 2,000-label sample from gold revision `a9a66ffa985edcf76b4be59ae2c6f5b1db889c38`; raw SHA256 manifest in `reports/generated/hf_vietnam_real_estates_snapshot_manifest_20260726.json`.
+- Exact remote command: `scripts/remote/run.sh 'uv run python scripts/property_delayed_label_monitoring.py'`.
+- Configuration and seed: December 2025 gold listings sampled with `random_state=42`; predictions from non-GIS comparable fallback; cohort groups `district, property_type`; minimum 50 rows; alert threshold >5 MdAPE points above overall.
+- VM hardware/environment: Ubuntu 24.04.4 LTS, 4 vCPU AMD EPYC 7B12, 15 GiB RAM, no GPU.
+- Runtime: monitoring script 22 seconds; focused monitoring tests passed in 0.65 seconds; final full suite passed with 130 tests in 8.20 seconds.
+- Peak RAM when available: not measured.
+- Metrics: 2,000 delayed labels; status `ok`; MAE 5.30B VND; median absolute error 1.4225B VND; MdAPE 16.73%; within 10% 36.10%; within 20% 56.55%; median comparable count 10; distance availability 0%; 10 monitored cohorts; 0 cohort alerts. Worst monitored cohort: Bình Thạnh house, 85 rows, MdAPE 20.56%, +3.83 MdAPE points vs overall.
+- Baseline comparison: previous monitoring covered synthetic feature drift only; this adds delayed-label error and district/property-type bias evidence and raises the remote suite to 130 passing tests.
+- Interpretation: fallback comparable predictions are reasonable on the sampled delayed-label cohort, but distance monitoring remains unavailable because source coordinates are absent.
+- Decision: keep delayed-label monitoring; do not treat it as the final AVM promotion cohort-regression report because the promoted model is still absent.
+- Lesson learned: delayed-label monitoring can be useful before production labels exist by replaying held-out listing labels, but it must identify the prediction source and sample scope.
+- Next experiment: add API startup warm-up or artifact packaging for the HGB/quantile model.
