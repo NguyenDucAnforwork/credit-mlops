@@ -35,7 +35,7 @@ Authenticated client -> Cloud Run API -> Secret Manager -> DagsHub MLflow
 - Invalid AVM request (`area_m2=0`): HTTP 422 validation response, not a 5xx.
 - ETL run 1: `credit-mlops-demo-etl-fdrgb`, successful in 3m42.48s.
 - ETL run 2: `credit-mlops-demo-etl-zrd8l`, completed successfully with consistent versioned outputs.
-- Scheduler trigger: `credit-mlops-demo-etl-2pk9v` initially hit a measured memory limit at 2 CPU/8Gi; after the job was raised to 4 CPU/16Gi, `credit-mlops-demo-etl-2pk9v` completed successfully in 2m29.37s.
+- Scheduler trigger `credit-mlops-demo-etl-2kjc6` hit a measured memory limit at 2 CPU/8Gi; after the job was raised to 4 CPU/16Gi, scheduler execution `credit-mlops-demo-etl-2pk9v` completed successfully in 2m29.37s.
 - Storage: three versioned parquet objects, 745.13 MiB total.
 - BigQuery: `property_silver` 893,830 rows; `property_gold` 638,123 rows; `property_quarantine` 106,170 rows.
 - Focused remote tests: `35 passed in 6.32s` (`tests/test_hf_etl.py`, `tests/test_api.py`, `tests/test_deployment.py`).
