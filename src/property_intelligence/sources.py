@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import hashlib
 from collections.abc import Iterable
 from dataclasses import dataclass
 from datetime import UTC, datetime
@@ -37,6 +38,8 @@ class HuggingFaceShardMetadata:
     num_columns: int | None = None
     num_row_groups: int | None = None
     footer_size_bytes: int | None = None
+    sha256: str | None = None
+    local_path: str | None = None
 
 
 def parse_hf_dataset_metadata(payload: dict, captured_at: datetime | None = None) -> HuggingFaceDatasetMetadata:
@@ -158,6 +161,8 @@ def write_shard_manifest(shards: Iterable[HuggingFaceShardMetadata], output_path
                     "num_columns": shard.num_columns,
                     "num_row_groups": shard.num_row_groups,
                     "footer_size_bytes": shard.footer_size_bytes,
+                    "sha256": shard.sha256,
+                    "local_path": shard.local_path,
                 }
                 for shard in shards
             ],
@@ -169,6 +174,39 @@ def write_shard_manifest(shards: Iterable[HuggingFaceShardMetadata], output_path
     return output_path
 
 
+def download_hf_shards(
+    shards: Iterable[HuggingFaceShardMetadata],
+    output_dir: Path,
+    chunk_size: int = 1024 * 1024,
+) -> list[HuggingFaceShardMetadata]:
+    output_dir.mkdir(parents=True, exist_ok=True)
+    downloaded: list[HuggingFaceShardMetadata] = []
+    for shard in shards:
+        output_path = output_dir / shard.filename
+        sha256, size_bytes = _download_with_sha256(shard.url, output_path, chunk_size=chunk_size)
+        if shard.size_bytes is not None and size_bytes != shard.size_bytes:
+            raise ValueError(
+                f"Downloaded size mismatch for {shard.filename}: "
+                f"expected {shard.size_bytes}, got {size_bytes}"
+            )
+        downloaded.append(
+            HuggingFaceShardMetadata(
+                filename=shard.filename,
+                url=shard.url,
+                size_bytes=size_bytes,
+                etag=shard.etag,
+                xet_hash=shard.xet_hash,
+                row_count=shard.row_count,
+                num_columns=shard.num_columns,
+                num_row_groups=shard.num_row_groups,
+                footer_size_bytes=shard.footer_size_bytes,
+                sha256=sha256,
+                local_path=str(output_path),
+            )
+        )
+    return downloaded
+
+
 def _head_headers(url: str) -> dict[str, str]:
     with urlopen(Request(url, method="HEAD"), timeout=30) as response:  # nosec B310
         return {key.casefold(): value for key, value in response.headers.items()}
@@ -178,6 +216,38 @@ def _read_http_range(url: str, start: int, end: int) -> bytes:
     request = Request(url, headers={"Range": f"bytes={start}-{end}"})
     with urlopen(request, timeout=60) as response:  # nosec B310
         return response.read()
+
+
+def _download_with_sha256(url: str, output_path: Path, chunk_size: int) -> tuple[str, int]:
+    if output_path.exists():
+        return _sha256_file(output_path, chunk_size)
+    tmp_path = output_path.with_suffix(f"{output_path.suffix}.tmp")
+    digest = hashlib.sha256()
+    size = 0
+    with urlopen(url, timeout=300) as response:  # nosec B310
+        with tmp_path.open("wb") as file:
+            while True:
+                chunk = response.read(chunk_size)
+                if not chunk:
+                    break
+                file.write(chunk)
+                digest.update(chunk)
+                size += len(chunk)
+    tmp_path.replace(output_path)
+    return digest.hexdigest(), size
+
+
+def _sha256_file(path: Path, chunk_size: int) -> tuple[str, int]:
+    digest = hashlib.sha256()
+    size = 0
+    with path.open("rb") as file:
+        while True:
+            chunk = file.read(chunk_size)
+            if not chunk:
+                break
+            digest.update(chunk)
+            size += len(chunk)
+    return digest.hexdigest(), size
 
 
 def _int_header(headers: dict[str, str], name: str) -> int | None:

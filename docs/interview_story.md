@@ -1,6 +1,6 @@
 # Interview Story
 
-Last updated: 2026-07-26 14:27:30 Asia/Bangkok
+Last updated: 2026-07-26 14:33:45 Asia/Bangkok
 
 ## Current 90-Second Story
 
@@ -12,6 +12,7 @@ I started with an existing credit scoring MLOps project and rebuilt its executio
 - Added a fixture-backed property ETL foundation that raised the VM-verified suite to 86 passing tests and proved 1,000-insert/100-duplicate incremental behavior.
 - Captured reproducible Hugging Face source metadata from the VM: revision `a9a66ffa985edcf76b4be59ae2c6f5b1db889c38` across 5 Parquet shards.
 - Verified the real-estate dataset scale without full local download by reading Parquet footers on the VM: 1,000,000 rows, 19 columns, 469,122,864 bytes.
+- Downloaded and checksummed the full pinned real-estate snapshot on the VM in 74 seconds, with a 12-second verified rerun path and no raw data committed locally.
 - Not ready: AVM metrics are not measured yet.
 - Not ready: cloud deployment metrics are not measured yet.
 

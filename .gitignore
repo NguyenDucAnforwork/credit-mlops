@@ -8,6 +8,10 @@ artifacts/lr_scaler.joblib
 
 # Raw dataset (too large for git)
 data/raw/
+data/bronze/
+data/silver/
+data/gold/
+data/quarantine/
 
 # Processed data (reproducible via pipeline)
 data/processed/

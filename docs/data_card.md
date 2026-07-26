@@ -1,6 +1,6 @@
 # Data Card
 
-Last updated: 2026-07-26 14:27:30 Asia/Bangkok
+Last updated: 2026-07-26 14:33:45 Asia/Bangkok
 
 ## Primary Dataset
 
@@ -10,15 +10,16 @@ Last updated: 2026-07-26 14:27:30 Asia/Bangkok
 - Coordinates: WGS84
 - License: CC BY-NC 4.0
 - Current local status: not downloaded
-- Current VM status: not fully downloaded; footer manifest measured via HTTP range reads
+- Current VM status: downloaded under ignored path `data/raw/vietnam-real-estates/a9a66ffa985edcf76b4be59ae2c6f5b1db889c38`
 - Source revision: `a9a66ffa985edcf76b4be59ae2c6f5b1db889c38`
 - Last modified: `2026-04-08T06:51:21.000Z`
 - Parquet shards: 5 (`shard_0000.parquet` through `shard_0004.parquet`)
 - HF ETags: measured for all 5 shards in `reports/generated/hf_vietnam_real_estates_shard_manifest_20260726.json`
-- Full SHA256 checksums: not measured
+- Full SHA256 checksums: measured for all 5 shards in `reports/generated/hf_vietnam_real_estates_snapshot_manifest_20260726.json`
 - Row counts: 1,000,000 total rows from Parquet footers, 200,000 per shard
 - Schema width: 19 columns from Parquet footers
 - Total shard size: 469,122,864 bytes from HTTP headers
+- VM raw snapshot disk use: 448M
 
 ## Fixture Data
 

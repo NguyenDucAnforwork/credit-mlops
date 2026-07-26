@@ -218,3 +218,18 @@ Full Hugging Face ingestion, row counts, checksums, ETL runtime, and peak RAM ar
 | Full SHA256 | not measured |
 | Footer summary evidence | `docs/evidence/hf_shard_footer_summary_20260726.json` |
 | Full suite after shard manifest module | 93 passed in 7.31 seconds; wrapper runtime 9 seconds |
+
+### HF Raw Snapshot
+
+| Field | Value |
+|-------|-------|
+| Remote raw path | `data/raw/vietnam-real-estates/a9a66ffa985edcf76b4be59ae2c6f5b1db889c38` |
+| Local raw data copied | no |
+| Shards downloaded | 5 |
+| Total rows from footers | 1,000,000 |
+| Total size | 469,122,864 bytes |
+| VM disk use | 448M |
+| First download runtime | 74 seconds |
+| Verified rerun runtime | 12 seconds |
+| Full SHA256 | captured for every shard in `reports/generated/hf_vietnam_real_estates_snapshot_manifest_20260726.json` |
+| Full suite after snapshot downloader | 96 passed in 7.35 seconds; wrapper runtime 9 seconds |

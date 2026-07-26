@@ -127,3 +127,21 @@
 - Decision: keep.
 - Lesson learned: Parquet footers are enough to verify row counts and schema width cheaply, but they are not a substitute for full-content SHA256.
 - Next experiment: full remote snapshot download with SHA256 and immutable bronze metadata, bounded by VM disk and runtime.
+
+## EXP-0008: Full HF Raw Snapshot Download
+
+- Timestamp in Asia/Bangkok: 2026-07-26 14:33:40
+- Hypothesis: The VM can download the full pinned HF Parquet snapshot, compute full SHA256 checksums, and keep raw data out of the local repository.
+- Local Git commit or working-tree identifier: `b2c41d0` plus uncommitted snapshot downloader source/tests/docs.
+- Dataset snapshot ID and checksums: revision `a9a66ffa985edcf76b4be59ae2c6f5b1db889c38`; SHA256 checksums captured in `reports/generated/hf_vietnam_real_estates_snapshot_manifest_20260726.json`.
+- Exact remote command: `scripts/remote/run.sh 'uv run python scripts/property_snapshot.py'`.
+- Configuration and seed: resolved HF URLs pinned to revision `a9a66ffa985edcf76b4be59ae2c6f5b1db889c38`; no random seed.
+- VM hardware/environment: Ubuntu 24.04.4 LTS, 4 vCPU AMD EPYC 7B12, 15 GiB RAM, no GPU.
+- Runtime: first download 74 seconds; rerun with local shard reuse 12 seconds; final pytest 7.35 seconds with 9-second wrapper runtime.
+- Peak RAM when available: not measured.
+- Metrics: 5 shards; 469,122,864 bytes; 448M disk under `data/raw/vietnam-real-estates`; 1,000,000 rows from footers; 19 columns; 96 tests passed.
+- Baseline comparison: previous shard manifest had 93 passing tests; snapshot downloader adds 3 passing tests for 96 total.
+- Interpretation: raw source snapshot is now reproducible and verified on the VM, while local Git contains only small JSON manifests and evidence.
+- Decision: keep.
+- Lesson learned: shard-level reuse avoids repeat downloads, but still recomputes local SHA256 to prove the existing file content.
+- Next experiment: convert raw snapshot into immutable bronze metadata and silver normalized/quarantine layers on the VM.

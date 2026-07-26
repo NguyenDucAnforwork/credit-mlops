@@ -1,0 +1,67 @@
+[
+  {
+    "etag": "38e6cddef12fb451acb22f5408cf26f92a9599eae254b97bdc87b2d4bc129b05",
+    "filename": "shard_0000.parquet",
+    "footer_size_bytes": 10637,
+    "local_path": "data/raw/vietnam-real-estates/a9a66ffa985edcf76b4be59ae2c6f5b1db889c38/shard_0000.parquet",
+    "num_columns": 19,
+    "num_row_groups": 1,
+    "row_count": 200000,
+    "sha256": "c85762720ca2f206071bf90d6dc8bf623f59b60e334f3dbb1af8919b243e08f8",
+    "size_bytes": 93704331,
+    "url": "https://huggingface.co/datasets/vduydong/vietnam-real-estates/resolve/a9a66ffa985edcf76b4be59ae2c6f5b1db889c38/shard_0000.parquet",
+    "xet_hash": null
+  },
+  {
+    "etag": "e6373b2a1a7aea0a73df7acb7437c221d4286e47ffbed072b62927088d1ececa",
+    "filename": "shard_0001.parquet",
+    "footer_size_bytes": 11517,
+    "local_path": "data/raw/vietnam-real-estates/a9a66ffa985edcf76b4be59ae2c6f5b1db889c38/shard_0001.parquet",
+    "num_columns": 19,
+    "num_row_groups": 1,
+    "row_count": 200000,
+    "sha256": "19357a66956fa89183baa78032001e5f661e4e7020d08a552f64297cba2d0785",
+    "size_bytes": 93776313,
+    "url": "https://huggingface.co/datasets/vduydong/vietnam-real-estates/resolve/a9a66ffa985edcf76b4be59ae2c6f5b1db889c38/shard_0001.parquet",
+    "xet_hash": null
+  },
+  {
+    "etag": "2f1a1a42e43d9c2527039487c997414a68f961b711ac2ed9c93bdf6b7822e495",
+    "filename": "shard_0002.parquet",
+    "footer_size_bytes": 10755,
+    "local_path": "data/raw/vietnam-real-estates/a9a66ffa985edcf76b4be59ae2c6f5b1db889c38/shard_0002.parquet",
+    "num_columns": 19,
+    "num_row_groups": 1,
+    "row_count": 200000,
+    "sha256": "5f9b153cf18567e33835fdbbcd9fec2f616037faba94116b0f7b530aa53722ed",
+    "size_bytes": 93778117,
+    "url": "https://huggingface.co/datasets/vduydong/vietnam-real-estates/resolve/a9a66ffa985edcf76b4be59ae2c6f5b1db889c38/shard_0002.parquet",
+    "xet_hash": null
+  },
+  {
+    "etag": "13f51d257500cd8e97da291e100ae9fa68954066556f31853b213c40c3349196",
+    "filename": "shard_0003.parquet",
+    "footer_size_bytes": 10514,
+    "local_path": "data/raw/vietnam-real-estates/a9a66ffa985edcf76b4be59ae2c6f5b1db889c38/shard_0003.parquet",
+    "num_columns": 19,
+    "num_row_groups": 1,
+    "row_count": 200000,
+    "sha256": "9959d85e907e4565105aaf43cb02bd75c977f96c245cb35196a649ae710da207",
+    "size_bytes": 93971883,
+    "url": "https://huggingface.co/datasets/vduydong/vietnam-real-estates/resolve/a9a66ffa985edcf76b4be59ae2c6f5b1db889c38/shard_0003.parquet",
+    "xet_hash": null
+  },
+  {
+    "etag": "4a7619158c7014ebfa30648324de5df8ed69e7a1b63ae5cf70b2ba92ffba883a",
+    "filename": "shard_0004.parquet",
+    "footer_size_bytes": 10704,
+    "local_path": "data/raw/vietnam-real-estates/a9a66ffa985edcf76b4be59ae2c6f5b1db889c38/shard_0004.parquet",
+    "num_columns": 19,
+    "num_row_groups": 1,
+    "row_count": 200000,
+    "sha256": "40c2160437e451a33acd08778f40e30eca129439ad316da8191666efb74e785b",
+    "size_bytes": 93892220,
+    "url": "https://huggingface.co/datasets/vduydong/vietnam-real-estates/resolve/a9a66ffa985edcf76b4be59ae2c6f5b1db889c38/shard_0004.parquet",
+    "xet_hash": null
+  }
+]

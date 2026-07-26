@@ -11,6 +11,7 @@ import pytest
 from property_intelligence import sources
 from property_intelligence.sources import (
     build_hf_shard_manifest,
+    download_hf_shards,
     fetch_parquet_footer_summary,
     hf_resolve_url,
     parse_hf_dataset_metadata,
@@ -135,3 +136,80 @@ def test_write_shard_manifest_records_footer_metrics(tmp_path, monkeypatch):
     assert payload[0]["row_count"] == 200000
     assert payload[0]["num_columns"] == 19
     assert payload[0]["footer_size_bytes"] == 10637
+
+
+def test_download_hf_shards_writes_sha256_manifest(tmp_path, monkeypatch):
+    class FakeResponse:
+        def __enter__(self):
+            self._chunks = [b"abc", b"123", b""]
+            return self
+
+        def __exit__(self, *_args):
+            return False
+
+        def read(self, _chunk_size):
+            return self._chunks.pop(0)
+
+    monkeypatch.setattr(sources, "urlopen", lambda _url, timeout=300: FakeResponse())
+    shard = sources.HuggingFaceShardMetadata(
+        filename="shard_0000.parquet",
+        url="https://example.test/shard_0000.parquet",
+        size_bytes=6,
+        etag="etag",
+        xet_hash=None,
+        row_count=2,
+    )
+
+    downloaded = download_hf_shards([shard], tmp_path)
+    manifest_path = write_shard_manifest(downloaded, tmp_path / "manifest.json")
+    payload = json.loads(manifest_path.read_text(encoding="utf-8"))
+
+    assert (tmp_path / "shard_0000.parquet").read_bytes() == b"abc123"
+    assert payload[0]["sha256"] == "6ca13d52ca70c883e0f0bb101e425a89e8624de51db2d2392593af6a84118090"
+    assert payload[0]["local_path"].endswith("shard_0000.parquet")
+
+
+def test_download_hf_shards_rejects_size_mismatch(tmp_path, monkeypatch):
+    class FakeResponse:
+        def __enter__(self):
+            self._chunks = [b"abc", b""]
+            return self
+
+        def __exit__(self, *_args):
+            return False
+
+        def read(self, _chunk_size):
+            return self._chunks.pop(0)
+
+    monkeypatch.setattr(sources, "urlopen", lambda _url, timeout=300: FakeResponse())
+    shard = sources.HuggingFaceShardMetadata(
+        filename="bad.parquet",
+        url="https://example.test/bad.parquet",
+        size_bytes=6,
+        etag="etag",
+        xet_hash=None,
+    )
+
+    with pytest.raises(ValueError, match="Downloaded size mismatch"):
+        download_hf_shards([shard], tmp_path)
+
+
+def test_download_hf_shards_reuses_existing_verified_file(tmp_path, monkeypatch):
+    output = tmp_path / "existing.parquet"
+    output.write_bytes(b"abc123")
+
+    def fail_urlopen(*_args, **_kwargs):
+        raise AssertionError("existing file should not be downloaded again")
+
+    monkeypatch.setattr(sources, "urlopen", fail_urlopen)
+    shard = sources.HuggingFaceShardMetadata(
+        filename="existing.parquet",
+        url="https://example.test/existing.parquet",
+        size_bytes=6,
+        etag="etag",
+        xet_hash=None,
+    )
+
+    downloaded = download_hf_shards([shard], tmp_path)
+
+    assert downloaded[0].sha256 == "6ca13d52ca70c883e0f0bb101e425a89e8624de51db2d2392593af6a84118090"

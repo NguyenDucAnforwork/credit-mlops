@@ -1,11 +1,11 @@
 # Progress
 
-Last updated: 2026-07-26 14:27:30 Asia/Bangkok
+Last updated: 2026-07-26 14:33:45 Asia/Bangkok
 
 ## Phase Checklist
 
 - Phase 0 audit and remote baseline: partially complete; tests pass, Docker smoke blocked
-- Phase 1 ETL: fixture-backed foundation and HF footer manifest complete; full content download/ETL not started
+- Phase 1 ETL: raw HF snapshot downloaded on VM; silver/gold full ETL not started
 - Phase 2 PostGIS and GIS: not started
 - Phase 3 AVM: not started
 - Phase 4 APIs: not started
@@ -33,7 +33,10 @@ Last updated: 2026-07-26 14:27:30 Asia/Bangkok
 - Full suite after HF metadata source module passed on the VM: 89 passed in 7.36 seconds; wrapper runtime 9 seconds.
 - HF shard footer manifest measured on the VM without full downloads: 5 shards, 1,000,000 total rows, 19 columns, 469,122,864 total bytes, ETags captured.
 - Full suite after shard manifest module passed on the VM: 93 passed in 7.31 seconds; wrapper runtime 9 seconds.
+- Full HF snapshot downloaded on the VM only: 5 Parquet shards, 469,122,864 bytes, 1,000,000 rows from footers, full SHA256 for every shard.
+- Snapshot download runtime: 74 seconds; rerun/reuse runtime: 12 seconds; disk usage: 448M under `data/raw/vietnam-real-estates`.
+- Full suite after snapshot downloader passed on the VM: 96 passed in 7.35 seconds; wrapper runtime 9 seconds.
 
 ## Next
 
-Commit and push the verified shard manifest milestone, then continue toward full remote snapshot download, SHA256 checksums, schema normalization, and data contracts.
+Commit and push the verified raw snapshot milestone, then continue toward silver/gold ETL, schema normalization, and data contracts.
