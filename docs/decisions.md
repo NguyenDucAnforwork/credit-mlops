@@ -1,6 +1,6 @@
 # Decisions
 
-Last updated: 2026-07-26 15:12:40 Asia/Bangkok
+Last updated: 2026-07-26 15:20:05 Asia/Bangkok
 
 ## ADR-0001: Local Source of Truth, VM Runtime Executor
 
@@ -25,3 +25,9 @@ Last updated: 2026-07-26 15:12:40 Asia/Bangkok
 - Decision: keep global and province/property-type residual interval experiments as measured baselines, but do not treat the confidence policy as production-ready.
 - Rationale: residual and direct quantile approaches hit the empirical coverage band, but the best median width measured so far is 76.99% of point estimate versus the <=50% target.
 - Consequence: APIs and model cards may expose these as experimental evidence only; the next AVM uncertainty work needs richer support/comparable features, legitimate spatial enrichment, or stronger quantile diagnostics before promotion.
+
+## ADR-0005: Use Non-GIS Comparables Only As Fallback
+
+- Decision: implement district/property-type comparable fallback for support metadata and API scaffolding, with `distance_status=not_available_missing_coordinates`.
+- Rationale: the real source schema lacks coordinates, so radius, distance, H3, and PostGIS evidence cannot be produced truthfully yet.
+- Consequence: fallback p95 latency can be reported separately, but Phase 2 PostGIS comparable criteria remain incomplete until legitimate coordinates and PostGIS are available.

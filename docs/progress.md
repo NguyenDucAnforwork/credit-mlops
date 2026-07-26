@@ -1,12 +1,12 @@
 # Progress
 
-Last updated: 2026-07-26 15:12:40 Asia/Bangkok
+Last updated: 2026-07-26 15:20:05 Asia/Bangkok
 
 ## Phase Checklist
 
 - Phase 0 audit and remote baseline: partially complete; tests pass, Docker smoke blocked
 - Phase 1 ETL: raw snapshot, silver/gold ETL, and data contracts complete with coordinate blocker documented
-- Phase 2 PostGIS and GIS: not started
+- Phase 2 PostGIS and GIS: PostGIS/GIS blocked by missing coordinates; non-GIS comparable fallback measured
 - Phase 3 AVM: non-GIS median/tabular baselines and three interval calibrations measured
 - Phase 4 APIs: not started
 - Phase 5 MLOps and monitoring: not started
@@ -56,7 +56,10 @@ Last updated: 2026-07-26 15:12:40 Asia/Bangkok
 - Direct quantile HGB intervals: empirical 80% interval coverage 78.67%, median interval width ratio 76.99%, p90 width ratio 134.16%; high-confidence share 14.33%, medium-confidence share 39.30%, low-confidence share 46.37%; width still fails the <=50% target.
 - Targeted AVM tests plus full suite before quantile experiment passed on the VM: 8 AVM tests in 1.13 seconds and 110 total tests in 8.02 seconds.
 - Final full suite after quantile docs/evidence passed on the VM: 110 passed in 7.98 seconds; wrapper runtime 10 seconds.
+- Non-GIS comparable fallback benchmark: 1,000 December queries; median latency 8.65 ms; p95 14.88 ms; max 18.64 ms; 0% valid-request errors; 10 comparables for every sampled query; distance status `not_available_missing_coordinates`.
+- Focused comparable tests plus full suite before benchmark passed on the VM: 2 comparable tests in 0.65 seconds and 112 total tests in 8.13 seconds.
+- Final full suite after comparable docs/evidence passed on the VM: 112 passed in 8.12 seconds; wrapper runtime 10 seconds.
 
 ## Next
 
-Run final verification for the quantile interval milestone, commit and push it, then continue with richer support/comparable features while coordinate enrichment remains unresolved.
+Run final verification for the comparable fallback milestone, commit and push it, then integrate fallback comparables into API response shapes while coordinate enrichment remains unresolved.

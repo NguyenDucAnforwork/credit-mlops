@@ -35,11 +35,21 @@ from property_intelligence.avm import (
     AvmMetrics,
     compute_avm_metrics,
     evaluate_price_per_m2_baselines,
+    evaluate_tabular_hgb_cohort_intervals,
     evaluate_tabular_hgb_intervals,
     evaluate_tabular_hgb_avm,
+    evaluate_tabular_hgb_quantile_intervals,
     make_tabular_hgb_pipeline,
     temporal_split,
     write_avm_report,
+)
+from property_intelligence.comparables import (
+    COMPARABLE_COLUMNS,
+    ComparableQuery,
+    ComparableResult,
+    NonGisComparableIndex,
+    benchmark_comparable_queries,
+    comparable_queries_from_frame,
 )
 
 __all__ = [
@@ -69,9 +79,17 @@ __all__ = [
     "AvmMetrics",
     "compute_avm_metrics",
     "evaluate_price_per_m2_baselines",
+    "evaluate_tabular_hgb_cohort_intervals",
     "evaluate_tabular_hgb_intervals",
     "evaluate_tabular_hgb_avm",
+    "evaluate_tabular_hgb_quantile_intervals",
     "make_tabular_hgb_pipeline",
     "temporal_split",
     "write_avm_report",
+    "COMPARABLE_COLUMNS",
+    "ComparableQuery",
+    "ComparableResult",
+    "NonGisComparableIndex",
+    "benchmark_comparable_queries",
+    "comparable_queries_from_frame",
 ]

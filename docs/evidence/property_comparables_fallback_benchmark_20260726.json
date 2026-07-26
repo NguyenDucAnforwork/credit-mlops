@@ -1,0 +1,30 @@
+{
+  "comparable_count": {
+    "max": 10,
+    "mean": 10.0,
+    "median": 10.0,
+    "min": 10
+  },
+  "distance_status": "not_available_missing_coordinates",
+  "error_count": 0,
+  "latency_ms": {
+    "max": 18.637477987795137,
+    "median": 8.65039950440405,
+    "p95": 14.882071054307744
+  },
+  "method": "non_gis_pandas_comparable_fallback",
+  "postgis_criterion_status": "blocked_missing_coordinates_and_postgis",
+  "query_count": 1000,
+  "query_sample": {
+    "random_state": 42,
+    "rows": 1000,
+    "split": "published_at >= 2025-12-01"
+  },
+  "snapshot_id": "a9a66ffa985edcf76b4be59ae2c6f5b1db889c38",
+  "support_share": {
+    "high": 1.0,
+    "low": 0.0,
+    "medium": 0.0
+  },
+  "valid_request_error_rate": 0.0
+}

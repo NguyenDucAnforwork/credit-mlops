@@ -271,3 +271,21 @@
 - Decision: keep as best current uncertainty experiment by median width and confidence segmentation, but do not promote.
 - Lesson learned: direct quantile objectives are better than residual grouping for high/medium/low confidence separation, but missing location signal and listing noise still dominate interval width.
 - Next experiment: add richer non-GIS support/comparable features or conformalized quantile diagnostics; GIS remains blocked until coordinates are legitimately enriched.
+
+## EXP-0016: Non-GIS Comparable Fallback Benchmark
+
+- Timestamp in Asia/Bangkok: 2026-07-26 15:19:58
+- Hypothesis: A leakage-safe district/property-type comparable fallback can provide support metadata and fast local query behavior while PostGIS/H3 remains blocked.
+- Local Git commit or working-tree identifier: `7f9c4a8` plus uncommitted comparable fallback source/tests/docs.
+- Dataset snapshot ID and checksums: gold layer from revision `a9a66ffa985edcf76b4be59ae2c6f5b1db889c38`; raw SHA256 manifest in `reports/generated/hf_vietnam_real_estates_snapshot_manifest_20260726.json`.
+- Exact remote command: `scripts/remote/run.sh 'uv run python scripts/property_comparables_benchmark.py'`.
+- Configuration and seed: 1,000 December 2025 gold listings sampled with `random_state=42`; index built from all gold rows; candidates must be published before the subject listing time; area tolerance ±25%; max 10 results.
+- VM hardware/environment: Ubuntu 24.04.4 LTS, 4 vCPU AMD EPYC 7B12, 15 GiB RAM, no GPU.
+- Runtime: benchmark script 13 seconds; focused comparable tests passed in 0.65 seconds; full suite passed with 112 tests in 8.13 seconds before the benchmark.
+- Peak RAM when available: not measured.
+- Metrics: 1,000 queries; 0 errors; valid-request error rate 0%; median latency 8.65 ms; p95 latency 14.88 ms; max latency 18.64 ms; comparable count median/mean/min/max all 10; support high 100%; distance status `not_available_missing_coordinates`.
+- Baseline comparison: no prior comparable implementation; this is a fallback only and does not satisfy the PostGIS indexed query, distance, or radius fallback criteria.
+- Interpretation: non-GIS comparable support is viable for API response scaffolding and model support metadata, but exact nearby comparable search remains blocked.
+- Decision: keep fallback with explicit warnings; do not mark Phase 2 GIS/PostGIS comparable criteria complete.
+- Lesson learned: district/property-type support can be fast and leakage-safe in memory, but benchmark labels must prevent it from being mistaken for spatial evidence.
+- Next experiment: integrate fallback comparables into AVM/API response shape or continue API decision boundaries while PostGIS remains blocked.

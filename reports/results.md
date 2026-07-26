@@ -367,3 +367,25 @@ Full Hugging Face ingestion, row counts, checksums, ETL runtime, and peak RAM ar
 | Evidence | `docs/evidence/avm_tabular_hgb_quantile_intervals_20260726.json` |
 | Verification before experiment | 8 AVM tests passed in 1.13 seconds; 110 total tests passed in 8.02 seconds |
 | Final verification after docs/evidence | 110 tests passed in 7.98 seconds; wrapper runtime 10 seconds |
+
+### Comparable Fallback Benchmark
+
+| Field | Value |
+|-------|-------|
+| Method | non-GIS pandas comparable fallback |
+| Query sample | 1,000 December 2025 gold listings, `random_state=42` |
+| Leakage guard | candidates must be published before subject listing time |
+| Max results | 10 |
+| Area tolerance | ±25% |
+| Valid-request error rate | 0% |
+| Median latency | 8.65 ms |
+| p95 latency | 14.88 ms |
+| Max latency | 18.64 ms |
+| Comparable count | median 10, mean 10, min 10, max 10 |
+| Support share | high 100%, medium 0%, low 0% |
+| Distance status | `not_available_missing_coordinates` |
+| PostGIS criterion status | blocked: missing coordinates and PostGIS |
+| Runtime | 13 seconds |
+| Evidence | `docs/evidence/property_comparables_fallback_benchmark_20260726.json` |
+| Verification before benchmark | 2 comparable tests passed in 0.65 seconds; 112 total tests passed in 8.13 seconds |
+| Final verification after docs/evidence | 112 tests passed in 8.12 seconds; wrapper runtime 10 seconds |

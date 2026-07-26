@@ -1,6 +1,6 @@
 # AVM Model Card
 
-Last updated: 2026-07-26 15:12:40 Asia/Bangkok
+Last updated: 2026-07-26 15:20:05 Asia/Bangkok
 
 Status: non-GIS tabular baseline measured; production AVM not promoted.
 
@@ -18,6 +18,7 @@ Estimate listing-based residential market value and price per square meter for l
 - Median interval-width ratio: 76.99%, above the <=50% target
 - p90 interval-width ratio: 134.16%
 - High-confidence share: 14.33%; medium-confidence share: 39.30%; low-confidence share: 46.37%
+- Comparable support: non-GIS fallback returns 10 leakage-safe comparables for each sampled December query with p95 14.88 ms; distance unavailable
 - Artifact size: not measured
 - Training runtime: 9 seconds for HGB baseline train/evaluation on VM
 - Baseline runtime: 2 seconds on VM
@@ -29,3 +30,4 @@ Estimate listing-based residential market value and price per square meter for l
 - Low-support and OOD behavior is not implemented yet.
 - Source latitude/longitude columns are absent, so GIS features and spatial holdout are not implemented yet.
 - Current quantile intervals are calibrated but too wide. They improve median width versus global residual and cohort residual intervals, but still fail the production width target.
+- Comparable fallback is administrative, not spatial; it must not be described as nearest-neighbor evidence.

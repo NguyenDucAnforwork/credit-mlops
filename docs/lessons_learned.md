@@ -1,6 +1,6 @@
 # Lessons Learned
 
-Last updated: 2026-07-26 15:12:40 Asia/Bangkok
+Last updated: 2026-07-26 15:20:05 Asia/Bangkok
 
 - Verify GCP from the VM before planning Terraform or Cloud Run work. The current VM account is present, but OAuth scopes are insufficient for Cloud Resource Manager and Service Usage.
 - Keep remote orchestration scripts allowlisted and sentinel-guarded so source synchronization cannot delete unrelated VM data.
@@ -19,3 +19,4 @@ Last updated: 2026-07-26 15:12:40 Asia/Bangkok
 - Global validation-residual intervals can hit coverage but be too wide. The first 80% interval had 79.61% coverage but 83.79% median width ratio, so interval usefulness needs cohort or quantile modeling.
 - Province/property-type residual cohorts are not enough by themselves. They improved median interval width only to 82.32% and increased p90 width to 107.48%, so the next uncertainty attempt should optimize quantiles directly rather than only regrouping residuals.
 - Direct q10/q90 HGB quantiles improved median interval width to 76.99% and created a 14.33% high-confidence segment, but still failed the <=50% width target. Quantile objectives help, but the listing feature set still lacks enough signal for narrow 80% AVM intervals.
+- Non-GIS comparables can be fast and leakage-safe for support metadata, but the evidence must remain separate from PostGIS criteria. The 1,000-query fallback p95 was 14.88 ms, but distance and radius are still unavailable.
