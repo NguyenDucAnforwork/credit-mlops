@@ -1,6 +1,6 @@
 # Progress
 
-Last updated: 2026-07-26 20:21:39 Asia/Bangkok
+Last updated: 2026-07-26 20:27:53 Asia/Bangkok
 
 ## Phase Checklist
 
@@ -92,7 +92,9 @@ Last updated: 2026-07-26 20:21:39 Asia/Bangkok
 - Final full suite after remote smoke/Ruff work passed on the VM: 139 passed in 11.11 seconds; wrapper runtime 13 seconds.
 - `make remote-coverage-smoke` added as a reusable VM coverage path. It ran the full test suite under coverage, passed 139 tests in 16.29 seconds, completed in 19 seconds, and measured 81% total coverage for `api/*`, `src/*`, and `scripts/property_*.py`.
 - Weakest measured coverage areas: `src/data_prep.py` 31%, `src/scorecard.py` 48%, and `api/model_loader.py` 49%; this is evidence, not a threshold gate yet.
+- Current control-plane blocker after key refresh attempt: local SSH preflight from this environment still fails for `lfm` with `Permission denied (publickey)` while offering `/home/ducan/.ssh/google_compute_engine`; fingerprint `SHA256:RmpU7NyWqtVhhY+TlyLY9UCN1FX7RGrSqvabZZpEVRI`.
+- Current GitHub dry-run blocker: `git push --dry-run` to `git@github-nguyenducan:NguyenDucAnforwork/credit-mlops.git` fails with `git@github.com: Permission denied (publickey)` while using `/home/ducan/.ssh/id_ed25519_nguyenducanforwork`; fingerprint `SHA256:oLwXALW0ZRrO9NFev1ElJxBtMkqpzMJQUcPQdUqZHtg`. No token or key material was requested or stored.
 
 ## Next
 
-Commit and push scoped coverage evidence, then continue with portfolio documentation and unblockable CI checks while Docker, GCP, and coordinate-backed GIS remain blocked.
+Restore VM SSH and GitHub SSH authentication in the same WSL/Linux environment Codex uses, then continue with portfolio documentation and unblockable CI checks while Docker, GCP, and coordinate-backed GIS remain blocked.

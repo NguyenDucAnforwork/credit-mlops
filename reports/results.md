@@ -179,6 +179,18 @@ Measured on VM `lfm` in `/home/ducan/credit-mlops-codex`.
 
 Docker/API smoke tests were not run because Docker access requires an approved VM permission/configuration change.
 
+## Control-Plane Auth Blocker, 2026-07-26
+
+Latest local preflight from this WSL/Linux environment:
+
+| Check | Result | Evidence |
+|-------|--------|----------|
+| VM SSH to `lfm` | blocked: `Permission denied (publickey)` | `docs/remote_environment.md` |
+| Offered VM key | `/home/ducan/.ssh/google_compute_engine`, fingerprint `SHA256:RmpU7NyWqtVhhY+TlyLY9UCN1FX7RGrSqvabZZpEVRI` | `docs/remote_environment.md` |
+| GitHub push dry-run | blocked: `git@github.com: Permission denied (publickey)` | uses `/home/ducan/.ssh/id_ed25519_nguyenducanforwork`, fingerprint `SHA256:oLwXALW0ZRrO9NFev1ElJxBtMkqpzMJQUcPQdUqZHtg`; no token or key material stored |
+
+No remote runtime, Docker, Terraform, GCP, or deployment command can continue until VM SSH is restored for this environment.
+
 ---
 
 ## Phase 1 ETL Foundation, 2026-07-26

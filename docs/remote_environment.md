@@ -1,6 +1,6 @@
 # Remote Environment
 
-Last updated: 2026-07-26 20:21:39 Asia/Bangkok
+Last updated: 2026-07-26 20:27:53 Asia/Bangkok
 
 ## SSH
 
@@ -8,6 +8,9 @@ Last updated: 2026-07-26 20:21:39 Asia/Bangkok
 - Required workspace: `/home/ducan/credit-mlops-codex`
 - Preflight command: `ssh -o BatchMode=yes -o ConnectTimeout=10 lfm 'printf "SSH_OK\n"; whoami; hostname; pwd'`
 - Result: `SSH_OK`, user `ducan`, hostname `lfm`, home `/home/ducan`
+- Current blocker observed at 2026-07-26 20:27:53 Asia/Bangkok: the same preflight now fails from this WSL/Linux environment with `ducan@35.198.224.210: Permission denied (publickey)`.
+- Offered identity from `ssh -G lfm`: `/home/ducan/.ssh/google_compute_engine`, `IdentitiesOnly yes`, user `ducan`, host `35.198.224.210`.
+- Offered public key fingerprint: `SHA256:RmpU7NyWqtVhhY+TlyLY9UCN1FX7RGrSqvabZZpEVRI` (`ducan@DESKTOP-DNLNJJ2`). Private key contents were not printed or stored.
 
 ## VM Resources
 
