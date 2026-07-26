@@ -1,6 +1,6 @@
 # Remote Environment
 
-Last updated: 2026-07-26 20:27:53 Asia/Bangkok
+Last updated: 2026-07-26 20:33:58 Asia/Bangkok
 
 ## SSH
 
@@ -8,9 +8,7 @@ Last updated: 2026-07-26 20:27:53 Asia/Bangkok
 - Required workspace: `/home/ducan/credit-mlops-codex`
 - Preflight command: `ssh -o BatchMode=yes -o ConnectTimeout=10 lfm 'printf "SSH_OK\n"; whoami; hostname; pwd'`
 - Result: `SSH_OK`, user `ducan`, hostname `lfm`, home `/home/ducan`
-- Current blocker observed at 2026-07-26 20:27:53 Asia/Bangkok: the same preflight now fails from this WSL/Linux environment with `ducan@35.198.224.210: Permission denied (publickey)`.
-- Offered identity from `ssh -G lfm`: `/home/ducan/.ssh/google_compute_engine`, `IdentitiesOnly yes`, user `ducan`, host `35.198.224.210`.
-- Offered public key fingerprint: `SHA256:RmpU7NyWqtVhhY+TlyLY9UCN1FX7RGrSqvabZZpEVRI` (`ducan@DESKTOP-DNLNJJ2`). Private key contents were not printed or stored.
+- Current status: SSH is working again; `make remote-coverage-smoke` and `make remote-vulnerability-smoke` both executed on `lfm` after the earlier transient auth issue.
 
 ## VM Resources
 
@@ -34,6 +32,7 @@ Last updated: 2026-07-26 20:27:53 Asia/Bangkok
 - Latest measured Python suite: 139 tests passed in 16.29 seconds under `make remote-coverage-smoke`; previous non-coverage suite was 139 passed in 11.11 seconds after remote smoke reproduction and Ruff smoke work.
 - Latest remote smoke reproduction: `make remote-reproduce-smoke` completed in 5 seconds with Ruff passing and 61 focused tests passing in 3.24 seconds.
 - Latest scoped coverage measurement: 81% total coverage for `api/*`, `src/*`, and `scripts/property_*.py`; wrapper runtime 19 seconds; evidence files `docs/evidence/phase7_coverage_report_20260726.txt`, `docs/evidence/phase7_coverage_stdout_20260726.txt`, and `reports/generated/phase7_coverage_20260726.json`.
+- Latest vulnerability audit: `make remote-vulnerability-smoke` completed in 33 seconds; `pip-audit` found 59 known vulnerabilities across 11 packages, so the vulnerability gate fails pending dependency remediation.
 - Latest measured local VM HTTP benchmark: AVM p95 140.84 ms and lending p95 24.21 ms with 0% errors at 1,000 requests/concurrency 10.
 - Latest startup warm-up benchmark: property index startup 4.85 seconds, first comparable request after startup 10.99 ms.
 - Latest AVM artifact evidence: 2.37 MB remote-only joblib, load 87.13 ms, single prediction 21.32 ms, same-seed MdAPE delta 0.0 percentage points.

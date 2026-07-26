@@ -1,6 +1,6 @@
 # Interview Story
 
-Last updated: 2026-07-26 20:21:39 Asia/Bangkok
+Last updated: 2026-07-26 20:33:58 Asia/Bangkok
 
 ## Current 90-Second Story
 
@@ -29,6 +29,7 @@ I started with an existing credit scoring MLOps project and rebuilt its executio
 - Added a Streamlit Property Intelligence workspace covering map reference input, AVM estimate/interval, comparables, factors, credit/LTV decisioning, disclaimers, and the three required demo scenarios.
 - Added a 5-second remote reproduction smoke path that runs syntax checks, Ruff lint, and 61 focused tests on the VM after local secret/path scanning.
 - Measured scoped API/source coverage on the VM: 139 tests passed in 16.29 seconds with 81% coverage across `api/*`, `src/*`, and property scripts.
+- Added a remote vulnerability evidence target; `pip-audit` found 59 known vulnerabilities across 11 packages, making dependency remediation an explicit remaining gate.
 - Not ready: GIS/spatial AVM metrics are not measured yet because coordinates are absent.
 - Not ready: cloud deployment metrics are not measured yet.
 

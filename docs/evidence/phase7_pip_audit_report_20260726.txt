@@ -1,0 +1,66 @@
+Found 59 known vulnerabilities in 11 packages
+Name          Version ID                  Fix Versions
+------------- ------- ------------------- ------------
+aiohttp       3.14.0  PYSEC-2026-237      3.14.1
+aiohttp       3.14.0  PYSEC-2026-2112     3.14.1
+aiohttp       3.14.0  PYSEC-2026-2111     3.14.1
+aiohttp       3.14.0  PYSEC-2026-2113     3.14.1
+aiohttp       3.14.0  PYSEC-2026-2109     3.14.1
+aiohttp       3.14.0  PYSEC-2026-2110     3.14.1
+aiohttp       3.14.0  PYSEC-2026-2108     3.14.1
+aiohttp       3.14.0  PYSEC-2026-2107     3.14.1
+cryptography  46.0.7  GHSA-537c-gmf6-5ccf 48.0.1
+gitpython     3.1.50  GHSA-2f96-g7mh-g2hx 3.1.51
+gitpython     3.1.50  GHSA-v396-v7q4-x2qj 3.1.51
+gitpython     3.1.50  GHSA-956x-8gvw-wg5v 3.1.51
+gitpython     3.1.50  GHSA-3rp5-jjmw-4wv2 3.1.53
+gitpython     3.1.50  GHSA-fjr4-x663-mwxc 3.1.54
+gitpython     3.1.50  GHSA-6p8h-3wgx-97gf 3.1.54
+gitpython     3.1.50  GHSA-r9mr-m37c-5fr3 3.1.54
+gitpython     3.1.50  GHSA-94p4-4cq8-9g67 3.1.55
+python-dotenv 1.1.0   PYSEC-2026-2270     1.2.2
+starlette     0.52.1  PYSEC-2026-161      1.0.1
+starlette     0.52.1  PYSEC-2026-161      1.0.1
+starlette     0.52.1  PYSEC-2026-248      1.3.0
+starlette     0.52.1  PYSEC-2026-249      1.3.1
+starlette     0.52.1  PYSEC-2026-248      1.3.0
+starlette     0.52.1  PYSEC-2026-2281     1.1.0
+starlette     0.52.1  PYSEC-2026-2280     1.1.0
+nltk          3.9.4   PYSEC-2026-597
+pillow        11.3.0  PYSEC-2026-165      12.2.0
+pillow        11.3.0  PYSEC-2026-165      12.2.0
+pillow        11.3.0  PYSEC-2026-2250     12.2.0
+pillow        11.3.0  PYSEC-2026-2253     12.3.0
+pillow        11.3.0  PYSEC-2026-2251     12.2.0
+pillow        11.3.0  PYSEC-2026-2255     12.3.0
+pillow        11.3.0  PYSEC-2026-2257     12.3.0
+pillow        11.3.0  PYSEC-2026-2256     12.3.0
+pillow        11.3.0  PYSEC-2026-2254     12.3.0
+pillow        11.3.0  PYSEC-2026-2252     12.2.0
+pillow        11.3.0  PYSEC-2026-2249     12.1.1
+pillow        11.3.0  PYSEC-2026-2874     12.2.0
+pillow        11.3.0  PYSEC-2026-3453     12.3.0
+pillow        11.3.0  PYSEC-2026-3451     12.3.0
+pillow        11.3.0  PYSEC-2026-2254     12.3.0
+pillow        11.3.0  PYSEC-2026-2253     12.3.0
+pillow        11.3.0  PYSEC-2026-2256     12.3.0
+pillow        11.3.0  PYSEC-2026-2255     12.3.0
+pillow        11.3.0  PYSEC-2026-3451     12.3.0
+pillow        11.3.0  PYSEC-2026-3453     12.3.0
+pillow        11.3.0  PYSEC-2026-3454     12.3.0
+pillow        11.3.0  PYSEC-2026-3495     12.3.0
+pillow        11.3.0  PYSEC-2026-3496     12.3.0
+pillow        11.3.0  PYSEC-2026-3494     12.3.0
+pillow        11.3.0  PYSEC-2026-3493     12.3.0
+pyasn1        0.6.3   PYSEC-2026-3456     0.6.4
+pyasn1        0.6.3   PYSEC-2026-3457     0.6.4
+pyasn1        0.6.3   PYSEC-2026-3455     0.6.4
+streamlit     1.45.1  PYSEC-2026-212      1.53.1
+streamlit     1.45.1  PYSEC-2026-2285     1.54.0
+tornado       6.5.6   GHSA-pw6j-qg29-8w7f 6.5.7
+ujson         5.12.1  PYSEC-2026-2294     5.13.0
+ujson         5.12.1  PYSEC-2026-2294     5.13.0
+
+Name         Skip Reason
+------------ ---------------------------------------------------------------------------
+credit-mlops Dependency not found on PyPI and could not be audited: credit-mlops (0.1.0)

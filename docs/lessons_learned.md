@@ -1,6 +1,6 @@
 # Lessons Learned
 
-Last updated: 2026-07-26 20:27:53 Asia/Bangkok
+Last updated: 2026-07-26 20:33:58 Asia/Bangkok
 
 - Verify GCP from the VM before planning Terraform or Cloud Run work. The current VM account is present, but OAuth scopes are insufficient for Cloud Resource Manager and Service Usage.
 - Keep remote orchestration scripts allowlisted and sentinel-guarded so source synchronization cannot delete unrelated VM data.
@@ -31,4 +31,4 @@ Last updated: 2026-07-26 20:27:53 Asia/Bangkok
 - UI scenario helpers should stay importable without Streamlit so required demo scenarios and LTV payload logic can be tested in the normal Python suite.
 - A useful CI smoke path should mark external blockers explicitly instead of failing on known missing Docker/GCP permissions. The current smoke proves source, syntax, Ruff lint, and focused contracts in 5 seconds while preserving the blocked status of container/cloud checks.
 - Treat coverage as a measured signal before making it a gate. The current scoped coverage is 81%, but legacy preprocessing/model-loading paths are below 50%, so a hard threshold would need either targeted tests or explicit exclusions.
-- Key refreshes must land in the execution environment Codex actually uses. The VM host alias currently points at `/home/ducan/.ssh/google_compute_engine` inside WSL/Linux, and that specific public key is not accepted by `lfm`; refreshing a Windows-side or different-shell key does not unblock remote orchestration.
+- Dependency security evidence should be captured even when it fails. The current `pip-audit` result found 59 vulnerabilities, so remediation needs its own compatibility-tested upgrade pass rather than silent package drift.

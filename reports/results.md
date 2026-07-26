@@ -179,17 +179,16 @@ Measured on VM `lfm` in `/home/ducan/credit-mlops-codex`.
 
 Docker/API smoke tests were not run because Docker access requires an approved VM permission/configuration change.
 
-## Control-Plane Auth Blocker, 2026-07-26
+## Control-Plane Auth Recovery, 2026-07-26
 
-Latest local preflight from this WSL/Linux environment:
+An intermediate SSH/GitHub auth failure was observed earlier in the session, but later VM runs and Git pushes succeeded from the same local repository.
 
 | Check | Result | Evidence |
 |-------|--------|----------|
-| VM SSH to `lfm` | blocked: `Permission denied (publickey)` | `docs/remote_environment.md` |
-| Offered VM key | `/home/ducan/.ssh/google_compute_engine`, fingerprint `SHA256:RmpU7NyWqtVhhY+TlyLY9UCN1FX7RGrSqvabZZpEVRI` | `docs/remote_environment.md` |
-| GitHub push dry-run | blocked: `git@github.com: Permission denied (publickey)` | uses `/home/ducan/.ssh/id_ed25519_nguyenducanforwork`, fingerprint `SHA256:oLwXALW0ZRrO9NFev1ElJxBtMkqpzMJQUcPQdUqZHtg`; no token or key material stored |
+| VM SSH to `lfm` | recovered; later remote coverage and vulnerability targets executed successfully | `docs/evidence/phase7_coverage_runtime_20260726.txt`, `docs/evidence/phase7_pip_audit_runtime_20260726.txt` |
+| GitHub push | recovered; feature branch pushed through commit `334be2f` before vulnerability target work | branch `feat/onemount-property-intelligence` |
 
-No remote runtime, Docker, Terraform, GCP, or deployment command can continue until VM SSH is restored for this environment.
+Current external blockers remain Docker socket/Compose access and GCP OAuth scopes, not SSH or GitHub push.
 
 ---
 
@@ -614,3 +613,17 @@ Full Hugging Face ingestion, row counts, checksums, ETL runtime, and peak RAM ar
 | Weakest modules | `src/data_prep.py` 31%, `src/scorecard.py` 48%, `api/model_loader.py` 49% |
 | Evidence | `docs/evidence/phase7_coverage_stdout_20260726.txt`, `docs/evidence/phase7_coverage_report_20260726.txt`, `reports/generated/phase7_coverage_20260726.json` |
 | Criterion status | coverage measured; not enforced as a gate yet |
+
+### Remote Vulnerability Audit
+
+| Field | Value |
+|-------|-------|
+| Command | `make remote-vulnerability-smoke` |
+| Execution location | VM `lfm`, workspace `/home/ducan/credit-mlops-codex` |
+| Runtime | 33 seconds |
+| Audit status | `pip_audit_exit=1`, `pip_audit_text_exit=1` |
+| Vulnerability count | 59 known vulnerabilities in 11 packages |
+| Affected packages | `aiohttp`, `cryptography`, `gitpython`, `python-dotenv`, `starlette`, `nltk`, `pillow`, `pyasn1`, `streamlit`, `tornado`, `ujson` |
+| Skipped package | `credit-mlops` 0.1.0, local package not found on PyPI |
+| Evidence | `docs/evidence/phase7_pip_audit_report_20260726.txt`, `docs/evidence/phase7_pip_audit_runtime_20260726.txt`, `reports/generated/phase7_pip_audit_summary_20260726.json` |
+| Criterion status | vulnerability audit measured; security gate fails pending dependency remediation |

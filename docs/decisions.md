@@ -1,6 +1,6 @@
 # Decisions
 
-Last updated: 2026-07-26 16:16:20 Asia/Bangkok
+Last updated: 2026-07-26 20:33:58 Asia/Bangkok
 
 ## ADR-0001: Local Source of Truth, VM Runtime Executor
 
@@ -55,3 +55,9 @@ Last updated: 2026-07-26 16:16:20 Asia/Bangkok
 - Decision: package the HGB point + q10/q90 quantile AVM as a joblib artifact on the VM under `artifacts/models/`, expose it through `AVM_ARTIFACT_PATH`, and commit only JSON/stdout evidence.
 - Rationale: the contract forbids committing model binaries locally, while artifact size/load/reproducibility evidence is required for the AVM done criteria.
 - Consequence: local source remains lightweight; API can use the artifact when configured and otherwise degrades to the non-GIS comparable fallback. Promotion remains blocked by interval width, spatial holdout, and cloud/container evidence.
+
+## ADR-0010: Treat Vulnerability Remediation as a Separate Compatibility Pass
+
+- Decision: keep the `pip-audit` failure as evidence and do not blind-upgrade vulnerable dependencies in the audit commit.
+- Rationale: the scan found 59 vulnerabilities across 11 packages, including transitive framework dependencies whose fixed versions may require coordinated FastAPI/Streamlit/MLflow compatibility checks.
+- Consequence: vulnerability gate remains failed until dependency upgrades are tested on the VM and followed by Ruff, coverage, full tests, API smoke, and a clean or improved audit.

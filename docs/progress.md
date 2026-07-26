@@ -1,6 +1,6 @@
 # Progress
 
-Last updated: 2026-07-26 20:27:53 Asia/Bangkok
+Last updated: 2026-07-26 20:33:58 Asia/Bangkok
 
 ## Phase Checklist
 
@@ -11,7 +11,7 @@ Last updated: 2026-07-26 20:27:53 Asia/Bangkok
 - Phase 4 APIs: scaffold endpoints implemented; local-on-VM uvicorn AVM/lending p95 criteria measured for fallback and artifact-backed service paths
 - Phase 5 MLOps and monitoring: AVM promotion gate dry-run, synthetic drift, and delayed-label monitoring implemented
 - Phase 6 Docker and GCP: cloud access blocked by VM OAuth scopes; local Docker baseline pending
-- Phase 7 UI, CI, portfolio: Property Intelligence UI, non-Docker remote smoke reproduction, Ruff smoke, and scoped coverage measurement implemented; portfolio packaging pending
+- Phase 7 UI, CI, portfolio: Property Intelligence UI, non-Docker remote smoke reproduction, Ruff smoke, scoped coverage measurement, and vulnerability audit evidence implemented; vulnerability gate fails and portfolio packaging remains pending
 
 ## Evidence
 
@@ -92,9 +92,9 @@ Last updated: 2026-07-26 20:27:53 Asia/Bangkok
 - Final full suite after remote smoke/Ruff work passed on the VM: 139 passed in 11.11 seconds; wrapper runtime 13 seconds.
 - `make remote-coverage-smoke` added as a reusable VM coverage path. It ran the full test suite under coverage, passed 139 tests in 16.29 seconds, completed in 19 seconds, and measured 81% total coverage for `api/*`, `src/*`, and `scripts/property_*.py`.
 - Weakest measured coverage areas: `src/data_prep.py` 31%, `src/scorecard.py` 48%, and `api/model_loader.py` 49%; this is evidence, not a threshold gate yet.
-- Current control-plane blocker after key refresh attempt: local SSH preflight from this environment still fails for `lfm` with `Permission denied (publickey)` while offering `/home/ducan/.ssh/google_compute_engine`; fingerprint `SHA256:RmpU7NyWqtVhhY+TlyLY9UCN1FX7RGrSqvabZZpEVRI`.
-- Current GitHub dry-run blocker: `git push --dry-run` to `git@github-nguyenducan:NguyenDucAnforwork/credit-mlops.git` fails with `git@github.com: Permission denied (publickey)` while using `/home/ducan/.ssh/id_ed25519_nguyenducanforwork`; fingerprint `SHA256:oLwXALW0ZRrO9NFev1ElJxBtMkqpzMJQUcPQdUqZHtg`. No token or key material was requested or stored.
+- `make remote-vulnerability-smoke` added as a reusable VM dependency audit path. It exported resolved dependencies on the VM, ran `pip-audit`, completed in 33 seconds, and wrote JSON/text evidence.
+- Vulnerability audit result: `pip_audit_exit=1`; 59 known vulnerabilities in 11 packages (`aiohttp`, `cryptography`, `gitpython`, `python-dotenv`, `starlette`, `nltk`, `pillow`, `pyasn1`, `streamlit`, `tornado`, `ujson`); local package `credit-mlops` was skipped because it is not on PyPI.
 
 ## Next
 
-Restore VM SSH and GitHub SSH authentication in the same WSL/Linux environment Codex uses, then continue with portfolio documentation and unblockable CI checks while Docker, GCP, and coordinate-backed GIS remain blocked.
+Commit and push vulnerability audit evidence, then continue with portfolio documentation and dependency remediation planning while Docker, GCP, and coordinate-backed GIS remain blocked.

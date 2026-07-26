@@ -488,3 +488,21 @@
 - Decision: keep `make remote-coverage-smoke` as a reusable coverage evidence path, not as a pass/fail quality gate.
 - Lesson learned: source coverage can look healthy overall while important older modules remain under-tested.
 - Next experiment: add type or vulnerability evidence if available on the VM, or document precise blockers without installing tooling locally.
+
+## EXP-0028: Remote Dependency Vulnerability Audit
+
+- Timestamp in Asia/Bangkok: 2026-07-26 20:33:58
+- Hypothesis: The resolved dependency set can be audited on the VM and produce small, commit-safe evidence without installing tooling locally.
+- Local Git commit or working-tree identifier: `334be2f` plus uncommitted vulnerability target/evidence/docs.
+- Dataset snapshot ID and checksums: no dataset used.
+- Exact remote command: `make remote-vulnerability-smoke`.
+- Configuration and seed: VM `uv export --all-extras --dev --format requirements-txt --no-hashes`; `uvx pip-audit` JSON and text reports.
+- VM hardware/environment: Ubuntu 24.04.4 LTS, 4 vCPU AMD EPYC 7B12, 15 GiB RAM, no GPU.
+- Runtime: 33 seconds.
+- Peak RAM when available: not measured.
+- Metrics: `pip_audit_exit=1`; 59 known vulnerabilities across 11 packages; affected packages are `aiohttp`, `cryptography`, `gitpython`, `python-dotenv`, `starlette`, `nltk`, `pillow`, `pyasn1`, `streamlit`, `tornado`, and `ujson`; local `credit-mlops` package skipped because it is not on PyPI.
+- Baseline comparison: no prior dependency vulnerability evidence existed.
+- Interpretation: vulnerability audit execution is reproducible, but the security gate fails.
+- Decision: do not blind-upgrade dependencies inside this evidence commit; remediation requires a separate VM compatibility run because several affected packages are transitive and framework-constrained.
+- Lesson learned: security scans should be reported as first-class evidence even when they fail.
+- Next experiment: plan and test dependency upgrades on the VM, then rerun Ruff, coverage, full tests, API smoke, and vulnerability audit.
