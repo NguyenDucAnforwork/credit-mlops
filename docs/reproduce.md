@@ -1,6 +1,6 @@
 # Reproduce
 
-Last updated: 2026-07-26 16:00:50 Asia/Bangkok
+Last updated: 2026-07-26 16:16:20 Asia/Bangkok
 
 All heavy work runs on the VM. Do not install project dependencies, run tests, train models, Docker, Terraform, or `gcloud` locally.
 
@@ -144,6 +144,17 @@ scripts/remote/fetch_artifacts.sh
 ```
 
 The same benchmark records startup warm-up evidence after the property index warm-up change.
+
+AVM artifact packaging and artifact-backed API benchmark:
+
+```bash
+scripts/remote/sync_to_vm.sh
+scripts/remote/run.sh 'uv run python scripts/property_avm_artifact.py'
+scripts/remote/run.sh 'AVM_ARTIFACT_PATH=artifacts/models/property_avm_hgb_quantile_20260726.joblib uv run python scripts/property_api_http_benchmark.py'
+scripts/remote/fetch_artifacts.sh
+```
+
+The joblib artifact remains on the VM under `artifacts/models/`; only JSON/stdout evidence is copied back.
 
 Delayed-label AVM monitoring:
 

@@ -25,6 +25,7 @@ async def main() -> None:
     repo_root = Path.cwd()
     gold_path = (repo_root / "data/gold" / metadata.revision / "listings_gold.parquet").resolve()
     port = _free_port()
+    avm_artifact_path = os.getenv("AVM_ARTIFACT_PATH")
     server_start = perf_counter()
     process = _start_server(repo_root, gold_path, port)
     try:
@@ -54,6 +55,8 @@ async def main() -> None:
                 "requests_per_endpoint": REQUESTS,
                 "concurrency": CONCURRENCY,
                 "gold_path_exists": gold_path.exists(),
+                "avm_artifact_path": avm_artifact_path,
+                "avm_artifact_exists": Path(avm_artifact_path).exists() if avm_artifact_path else False,
                 "server": {
                     "host": HOST,
                     "port": port,
@@ -74,13 +77,22 @@ async def main() -> None:
                     "/v1/lending/decision",
                     json_payload=lending_payload,
                 ),
-                "criterion_scope": "vm_uvicorn_http_service_non_docker",
+                "criterion_scope": (
+                    "vm_uvicorn_http_service_non_docker_avm_artifact"
+                    if avm_artifact_path
+                    else "vm_uvicorn_http_service_non_docker"
+                ),
             }
     finally:
         _stop_server(process)
 
-    reports_path = Path("reports/generated/property_api_http_warmup_benchmark_20260726.json")
-    evidence_path = Path("docs/evidence/property_api_http_warmup_benchmark_20260726.json")
+    output_name = (
+        "property_api_http_artifact_benchmark_20260726.json"
+        if avm_artifact_path
+        else "property_api_http_warmup_benchmark_20260726.json"
+    )
+    reports_path = Path("reports/generated") / output_name
+    evidence_path = Path("docs/evidence") / output_name
     for path in (reports_path, evidence_path):
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(json.dumps(report, indent=2, sort_keys=True), encoding="utf-8")

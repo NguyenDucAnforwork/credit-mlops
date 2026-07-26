@@ -531,3 +531,26 @@ Full Hugging Face ingestion, row counts, checksums, ETL runtime, and peak RAM ar
 | Evidence | `docs/evidence/property_api_http_warmup_benchmark_20260726.json` |
 | Final verification after report | 132 tests passed in 10.73 seconds; wrapper runtime 13 seconds |
 | Criterion status | local VM uvicorn service warm path remains under AVM/lending p95 targets; Docker and Cloud Run criteria remain unmeasured |
+
+### HGB Quantile AVM Artifact
+
+| Field | Value |
+|-------|-------|
+| Artifact path on VM | `artifacts/models/property_avm_hgb_quantile_20260726.joblib` |
+| Artifact committed locally | no |
+| Artifact size | 2,480,557 bytes / 2.37 MB |
+| Artifact size criterion | pass, <=150 MB |
+| Artifact load latency | 87.13 ms |
+| Single prediction latency | 21.32 ms |
+| Train/evaluation runtime | 26.40 seconds |
+| Script runtime including same-seed rerun | 55 seconds |
+| Same-seed MdAPE delta | 0.0 percentage points |
+| December test MdAPE | 19.16% |
+| December test RMSLE | 0.3850 |
+| Interval coverage | 78.67% |
+| Median interval width ratio | 76.99%, still fails <=50% target |
+| Artifact-backed AVM HTTP p95 | 136.63 ms, 0% valid-request errors |
+| Artifact-backed lending HTTP p95 | 15.53 ms, 0% valid-request errors |
+| Evidence | `docs/evidence/avm_hgb_quantile_artifact_20260726.json`; `docs/evidence/property_api_http_artifact_benchmark_20260726.json` |
+| Final verification after report | 135 tests passed in 11.15 seconds; wrapper runtime 13 seconds |
+| Criterion status | artifact size, same-seed reproducibility, train runtime, and local VM artifact-backed API p95 pass; interval width, spatial holdout, Docker, and Cloud Run remain incomplete |

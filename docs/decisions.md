@@ -1,6 +1,6 @@
 # Decisions
 
-Last updated: 2026-07-26 15:39:35 Asia/Bangkok
+Last updated: 2026-07-26 16:16:20 Asia/Bangkok
 
 ## ADR-0001: Local Source of Truth, VM Runtime Executor
 
@@ -49,3 +49,9 @@ Last updated: 2026-07-26 15:39:35 Asia/Bangkok
 - Decision: implement deterministic property drift checks for area, price/m2, interval width, confidence mix, and missingness before wiring external monitoring services.
 - Rationale: synthetic drift evidence must be reproducible and small enough to commit while Docker/monitoring services remain blocked.
 - Consequence: alert logic is testable now; dashboards and production delayed-label pipelines remain future work.
+
+## ADR-0009: Keep AVM Model Artifact Remote-Only
+
+- Decision: package the HGB point + q10/q90 quantile AVM as a joblib artifact on the VM under `artifacts/models/`, expose it through `AVM_ARTIFACT_PATH`, and commit only JSON/stdout evidence.
+- Rationale: the contract forbids committing model binaries locally, while artifact size/load/reproducibility evidence is required for the AVM done criteria.
+- Consequence: local source remains lightweight; API can use the artifact when configured and otherwise degrades to the non-GIS comparable fallback. Promotion remains blocked by interval width, spatial holdout, and cloud/container evidence.

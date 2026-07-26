@@ -10,8 +10,10 @@ from property_intelligence.avm import (
     evaluate_tabular_hgb_intervals,
     evaluate_tabular_hgb_avm,
     evaluate_tabular_hgb_quantile_intervals,
+    fit_tabular_hgb_quantile_artifact,
     make_tabular_hgb_pipeline,
     temporal_split,
+    TabularHgbQuantileArtifact,
 )
 
 
@@ -223,3 +225,27 @@ def test_make_tabular_hgb_pipeline_has_preprocess_and_model_steps():
     pipeline = make_tabular_hgb_pipeline()
 
     assert list(pipeline.named_steps) == ["preprocess", "model"]
+
+
+def test_tabular_hgb_quantile_artifact_saves_loads_and_predicts(tmp_path):
+    artifact, report = fit_tabular_hgb_quantile_artifact(
+        _gold_frame(),
+        random_state=7,
+        snapshot_id="test-snapshot",
+    )
+    path = artifact.save(tmp_path / "avm.joblib")
+    loaded = TabularHgbQuantileArtifact.load(path)
+    prediction = loaded.predict_one(
+        {
+            "province": "Hà Nội",
+            "district": "Cầu Giấy",
+            "property_type": "apartment",
+            "area_m2": 55,
+        }
+    )
+
+    assert report["model_version"] == "avm_hgb_quantile_experimental_20260726"
+    assert loaded.metadata["snapshot_id"] == "test-snapshot"
+    assert prediction["estimated_value_vnd"] > 0
+    assert prediction["lower_value_vnd"] <= prediction["upper_value_vnd"]
+    assert prediction["confidence"] in {"high", "medium", "low"}

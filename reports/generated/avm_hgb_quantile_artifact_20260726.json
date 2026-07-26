@@ -1,0 +1,53 @@
+{
+  "artifact": {
+    "load_latency_ms": 87.12746399396565,
+    "path": "artifacts/models/property_avm_hgb_quantile_20260726.joblib",
+    "same_seed_mdape_diff_limit_points": 0.3,
+    "same_seed_mdape_diff_points": 0.0,
+    "single_prediction_latency_ms": 21.32367799640633,
+    "size_bytes": 2480557,
+    "size_limit_mb": 150,
+    "size_mb": 2.3656435012817383
+  },
+  "interval": "hist_gradient_boosting_quantile_log_price_per_m2_q10_q90",
+  "interval_metrics": {
+    "coverage": 0.7866821739772559,
+    "high_confidence_share": 0.1433226259045931,
+    "low_confidence_share": 0.46369627824545856,
+    "median_interval_width_ratio": 0.7698766284303298,
+    "medium_confidence_share": 0.39298109584994834,
+    "p90_interval_width_ratio": 1.3416214672429794
+  },
+  "model": "hist_gradient_boosting_log_price_per_m2",
+  "model_version": "avm_hgb_quantile_experimental_20260726",
+  "point_metrics": {
+    "mae_vnd": 18658887867.577744,
+    "mdape": 0.19161180559358712,
+    "median_absolute_error_vnd": 1576760601.8607616,
+    "model_name": "hist_gradient_boosting_log_price_per_m2",
+    "r2": 0.313374388574968,
+    "rmsle": 0.384952119043617,
+    "rows": 108336,
+    "split_name": "test",
+    "within_10pct": 0.27666703588834735,
+    "within_20pct": 0.5179072515138089
+  },
+  "random_state": 42,
+  "runtime": {
+    "train_eval_seconds": 26.397796940989792
+  },
+  "sample_prediction": {
+    "confidence": "low",
+    "estimated_price_per_m2": 177650577.59359378,
+    "estimated_value_vnd": 12435540431.551565,
+    "interval_width_ratio": 1.3037975543579066,
+    "lower_value_vnd": 6792094628.261534,
+    "upper_value_vnd": 23005521830.03733
+  },
+  "split_rows": {
+    "test": 108336,
+    "train": 429682,
+    "validation": 100105
+  },
+  "target": "log(price_per_m2)"
+}

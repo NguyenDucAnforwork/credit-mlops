@@ -1,0 +1,46 @@
+{
+  "avm": {
+    "latency_ms": {
+      "max": 215.28452599886805,
+      "median": 99.40941299282713,
+      "p95": 136.63203644609894,
+      "p99": 170.54677460211667
+    },
+    "status_codes": [
+      200
+    ],
+    "throughput_rps": 98.88745619201676,
+    "total_runtime_seconds": 10.112506060002488,
+    "valid_request_error_rate": 0.0
+  },
+  "avm_artifact_exists": true,
+  "avm_artifact_path": "artifacts/models/property_avm_hgb_quantile_20260726.joblib",
+  "concurrency": 10,
+  "criterion_scope": "vm_uvicorn_http_service_non_docker_avm_artifact",
+  "execution": "uvicorn_httpx_async",
+  "gold_path_exists": true,
+  "lending": {
+    "latency_ms": {
+      "max": 514.511893998133,
+      "median": 10.970319504849613,
+      "p95": 15.527868499339085,
+      "p99": 62.482040684553795
+    },
+    "status_codes": [
+      200
+    ],
+    "throughput_rps": 673.0505706218321,
+    "total_runtime_seconds": 1.485772457002895,
+    "valid_request_error_rate": 0.0
+  },
+  "requests_per_endpoint": 1000,
+  "server": {
+    "host": "127.0.0.1",
+    "port": 36943,
+    "startup_latency_ms": 4855.75753399462,
+    "startup_status": "ok",
+    "warmup_latency_ms": 11.069868996855803,
+    "warmup_status_code": 200
+  },
+  "snapshot_id": "a9a66ffa985edcf76b4be59ae2c6f5b1db889c38"
+}

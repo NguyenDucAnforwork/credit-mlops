@@ -4,6 +4,7 @@ import json
 from dataclasses import dataclass
 from pathlib import Path
 
+import joblib
 import numpy as np
 import pandas as pd
 from sklearn.compose import ColumnTransformer
@@ -48,6 +49,64 @@ class AvmMetrics:
     r2: float
     within_10pct: float
     within_20pct: float
+
+
+@dataclass
+class TabularHgbQuantileArtifact:
+    point_model: Pipeline
+    lower_model: Pipeline
+    upper_model: Pipeline
+    metadata: dict
+
+    def predict_frame(self, frame: pd.DataFrame) -> pd.DataFrame:
+        features = _ensure_feature_columns(frame)
+        point_log_ppm = self.point_model.predict(features)
+        lower_log_ppm = self.lower_model.predict(features)
+        upper_log_ppm = self.upper_model.predict(features)
+        lower_log_ppm, upper_log_ppm = np.minimum(lower_log_ppm, upper_log_ppm), np.maximum(
+            lower_log_ppm,
+            upper_log_ppm,
+        )
+        area = features["area_m2"].to_numpy(dtype=float)
+        point = np.exp(point_log_ppm) * area
+        lower = np.exp(lower_log_ppm) * area
+        upper = np.exp(upper_log_ppm) * area
+        width_ratio = (upper - lower) / np.maximum(point, 1.0)
+        confidence = np.where(width_ratio <= 0.5, "high", np.where(width_ratio <= 0.8, "medium", "low"))
+        return pd.DataFrame(
+            {
+                "estimated_price_per_m2": np.exp(point_log_ppm),
+                "estimated_value_vnd": point,
+                "lower_value_vnd": lower,
+                "upper_value_vnd": upper,
+                "interval_width_ratio": width_ratio,
+                "confidence": confidence,
+            },
+            index=frame.index,
+        )
+
+    def predict_one(self, features: dict) -> dict:
+        row = self.predict_frame(pd.DataFrame([features])).iloc[0]
+        return {
+            "estimated_price_per_m2": float(row["estimated_price_per_m2"]),
+            "estimated_value_vnd": float(row["estimated_value_vnd"]),
+            "lower_value_vnd": float(row["lower_value_vnd"]),
+            "upper_value_vnd": float(row["upper_value_vnd"]),
+            "interval_width_ratio": float(row["interval_width_ratio"]),
+            "confidence": str(row["confidence"]),
+        }
+
+    def save(self, path: Path) -> Path:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        joblib.dump(self, path)
+        return path
+
+    @staticmethod
+    def load(path: Path) -> "TabularHgbQuantileArtifact":
+        artifact = joblib.load(path)
+        if not isinstance(artifact, TabularHgbQuantileArtifact):
+            raise TypeError(f"Unexpected AVM artifact type: {type(artifact)!r}")
+        return artifact
 
 
 def temporal_split(
@@ -291,6 +350,64 @@ def evaluate_tabular_hgb_quantile_intervals(gold: pd.DataFrame, random_state: in
     }
 
 
+def fit_tabular_hgb_quantile_artifact(
+    gold: pd.DataFrame,
+    random_state: int = 42,
+    snapshot_id: str = "unknown",
+) -> tuple[TabularHgbQuantileArtifact, dict]:
+    clean = _clean_gold(gold)
+    splits = temporal_split(clean)
+    train = splits["train"]
+    test = splits["test"]
+    feature_columns = NUMERIC_FEATURES + CATEGORICAL_FEATURES
+    target = np.log(train["price_per_m2"])
+
+    point_model = make_tabular_hgb_pipeline(random_state=random_state)
+    lower_model = make_tabular_hgb_pipeline(random_state=random_state, loss="quantile", quantile=0.10)
+    upper_model = make_tabular_hgb_pipeline(random_state=random_state, loss="quantile", quantile=0.90)
+    point_model.fit(train[feature_columns], target)
+    lower_model.fit(train[feature_columns], target)
+    upper_model.fit(train[feature_columns], target)
+
+    artifact = TabularHgbQuantileArtifact(
+        point_model=point_model,
+        lower_model=lower_model,
+        upper_model=upper_model,
+        metadata={
+            "model_version": "avm_hgb_quantile_experimental_20260726",
+            "model": "hist_gradient_boosting_log_price_per_m2",
+            "interval": "hist_gradient_boosting_quantile_log_price_per_m2_q10_q90",
+            "target": "log(price_per_m2)",
+            "random_state": random_state,
+            "snapshot_id": snapshot_id,
+            "feature_columns": feature_columns,
+            "numeric_features": NUMERIC_FEATURES,
+            "categorical_features": CATEGORICAL_FEATURES,
+        },
+    )
+    predictions = artifact.predict_frame(test)
+    return artifact, {
+        "model": artifact.metadata["model"],
+        "model_version": artifact.metadata["model_version"],
+        "target": artifact.metadata["target"],
+        "interval": artifact.metadata["interval"],
+        "random_state": random_state,
+        "split_rows": {name: len(frame) for name, frame in splits.items()},
+        "point_metrics": compute_avm_metrics(
+            artifact.metadata["model"],
+            "test",
+            test["price_vnd"],
+            predictions["estimated_value_vnd"].to_numpy(dtype=float),
+        ).__dict__,
+        "interval_metrics": _interval_summary(
+            test["price_vnd"].to_numpy(dtype=float),
+            predictions["estimated_value_vnd"].to_numpy(dtype=float),
+            predictions["lower_value_vnd"].to_numpy(dtype=float),
+            predictions["upper_value_vnd"].to_numpy(dtype=float),
+        ),
+    }
+
+
 def make_tabular_hgb_pipeline(
     random_state: int = 42,
     loss: str = "squared_error",
@@ -418,6 +535,17 @@ def _clean_gold(gold: pd.DataFrame) -> pd.DataFrame:
     return clean
 
 
+def _ensure_feature_columns(frame: pd.DataFrame) -> pd.DataFrame:
+    features = frame.copy()
+    for column in NUMERIC_FEATURES:
+        if column not in features.columns:
+            features[column] = np.nan
+    for column in CATEGORICAL_FEATURES:
+        if column not in features.columns:
+            features[column] = "missing"
+    return features[NUMERIC_FEATURES + CATEGORICAL_FEATURES]
+
+
 def _residual_quantiles(residuals: np.ndarray) -> tuple[float, float]:
     return float(np.quantile(residuals, 0.10)), float(np.quantile(residuals, 0.90))
 
@@ -490,6 +618,20 @@ def _predict_interval_metrics(
             "medium_confidence_share": float(np.mean(confidence == "medium")),
             "low_confidence_share": float(np.mean(confidence == "low")),
         },
+    }
+
+
+def _interval_summary(actual: np.ndarray, point: np.ndarray, lower: np.ndarray, upper: np.ndarray) -> dict:
+    coverage = np.mean((actual >= lower) & (actual <= upper))
+    width_ratio = (upper - lower) / np.maximum(point, 1.0)
+    confidence = np.where(width_ratio <= 0.5, "high", np.where(width_ratio <= 0.8, "medium", "low"))
+    return {
+        "coverage": float(coverage),
+        "median_interval_width_ratio": float(np.median(width_ratio)),
+        "p90_interval_width_ratio": float(np.quantile(width_ratio, 0.90)),
+        "high_confidence_share": float(np.mean(confidence == "high")),
+        "medium_confidence_share": float(np.mean(confidence == "medium")),
+        "low_confidence_share": float(np.mean(confidence == "low")),
     }
 
 

@@ -1,6 +1,6 @@
 # AVM Model Card
 
-Last updated: 2026-07-26 16:00:50 Asia/Bangkok
+Last updated: 2026-07-26 16:16:20 Asia/Bangkok
 
 Status: non-GIS tabular baseline measured; production AVM not promoted.
 
@@ -25,8 +25,10 @@ Estimate listing-based residential market value and price per square meter for l
 - Delayed-label monitoring: 2,000-label fallback replay MdAPE 16.73%, 0 cohort alerts above +5 points
 - Warm API uvicorn HTTP load: AVM p95 140.84 ms with 0% errors at concurrency 10
 - Startup warm-up: first comparable request after startup 10.99 ms after 4.85s index warm-up during lifespan
-- Artifact size: not measured
-- Training runtime: 9 seconds for HGB baseline train/evaluation on VM
+- Artifact package: 2.37 MB HGB point + q10/q90 quantile joblib, VM-only under `artifacts/models/`
+- Artifact load/predict: load 87.13 ms, single prediction 21.32 ms
+- Artifact-backed API: AVM p95 136.63 ms and lending p95 15.53 ms with 0% valid-request errors at concurrency 10
+- Training runtime: 26.40 seconds for artifact train/evaluation on VM; same-seed MdAPE delta 0.0 percentage points
 - Baseline runtime: 2 seconds on VM
 
 ## Known Limitations
@@ -37,7 +39,7 @@ Estimate listing-based residential market value and price per square meter for l
 - Source latitude/longitude columns are absent, so GIS features and spatial holdout are not implemented yet.
 - Current quantile intervals are calibrated but too wide. They improve median width versus global residual and cohort residual intervals, but still fail the production width target.
 - Comparable fallback is administrative, not spatial; it must not be described as nearest-neighbor evidence.
-- API scaffold currently serves an experimental fallback estimate, not the trained HGB quantile model artifact.
+- API can serve the experimental HGB quantile artifact when `AVM_ARTIFACT_PATH` is configured, and otherwise falls back to non-GIS comparables.
 - No `property_avm@champion` alias is promoted yet.
 - Monitoring currently covers synthetic drift and delayed-label replay; production delayed-label ingestion is not implemented yet.
 - Warm local VM service p95 is measured with uvicorn; Docker and Cloud Run p95 are not measured.

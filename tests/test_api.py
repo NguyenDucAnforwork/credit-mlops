@@ -88,6 +88,18 @@ def test_warm_property_index_reports_cached_rows(monkeypatch):
     }
 
 
+def test_warm_avm_artifact_skips_when_unconfigured(monkeypatch):
+    import property_service
+
+    monkeypatch.delenv("AVM_ARTIFACT_PATH", raising=False)
+    property_service._get_avm_artifact.cache_clear()
+
+    assert property_service.warm_avm_artifact() == {
+        "status": "skipped",
+        "reason": "AVM_ARTIFACT_PATH not configured",
+    }
+
+
 def test_predict_returns_200(client, valid_predict_payload):
     resp = client.post("/predict", json=valid_predict_payload)
     assert resp.status_code == 200
@@ -163,6 +175,46 @@ def test_avm_predict_returns_required_property_fields(client, monkeypatch):
     assert data["confidence"] in ["high", "medium", "low"]
     assert data["comparables"][0]["distance_status"] == "not_available_missing_coordinates"
     assert data["trace_id"]
+
+
+def test_avm_predict_uses_configured_artifact(client, monkeypatch):
+    import property_service
+
+    class FakeArtifact:
+        metadata = {"model_version": "artifact-v1"}
+
+        def predict_one(self, features):
+            return {
+                "estimated_value_vnd": 6_000_000_000.0,
+                "estimated_price_per_m2": 120_000_000.0,
+                "lower_value_vnd": 5_000_000_000.0,
+                "upper_value_vnd": 7_000_000_000.0,
+                "interval_width_ratio": 0.33,
+                "confidence": "high",
+            }
+
+    class FakeIndex:
+        def query(self, query):
+            return _fake_comparable_result(query)
+
+    monkeypatch.setattr(property_service, "_get_avm_artifact", lambda: FakeArtifact())
+    monkeypatch.setattr(property_service, "_get_comparable_index", lambda: FakeIndex())
+    resp = client.post(
+        "/v1/avm/predict",
+        json={
+            "published_at": "2025-12-15T00:00:00Z",
+            "province": "Hà Nội",
+            "district": "Cầu Giấy",
+            "property_type": "apartment",
+            "area_m2": 50,
+        },
+    )
+
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["model_version"] == "artifact-v1"
+    assert data["estimated_value_vnd"] == 6_000_000_000.0
+    assert data["top_factors"][0] == "HGB log(price_per_m2) tabular features"
 
 
 def test_comparables_endpoint_returns_support_metadata(client, monkeypatch):

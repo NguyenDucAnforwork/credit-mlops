@@ -7,6 +7,7 @@ from statistics import median
 
 import pandas as pd
 
+from property_intelligence.avm import TabularHgbQuantileArtifact
 from property_intelligence.comparables import (
     COMPARABLE_COLUMNS,
     ComparableQuery,
@@ -28,6 +29,17 @@ def warm_property_index() -> dict:
     }
 
 
+def warm_avm_artifact() -> dict:
+    artifact = _get_avm_artifact()
+    if artifact is None:
+        return {"status": "skipped", "reason": "AVM_ARTIFACT_PATH not configured"}
+    return {
+        "status": "ok",
+        "model_version": artifact.metadata.get("model_version", "unknown"),
+        "artifact_path": str(_avm_artifact_path()),
+    }
+
+
 def make_comparable_query(payload) -> ComparableQuery:
     return ComparableQuery(
         listing_id=getattr(payload, "listing_id", None),
@@ -41,26 +53,68 @@ def make_comparable_query(payload) -> ComparableQuery:
 
 def predict_avm(payload, trace_id: str, latency_ms: float) -> dict:
     query = make_comparable_query(payload)
+    artifact: TabularHgbQuantileArtifact | None = None
+    artifact_prediction: dict | None = None
+    artifact_warnings: list[str] = []
+    try:
+        artifact = _get_avm_artifact()
+        if artifact is not None:
+            artifact_prediction = artifact.predict_one(payload.model_dump())
+    except Exception as exc:
+        artifact_warnings.append(f"configured AVM artifact unavailable: {exc}")
+
     comparable_result = _get_comparable_index().query(query)
     comparables = comparable_result["comparables"]
-    if not comparables:
+    if artifact_prediction is not None:
+        estimated_value = artifact_prediction["estimated_value_vnd"]
+        estimated_ppm = artifact_prediction["estimated_price_per_m2"]
+        lower_value = artifact_prediction["lower_value_vnd"]
+        upper_value = artifact_prediction["upper_value_vnd"]
+        interval_width_ratio = artifact_prediction["interval_width_ratio"]
+        confidence = artifact_prediction["confidence"]
+        warnings = comparable_result["warnings"] + artifact_warnings
+        model_version = artifact.metadata.get("model_version", MODEL_VERSION) if artifact else MODEL_VERSION
+        top_factors = [
+            "HGB log(price_per_m2) tabular features",
+            "q10/q90 quantile interval models",
+            "area_m2 value scaling",
+            "non-GIS comparable support metadata",
+        ]
+    elif not comparables:
         estimated_ppm = 0.0
         lower_ppm = 0.0
         upper_ppm = 0.0
         confidence = "low"
-        warnings = comparable_result["warnings"] + ["no historical comparable support found"]
+        warnings = comparable_result["warnings"] + artifact_warnings + ["no historical comparable support found"]
+        estimated_value = estimated_ppm * query.area_m2
+        lower_value = lower_ppm * query.area_m2
+        upper_value = upper_ppm * query.area_m2
+        interval_width_ratio = 1.0
+        model_version = MODEL_VERSION
+        top_factors = [
+            "median historical comparable price_per_m2",
+            "province/district/property_type match tier",
+            "area tolerance",
+            "listing recency",
+        ]
     else:
         ppm_values = sorted(item["price_per_m2"] for item in comparables)
         estimated_ppm = float(median(ppm_values))
         lower_ppm = float(_quantile(ppm_values, 0.10))
         upper_ppm = float(_quantile(ppm_values, 0.90))
         confidence = comparable_result["support_level"]
-        warnings = comparable_result["warnings"]
-
-    estimated_value = estimated_ppm * query.area_m2
-    lower_value = lower_ppm * query.area_m2
-    upper_value = upper_ppm * query.area_m2
-    interval_width_ratio = (upper_value - lower_value) / estimated_value if estimated_value > 0 else 1.0
+        warnings = comparable_result["warnings"] + artifact_warnings
+        estimated_value = estimated_ppm * query.area_m2
+        lower_value = lower_ppm * query.area_m2
+        upper_value = upper_ppm * query.area_m2
+        interval_width_ratio = (upper_value - lower_value) / estimated_value if estimated_value > 0 else 1.0
+        model_version = MODEL_VERSION
+        top_factors = [
+            "median historical comparable price_per_m2",
+            "province/district/property_type match tier",
+            "area tolerance",
+            "listing recency",
+        ]
     if interval_width_ratio > 0.8:
         confidence = "low"
     return {
@@ -70,14 +124,9 @@ def predict_avm(payload, trace_id: str, latency_ms: float) -> dict:
         "upper_value_vnd": upper_value,
         "confidence": confidence,
         "interval_width_ratio": interval_width_ratio,
-        "top_factors": [
-            "median historical comparable price_per_m2",
-            "province/district/property_type match tier",
-            "area tolerance",
-            "listing recency",
-        ],
+        "top_factors": top_factors,
         "comparables": comparables,
-        "model_version": MODEL_VERSION,
+        "model_version": model_version,
         "feature_version": FEATURE_VERSION,
         "data_snapshot_id": DATA_SNAPSHOT_ID,
         "trace_id": trace_id,
@@ -138,6 +187,21 @@ def _gold_path() -> Path:
     if configured:
         return Path(configured)
     return Path("data/gold") / DATA_SNAPSHOT_ID / "listings_gold.parquet"
+
+
+@lru_cache(maxsize=1)
+def _get_avm_artifact() -> TabularHgbQuantileArtifact | None:
+    path = _avm_artifact_path()
+    if path is None:
+        return None
+    if not path.exists():
+        raise FileNotFoundError(f"Configured AVM artifact not found: {path}")
+    return TabularHgbQuantileArtifact.load(path)
+
+
+def _avm_artifact_path() -> Path | None:
+    configured = os.getenv("AVM_ARTIFACT_PATH")
+    return Path(configured) if configured else None
 
 
 def _quantile(values: list[float], q: float) -> float:

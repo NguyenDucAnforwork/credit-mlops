@@ -5,6 +5,7 @@
 artifacts/feature_pipeline.joblib
 artifacts/scorecard_model.joblib
 artifacts/lr_scaler.joblib
+artifacts/models/
 
 # Raw dataset (too large for git)
 data/raw/

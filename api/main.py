@@ -28,6 +28,7 @@ from property_service import (
     make_comparable_query,
     make_lending_decision,
     predict_avm,
+    warm_avm_artifact,
     warm_property_index,
 )
 from schemas import (
@@ -209,6 +210,11 @@ async def lifespan(app: FastAPI):
         print(f"[startup] property index warmed: {warm_info}")
     except Exception as exc:
         print(f"[startup] property index warm-up failed (non-fatal): {exc}")
+    try:
+        warm_avm_info = warm_avm_artifact()
+        print(f"[startup] AVM artifact warm-up: {warm_avm_info}")
+    except Exception as exc:
+        print(f"[startup] AVM artifact warm-up failed (non-fatal): {exc}")
     yield
 
 

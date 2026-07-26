@@ -1,6 +1,6 @@
 # Interview Story
 
-Last updated: 2026-07-26 16:00:50 Asia/Bangkok
+Last updated: 2026-07-26 16:16:20 Asia/Bangkok
 
 ## Current 90-Second Story
 
@@ -25,6 +25,7 @@ I started with an existing credit scoring MLOps project and rebuilt its executio
 - Benchmarked warmed property APIs through uvicorn on the VM: 1,000 AVM HTTP requests at concurrency 10 reached p95 140.84 ms with 0% errors, and 1,000 lending HTTP requests reached p95 24.21 ms.
 - Added delayed-label monitoring on 2,000 December listings: fallback comparable replay reached 16.73% MdAPE and found no district/property-type cohort above the +5 MdAPE point alert threshold.
 - Moved property index construction into FastAPI startup, reducing the first comparable request after startup to 10.99 ms while making the 4.85-second startup cost explicit.
+- Packaged the HGB quantile AVM as a VM-only 2.37 MB artifact, proved same-seed MdAPE delta 0.0 points, and measured artifact-backed uvicorn p95 at 136.63 ms for AVM requests.
 - Not ready: GIS/spatial AVM metrics are not measured yet because coordinates are absent.
 - Not ready: cloud deployment metrics are not measured yet.
 

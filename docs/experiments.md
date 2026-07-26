@@ -415,3 +415,22 @@
 - Decision: keep startup warm-up as non-fatal; missing property data degrades property endpoints but does not break `/health`.
 - Lesson learned: startup warm-up is a better place for predictable parquet/index initialization than the first customer request.
 - Next experiment: package/load the trained HGB/quantile AVM artifact or continue UI/portfolio work while Docker and GCP remain blocked.
+
+## EXP-0024: HGB Quantile AVM Artifact Packaging
+
+- Timestamp in Asia/Bangkok: 2026-07-26 16:16:20
+- Hypothesis: The measured HGB point + q10/q90 quantile model can be packaged as a small VM-only artifact, loaded by the API through `AVM_ARTIFACT_PATH`, and still satisfy local-on-VM HTTP p95 targets.
+- Local Git commit or working-tree identifier: `e8c2962` plus uncommitted artifact source/tests/docs.
+- Dataset snapshot ID and checksums: artifact trains on gold revision `a9a66ffa985edcf76b4be59ae2c6f5b1db889c38`; raw SHA256 manifest in `reports/generated/hf_vietnam_real_estates_snapshot_manifest_20260726.json`.
+- Exact remote commands: `scripts/remote/run.sh 'uv run python scripts/property_avm_artifact.py'` and `scripts/remote/run.sh 'AVM_ARTIFACT_PATH=artifacts/models/property_avm_hgb_quantile_20260726.joblib uv run python scripts/property_api_http_benchmark.py'`.
+- Configuration and seed: HGB point model plus HGB q10/q90 quantile models for `log(price_per_m2)`, `random_state=42`, June-October train, November validation, December test.
+- VM hardware/environment: Ubuntu 24.04.4 LTS, 4 vCPU AMD EPYC 7B12, 15 GiB RAM, no GPU.
+- Runtime: artifact train/evaluation 26.40 seconds; artifact script runtime with same-seed rerun 55 seconds; artifact-backed HTTP benchmark 18 seconds; final full suite 135 tests in 11.15 seconds.
+- Peak RAM when available: not measured.
+- Metrics: artifact size 2,480,557 bytes / 2.37 MB; load latency 87.13 ms; single prediction latency 21.32 ms; same-seed MdAPE difference 0.0 percentage points; December test MdAPE 19.16%, RMSLE 0.3850; interval coverage 78.67%, median width 76.99%.
+- API metrics with artifact: AVM p95 136.63 ms and 0% valid-request errors; lending p95 15.53 ms and 0% valid-request errors; 1,000 requests per endpoint, concurrency 10.
+- Baseline comparison: artifact-backed AVM p95 is similar to the warmed fallback path and remains under the 300 ms local VM target; artifact size is far below the 150 MB limit.
+- Interpretation: artifact packaging, loading, size, same-seed reproducibility, and local-on-VM API p95 criteria are measured. Promotion remains blocked by interval width, spatial holdout, cohort regression, Docker, and Cloud Run evidence.
+- Decision: keep the artifact as experimental and remote-only; do not mutate an MLflow alias or commit the binary.
+- Lesson learned: the artifact boundary should be evidence-driven and lightweight; model binaries stay on the VM while JSON reports carry the auditable metrics.
+- Next experiment: build the UI/portfolio surface or CI smoke path while Docker/GCP and coordinate-backed GIS remain blocked.

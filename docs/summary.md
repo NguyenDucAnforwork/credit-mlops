@@ -1,6 +1,6 @@
 # Summary
 
-Last updated: 2026-07-26 16:00:50 Asia/Bangkok
+Last updated: 2026-07-26 16:16:20 Asia/Bangkok
 
 Status: Phase 1 data contracts complete with blockers for GIS/GCP/Docker.
 
@@ -14,7 +14,7 @@ The project is being converted from a credit scoring MLOps demo into a Property 
 - GCP access: blocked by `ACCESS_TOKEN_SCOPE_INSUFFICIENT`.
 - Remote workspace: created as rsync-backed after VM Git clone failed on local SSH alias `github-nguyenducan`.
 - Baseline tests: 76 passed in 7.42 seconds on the VM.
-- Current tests: 132 passed in 10.73 seconds on the VM after API startup warm-up.
+- Current tests: 135 passed in 11.15 seconds on the VM after AVM artifact packaging.
 - Baseline data split: version `cac9de3c`, 16,000 train rows, 4,000 test rows.
 - ETL fixture: 1,000 inserts, 100 duplicates, identical rerun 0 inserts.
 - HF dataset metadata: revision `a9a66ffa985edcf76b4be59ae2c6f5b1db889c38`, 5 Parquet shards, last modified `2026-04-08T06:51:21.000Z`.
@@ -25,6 +25,7 @@ The project is being converted from a credit scoring MLOps demo into a Property 
 - AVM baseline: district+property-type median price/m2 reached December test MdAPE 22.85% and RMSLE 0.4426 on 108,336 rows.
 - Current best non-GIS AVM: HGB log(price/m2), December test MdAPE 19.16%, RMSLE 0.3850, 16.14% relative MdAPE improvement over strongest simple baseline.
 - Uncertainty: direct quantile 80% interval coverage 78.67% passes and improves median width to 76.99% with 14.33% high-confidence share, but the <=50% width target still fails and p90 width is 134.16%.
+- AVM artifact: HGB point + q10/q90 quantile artifact is packaged on the VM only at `artifacts/models/property_avm_hgb_quantile_20260726.joblib`; size 2.37 MB, load 87.13 ms, single prediction 21.32 ms, same-seed MdAPE delta 0.0 percentage points.
 - Comparables: non-GIS fallback benchmark ran 1,000 December queries with p95 14.88 ms and 0% valid-request errors, but distance/radius/PostGIS criteria remain blocked by missing coordinates.
 - APIs: `POST /v1/avm/predict`, `GET /v1/comparables`, and `POST /v1/lending/decision` are implemented and smoked with real VM gold data.
 - AVM lifecycle: dry-run promotion gate rejects current candidate; temporal improvement and coverage pass, but interval width, spatial holdout, cohort regression, and warm API p95 evidence block promotion.
@@ -32,10 +33,11 @@ The project is being converted from a credit scoring MLOps demo into a Property 
 - Delayed-label monitoring: 2,000 December labels show fallback comparable MdAPE 16.73%, within 20% 56.55%, 0 cohort alerts above +5 MdAPE points, and 0% distance availability because coordinates are absent.
 - Warm uvicorn HTTP load: AVM p95 140.84 ms and lending p95 24.21 ms with 0% errors at 1,000 requests/concurrency 10; Docker and Cloud Run p95 remain unmeasured.
 - API startup warm-up: first comparable request after startup is 10.99 ms after moving the 4.85s index load into lifespan startup.
-- Engineering test-count criterion: 126 passing tests meets the >=125 numeric floor.
+- Artifact-backed API uvicorn load: AVM p95 136.63 ms and lending p95 15.53 ms with 0% valid-request errors at 1,000 requests/concurrency 10.
+- Engineering test-count criterion: 135 passing tests meets the >=125 numeric floor.
 - Docker smoke: blocked because `ducan` cannot access Docker socket and `docker compose` is unavailable.
 - Deployment URL: not deployed.
 
 ## Next Step
 
-Commit and push API startup warm-up, then continue with HGB/quantile artifact packaging or UI/portfolio work.
+Commit and push AVM artifact packaging, then continue with UI/portfolio or CI while Docker, GCP, and coordinate-backed GIS remain blocked.
