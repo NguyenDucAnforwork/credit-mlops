@@ -1,13 +1,13 @@
 # Progress
 
-Last updated: 2026-07-26 14:47:20 Asia/Bangkok
+Last updated: 2026-07-26 14:51:45 Asia/Bangkok
 
 ## Phase Checklist
 
 - Phase 0 audit and remote baseline: partially complete; tests pass, Docker smoke blocked
 - Phase 1 ETL: raw snapshot, silver/gold ETL, and data contracts complete with coordinate blocker documented
 - Phase 2 PostGIS and GIS: not started
-- Phase 3 AVM: not started
+- Phase 3 AVM: non-GIS median baselines started
 - Phase 4 APIs: not started
 - Phase 5 MLOps and monitoring: not started
 - Phase 6 Docker and GCP: cloud access blocked by VM OAuth scopes; local Docker baseline pending
@@ -42,7 +42,10 @@ Last updated: 2026-07-26 14:47:20 Asia/Bangkok
 - Full suite after HF ETL passed on the VM: 99 passed in 7.38 seconds; wrapper runtime 9 seconds.
 - Data contract validation status: `pass_with_blockers`; 9 core checks passed; coordinate-source check failed as blocker.
 - Full suite after data contracts passed on the VM: 102 passed in 7.98 seconds; wrapper runtime 10 seconds.
+- AVM baseline split: train June-October 2025 = 429,682 rows, validation November 2025 = 100,105 rows, test December 2025 = 108,336 rows.
+- Best non-GIS simple baseline: district + property-type median price/m2; December test MdAPE 22.85%, RMSLE 0.4426, MAE 18.52B VND, R2 0.387, within 20% = 44.42%.
+- Full suite after AVM baseline passed on the VM: 105 passed in 7.57 seconds; wrapper runtime 9 seconds.
 
 ## Next
 
-Commit and push the verified data-contract milestone, then continue with a coordinate enrichment decision and non-GIS AVM baseline experiments that do not fabricate coordinates.
+Commit and push the verified AVM baseline milestone, then continue with stronger non-GIS tabular models and uncertainty calibration while coordinate enrichment remains unresolved.

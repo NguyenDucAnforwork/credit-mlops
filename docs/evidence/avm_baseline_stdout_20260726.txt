@@ -1,0 +1,93 @@
+{
+  "best_test_by_mdape": {
+    "mae_vnd": 18523445679.754288,
+    "mdape": 0.2285,
+    "median_absolute_error_vnd": 1851613195.852326,
+    "model_name": "district_property_type_median_price_per_m2",
+    "r2": 0.38695540725974853,
+    "rmsle": 0.4425660826467334,
+    "rows": 108336,
+    "split_name": "test",
+    "within_10pct": 0.23421577315019937,
+    "within_20pct": 0.4442013735046522
+  },
+  "metrics": [
+    {
+      "mae_vnd": 45309683879.36549,
+      "mdape": 0.47285714285714286,
+      "median_absolute_error_vnd": 4375000000.0,
+      "model_name": "global_median_price_per_m2",
+      "r2": -144.7613747636782,
+      "rmsle": 0.7986881886526077,
+      "rows": 100105,
+      "split_name": "validation",
+      "within_10pct": 0.09451076369811698,
+      "within_20pct": 0.1896208980570401
+    },
+    {
+      "mae_vnd": 16014945490.4488,
+      "mdape": 0.3055555555555556,
+      "median_absolute_error_vnd": 2700000000.0,
+      "model_name": "district_median_price_per_m2",
+      "r2": -4.945508106514483,
+      "rmsle": 0.567358512464758,
+      "rows": 100105,
+      "split_name": "validation",
+      "within_10pct": 0.17604515258978073,
+      "within_20pct": 0.34256031167274364
+    },
+    {
+      "mae_vnd": 13771370724.116583,
+      "mdape": 0.22354719516291577,
+      "median_absolute_error_vnd": 1809316770.1863356,
+      "model_name": "district_property_type_median_price_per_m2",
+      "r2": -4.036001859778395,
+      "rmsle": 0.43939368922183425,
+      "rows": 100105,
+      "split_name": "validation",
+      "within_10pct": 0.23930872583787025,
+      "within_20pct": 0.4546026671994406
+    },
+    {
+      "mae_vnd": 57710406862.26649,
+      "mdape": 0.47970916237336236,
+      "median_absolute_error_vnd": 4455000000.0,
+      "model_name": "global_median_price_per_m2",
+      "r2": -24.791461885865193,
+      "rmsle": 0.797100065533256,
+      "rows": 108336,
+      "split_name": "test",
+      "within_10pct": 0.09451151971643774,
+      "within_20pct": 0.18698308964702406
+    },
+    {
+      "mae_vnd": 24033149003.261932,
+      "mdape": 0.3142857142857143,
+      "median_absolute_error_vnd": 2820000000.0,
+      "model_name": "district_median_price_per_m2",
+      "r2": -0.05371961153054716,
+      "rmsle": 0.5719627593061796,
+      "rows": 108336,
+      "split_name": "test",
+      "within_10pct": 0.17144808743169399,
+      "within_20pct": 0.33483791168217397
+    },
+    {
+      "mae_vnd": 18523445679.754288,
+      "mdape": 0.2285,
+      "median_absolute_error_vnd": 1851613195.852326,
+      "model_name": "district_property_type_median_price_per_m2",
+      "r2": 0.38695540725974853,
+      "rmsle": 0.4425660826467334,
+      "rows": 108336,
+      "split_name": "test",
+      "within_10pct": 0.23421577315019937,
+      "within_20pct": 0.4442013735046522
+    }
+  ],
+  "split_rows": {
+    "test": 108336,
+    "train": 429682,
+    "validation": 100105
+  }
+}

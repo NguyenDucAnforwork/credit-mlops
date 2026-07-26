@@ -1,6 +1,6 @@
 # Summary
 
-Last updated: 2026-07-26 14:47:20 Asia/Bangkok
+Last updated: 2026-07-26 14:51:45 Asia/Bangkok
 
 Status: Phase 1 data contracts complete with blockers for GIS/GCP/Docker.
 
@@ -14,7 +14,7 @@ The project is being converted from a credit scoring MLOps demo into a Property 
 - GCP access: blocked by `ACCESS_TOKEN_SCOPE_INSUFFICIENT`.
 - Remote workspace: created as rsync-backed after VM Git clone failed on local SSH alias `github-nguyenducan`.
 - Baseline tests: 76 passed in 7.42 seconds on the VM.
-- Current tests: 102 passed in 7.98 seconds on the VM after data contracts.
+- Current tests: 105 passed in 7.57 seconds on the VM after AVM baseline.
 - Baseline data split: version `cac9de3c`, 16,000 train rows, 4,000 test rows.
 - ETL fixture: 1,000 inserts, 100 duplicates, identical rerun 0 inserts.
 - HF dataset metadata: revision `a9a66ffa985edcf76b4be59ae2c6f5b1db889c38`, 5 Parquet shards, last modified `2026-04-08T06:51:21.000Z`.
@@ -22,9 +22,10 @@ The project is being converted from a credit scoring MLOps demo into a Property 
 - HF ETL: 893,830 silver rows, 638,123 MVP gold rows, 106,170 quarantine rows, 8 duplicate rows.
 - Coordinate blocker: actual source schema lacks `latitude` and `longitude`; no coordinates were fabricated.
 - Data contract status: `pass_with_blockers`; core ETL checks pass and coordinate availability is the blocker.
+- AVM baseline: district+property-type median price/m2 reached December test MdAPE 22.85% and RMSLE 0.4426 on 108,336 rows.
 - Docker smoke: blocked because `ducan` cannot access Docker socket and `docker compose` is unavailable.
 - Deployment URL: not deployed.
 
 ## Next Step
 
-Commit and push the verified data-contract milestone, then continue with coordinate enrichment decisioning and non-GIS AVM baselines.
+Commit and push the verified AVM baseline milestone, then continue with stronger non-GIS tabular models and uncertainty.

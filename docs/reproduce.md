@@ -1,6 +1,6 @@
 # Reproduce
 
-Last updated: 2026-07-26 14:47:20 Asia/Bangkok
+Last updated: 2026-07-26 14:51:45 Asia/Bangkok
 
 All heavy work runs on the VM. Do not install project dependencies, run tests, train models, Docker, Terraform, or `gcloud` locally.
 
@@ -52,6 +52,14 @@ HF layer contract validation:
 ```bash
 make remote-sync
 scripts/remote/run.sh 'uv run python scripts/property_validate.py'
+scripts/remote/fetch_artifacts.sh
+```
+
+Non-GIS AVM baseline:
+
+```bash
+make remote-sync
+scripts/remote/run.sh 'uv run python scripts/property_avm_baseline.py'
 scripts/remote/fetch_artifacts.sh
 ```
 

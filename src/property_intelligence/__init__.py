@@ -31,6 +31,13 @@ from property_intelligence.contracts import (
     validate_hf_layers,
     write_contract_report,
 )
+from property_intelligence.avm import (
+    AvmMetrics,
+    compute_avm_metrics,
+    evaluate_price_per_m2_baselines,
+    temporal_split,
+    write_avm_report,
+)
 
 __all__ = [
     "build_gold",
@@ -56,4 +63,9 @@ __all__ = [
     "ContractReport",
     "validate_hf_layers",
     "write_contract_report",
+    "AvmMetrics",
+    "compute_avm_metrics",
+    "evaluate_price_per_m2_baselines",
+    "temporal_split",
+    "write_avm_report",
 ]

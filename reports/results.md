@@ -264,3 +264,23 @@ Full Hugging Face ingestion, row counts, checksums, ETL runtime, and peak RAM ar
 | Contract runtime | 16 seconds |
 | Evidence | `docs/evidence/hf_contract_report_20260726.json` |
 | Full suite after contracts | 102 passed in 7.98 seconds; wrapper runtime 10 seconds |
+
+### AVM Baseline Experiment 1
+
+| Field | Value |
+|-------|-------|
+| Split | June-October 2025 train, November 2025 validation, December 2025 test |
+| Train rows | 429,682 |
+| Validation rows | 100,105 |
+| Test rows | 108,336 |
+| Best simple baseline | `district_property_type_median_price_per_m2` |
+| Test MdAPE | 22.85% |
+| Test RMSLE | 0.4426 |
+| Test MAE | 18.52B VND |
+| Test median absolute error | 1.85B VND |
+| Test R2 | 0.387 |
+| Within 10% | 23.42% |
+| Within 20% | 44.42% |
+| Runtime | 2 seconds |
+| Evidence | `docs/evidence/avm_baseline_metrics_20260726.json` |
+| Full suite after baseline | 105 passed in 7.57 seconds; wrapper runtime 9 seconds |

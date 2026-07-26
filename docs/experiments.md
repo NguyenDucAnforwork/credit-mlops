@@ -181,3 +181,21 @@
 - Decision: keep validation and treat coordinate enrichment as an explicit architecture decision.
 - Lesson learned: a `pass_with_blockers` state is more honest than either failing all ETL or pretending GIS fields exist.
 - Next experiment: document coordinate enrichment decision and start non-GIS AVM baselines.
+
+## EXP-0011: Non-GIS AVM Median Baselines
+
+- Timestamp in Asia/Bangkok: 2026-07-26 14:51:38
+- Hypothesis: Simple listing price-per-m2 median baselines provide a defensible AVM floor before adding tabular ML or GIS features.
+- Local Git commit or working-tree identifier: `84b1034` plus uncommitted AVM baseline source/tests/docs.
+- Dataset snapshot ID and checksums: gold layer from revision `a9a66ffa985edcf76b4be59ae2c6f5b1db889c38`; raw SHA256 manifest in `reports/generated/hf_vietnam_real_estates_snapshot_manifest_20260726.json`.
+- Exact remote command: `scripts/remote/run.sh 'uv run python scripts/property_avm_baseline.py'`.
+- Configuration and seed: deterministic temporal split, June-October 2025 train, November 2025 validation, December 2025 test; no random seed.
+- VM hardware/environment: Ubuntu 24.04.4 LTS, 4 vCPU AMD EPYC 7B12, 15 GiB RAM, no GPU.
+- Runtime: AVM baseline script 2 seconds; final pytest 7.57 seconds with 9-second wrapper runtime.
+- Peak RAM when available: not measured.
+- Metrics: train 429,682 rows; validation 100,105 rows; test 108,336 rows. Best test model `district_property_type_median_price_per_m2`: MdAPE 22.85%, RMSLE 0.4426, MAE 18.52B VND, median absolute error 1.85B VND, R2 0.387, within 10% 23.42%, within 20% 44.42%.
+- Baseline comparison: global median test MdAPE 47.97%; district median test MdAPE 31.43%; district+property-type median test MdAPE 22.85%.
+- Interpretation: district+property-type stratification is a strong simple baseline and already meets the temporal MdAPE target, but RMSLE remains above target and GIS/spatial holdout requirements remain blocked by missing coordinates.
+- Decision: keep as AVM Experiment 1 baseline.
+- Lesson learned: property type materially improves listing-based value estimation, but the error distribution remains wide for high-value listings.
+- Next experiment: train non-GIS tabular model and compare against this strongest simple baseline.
