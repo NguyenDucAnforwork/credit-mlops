@@ -1,0 +1,23 @@
+Name                                       Stmts   Miss  Cover
+--------------------------------------------------------------
+api/decision.py                               22      0   100%
+api/main.py                                  179     51    72%
+api/model_loader.py                          194     98    49%
+api/property_service.py                      126     29    77%
+api/schemas.py                               185      0   100%
+src/data_prep.py                              45     31    31%
+src/evaluate.py                               22      0   100%
+src/features.py                              123     39    68%
+src/property_intelligence/__init__.py          9      0   100%
+src/property_intelligence/avm.py             274     11    96%
+src/property_intelligence/comparables.py     118      8    93%
+src/property_intelligence/contracts.py        46      1    98%
+src/property_intelligence/crawler.py          29      0   100%
+src/property_intelligence/etl.py             155      9    94%
+src/property_intelligence/hf_etl.py          106      3    97%
+src/property_intelligence/lifecycle.py        48      1    98%
+src/property_intelligence/monitoring.py       81      6    93%
+src/property_intelligence/sources.py         136     13    90%
+src/scorecard.py                             189     98    48%
+--------------------------------------------------------------
+TOTAL                                       2087    398    81%

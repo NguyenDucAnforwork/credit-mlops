@@ -1,6 +1,6 @@
 # Progress
 
-Last updated: 2026-07-26 20:09:20 Asia/Bangkok
+Last updated: 2026-07-26 20:21:39 Asia/Bangkok
 
 ## Phase Checklist
 
@@ -11,7 +11,7 @@ Last updated: 2026-07-26 20:09:20 Asia/Bangkok
 - Phase 4 APIs: scaffold endpoints implemented; local-on-VM uvicorn AVM/lending p95 criteria measured for fallback and artifact-backed service paths
 - Phase 5 MLOps and monitoring: AVM promotion gate dry-run, synthetic drift, and delayed-label monitoring implemented
 - Phase 6 Docker and GCP: cloud access blocked by VM OAuth scopes; local Docker baseline pending
-- Phase 7 UI, CI, portfolio: Property Intelligence UI and non-Docker remote smoke reproduction implemented; portfolio packaging pending
+- Phase 7 UI, CI, portfolio: Property Intelligence UI, non-Docker remote smoke reproduction, Ruff smoke, and scoped coverage measurement implemented; portfolio packaging pending
 
 ## Evidence
 
@@ -90,7 +90,9 @@ Last updated: 2026-07-26 20:09:20 Asia/Bangkok
 - `make remote-reproduce-smoke` added as a reusable non-Docker smoke path. It ran local secret/path scans, synced to the VM, compiled key API/script/UI modules, ran Ruff with 0 errors, ran 61 focused tests in 3.24 seconds, and completed in 5 seconds.
 - Smoke reproduction explicitly reported Docker skipped because VM socket/Compose access is blocked and GCP skipped because VM access token scope is insufficient.
 - Final full suite after remote smoke/Ruff work passed on the VM: 139 passed in 11.11 seconds; wrapper runtime 13 seconds.
+- Scoped coverage measurement on the VM: `coverage run -m pytest -q` passed 139 tests in 16.21 seconds; wrapper runtime 20 seconds; total coverage for `api/*`, `src/*`, and `scripts/property_*.py` was 81%.
+- Weakest measured coverage areas: `src/data_prep.py` 31%, `src/scorecard.py` 48%, and `api/model_loader.py` 49%; this is evidence, not a threshold gate yet.
 
 ## Next
 
-Commit and push remote smoke reproduction, then continue with portfolio documentation and unblockable CI checks while Docker, GCP, and coordinate-backed GIS remain blocked.
+Commit and push scoped coverage evidence, then continue with portfolio documentation and unblockable CI checks while Docker, GCP, and coordinate-backed GIS remain blocked.

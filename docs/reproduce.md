@@ -1,6 +1,6 @@
 # Reproduce
 
-Last updated: 2026-07-26 20:09:20 Asia/Bangkok
+Last updated: 2026-07-26 20:21:39 Asia/Bangkok
 
 All heavy work runs on the VM. Do not install project dependencies, run tests, train models, Docker, Terraform, or `gcloud` locally.
 
@@ -186,6 +186,15 @@ make remote-cloud-smoke
 ```
 
 `make remote-reproduce-smoke` is the current non-Docker smoke path. It performs a local secret/path scan, syncs source to `/home/ducan/credit-mlops-codex`, compiles key modules, runs Ruff, runs focused API/ETL/AVM/monitoring/UI tests on the VM, writes `docs/evidence/remote_reproduce_smoke_20260726.txt`, and fetches evidence back locally.
+
+The latest scoped coverage measurement was run entirely on the VM:
+
+```bash
+scripts/remote/run.sh 'uv run --with coverage coverage run -m pytest -q && uv run --with coverage coverage report --include="api/*,src/*,scripts/property_*.py"'
+scripts/remote/fetch_artifacts.sh
+```
+
+It passed 139 tests in 16.21 seconds with 81% scoped coverage. The coverage report and JSON evidence are committed under `docs/evidence/phase7_coverage_report_20260726.txt` and `reports/generated/phase7_coverage_20260726.json`.
 
 Cloud reproduction is blocked until the VM service account has sufficient OAuth scopes/IAM for project `driven-reef-452414-b5`.
 

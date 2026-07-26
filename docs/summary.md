@@ -1,6 +1,6 @@
 # Summary
 
-Last updated: 2026-07-26 20:09:20 Asia/Bangkok
+Last updated: 2026-07-26 20:21:39 Asia/Bangkok
 
 Status: Phase 1 data contracts complete with blockers for GIS/GCP/Docker.
 
@@ -14,7 +14,7 @@ The project is being converted from a credit scoring MLOps demo into a Property 
 - GCP access: blocked by `ACCESS_TOKEN_SCOPE_INSUFFICIENT`.
 - Remote workspace: created as rsync-backed after VM Git clone failed on local SSH alias `github-nguyenducan`.
 - Baseline tests: 76 passed in 7.42 seconds on the VM.
-- Current tests: 139 passed in 11.11 seconds on the VM after remote smoke reproduction and Ruff smoke work.
+- Current tests: 139 passed in 16.21 seconds under VM coverage measurement; previous non-coverage full suite was 139 passed in 11.11 seconds after remote smoke reproduction and Ruff smoke work.
 - Baseline data split: version `cac9de3c`, 16,000 train rows, 4,000 test rows.
 - ETL fixture: 1,000 inserts, 100 duplicates, identical rerun 0 inserts.
 - HF dataset metadata: revision `a9a66ffa985edcf76b4be59ae2c6f5b1db889c38`, 5 Parquet shards, last modified `2026-04-08T06:51:21.000Z`.
@@ -36,6 +36,7 @@ The project is being converted from a credit scoring MLOps demo into a Property 
 - Artifact-backed API uvicorn load: AVM p95 136.63 ms and lending p95 15.53 ms with 0% valid-request errors at 1,000 requests/concurrency 10.
 - Streamlit UI: property-lending workspace added with map reference input, property attributes, estimate/interval/comparables/factors, credit/LTV decision inputs, disclaimer, and three required scenarios.
 - Remote smoke reproduction: `make remote-reproduce-smoke` performs local secret/path scan, syncs to VM, compiles key modules, runs Ruff with 0 errors, runs 61 focused tests, and completes in 5 seconds while explicitly skipping Docker/GCP blockers.
+- Coverage measurement: `coverage run -m pytest -q` on the VM passed 139 tests in 16.21 seconds; scoped coverage for `api/*`, `src/*`, and `scripts/property_*.py` is 81% total, with weakest measured modules `src/data_prep.py` 31%, `src/scorecard.py` 48%, and `api/model_loader.py` 49%.
 - Engineering test-count criterion: 139 passing tests meets the >=125 numeric floor.
 - Docker smoke: blocked because `ducan` cannot access Docker socket and `docker compose` is unavailable.
 - Deployment URL: not deployed.

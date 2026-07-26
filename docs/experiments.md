@@ -470,3 +470,21 @@
 - Decision: keep this as the PR/portfolio smoke path until Docker/GCP permissions are fixed.
 - Lesson learned: reproduction targets should be explicit about what they prove and what they skip.
 - Next experiment: add coverage/type/lint/vulnerability checks if dependencies are available or document precise tooling blockers without installing locally.
+
+## EXP-0027: Scoped Remote Coverage Measurement
+
+- Timestamp in Asia/Bangkok: 2026-07-26 20:21:39
+- Hypothesis: The current VM-verified test suite can produce a reproducible coverage signal without installing dependencies or running tests locally.
+- Local Git commit or working-tree identifier: `5b10d7c` plus uncommitted coverage evidence/docs.
+- Dataset snapshot ID and checksums: coverage run uses the existing VM workspace and fixtures/artifacts; no new dataset download.
+- Exact remote command: `scripts/remote/run.sh 'uv run --with coverage coverage run -m pytest -q; uv run --with coverage coverage report --include="api/*,src/*,scripts/property_*.py"; uv run --with coverage coverage json -o reports/generated/phase7_coverage_20260726.json'`.
+- Configuration and seed: normal pytest configuration; coverage report scoped to `api/*`, `src/*`, and `scripts/property_*.py`.
+- VM hardware/environment: Ubuntu 24.04.4 LTS, 4 vCPU AMD EPYC 7B12, 15 GiB RAM, no GPU.
+- Runtime: pytest under coverage 16.21 seconds; wrapper runtime 20 seconds.
+- Peak RAM when available: not measured.
+- Metrics: coverage exit 0; 139 tests passed; total scoped coverage 81%; weakest measured modules were `src/data_prep.py` 31%, `src/scorecard.py` 48%, and `api/model_loader.py` 49%.
+- Baseline comparison: prior smoke had Ruff and focused pytest evidence but no coverage measurement.
+- Interpretation: coverage is now measured and portfolio-ready, but not yet enforced as a CI gate; legacy paths need targeted tests or explicit exclusion before setting a hard threshold.
+- Decision: commit coverage evidence as a measurement artifact, not as a pass/fail quality gate.
+- Lesson learned: source coverage can look healthy overall while important older modules remain under-tested.
+- Next experiment: add type or vulnerability evidence if available on the VM, or document precise blockers without installing tooling locally.

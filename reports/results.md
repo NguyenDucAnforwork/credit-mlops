@@ -589,3 +589,16 @@ Full Hugging Face ingestion, row counts, checksums, ETL runtime, and peak RAM ar
 | Evidence | `docs/evidence/remote_reproduce_smoke_20260726.txt` |
 | Final verification after report | 139 tests passed in 11.11 seconds; wrapper runtime 13 seconds |
 | Criterion status | smoke path <=15 minutes passes for non-Docker/non-cloud scope; full CI coverage/lint/type/vulnerability/Docker/Terraform checks remain incomplete |
+
+### Scoped Remote Coverage
+
+| Field | Value |
+|-------|-------|
+| Command | `coverage run -m pytest -q`; `coverage report --include="api/*,src/*,scripts/property_*.py"` |
+| Execution location | VM `lfm`, workspace `/home/ducan/credit-mlops-codex` |
+| Tests under coverage | 139 passed in 16.21 seconds |
+| Wrapper runtime | 20 seconds |
+| Total scoped coverage | 81% |
+| Weakest modules | `src/data_prep.py` 31%, `src/scorecard.py` 48%, `api/model_loader.py` 49% |
+| Evidence | `docs/evidence/phase7_coverage_stdout_20260726.txt`, `docs/evidence/phase7_coverage_report_20260726.txt`, `reports/generated/phase7_coverage_20260726.json` |
+| Criterion status | coverage measured; not enforced as a gate yet |
