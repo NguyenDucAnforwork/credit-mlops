@@ -151,7 +151,7 @@ When using `MLFLOW_MODEL_ALIAS=scorecard`, the `/predict` endpoint returns a ful
 ## Test Coverage
 
 ```
-62 tests  |  0 failures
+76 tests  |  0 failures
 ├── test_api.py        (8)   — endpoint integration
 ├── test_chaos.py      (7)   — fault injection (registry down, 503, 429)
 ├── test_contract.py   (9)   — Pydantic schema validation
@@ -160,3 +160,21 @@ When using `MLFLOW_MODEL_ALIAS=scorecard`, the `/predict` endpoint returns a ful
 ├── test_features.py   (6)   — pipeline transform correctness
 └── test_scorecard.py  (8)   — WOE binning + credit score formula
 ```
+
+---
+
+## Phase 0 Remote Baseline, 2026-07-26
+
+Measured on VM `lfm` in `/home/ducan/credit-mlops-codex`.
+
+| Check | Result | Evidence |
+|-------|--------|----------|
+| SSH preflight | pass | `docs/remote_environment.md` |
+| VM resources | 4 vCPU, 15 GiB RAM, 66 GiB free disk, no GPU | `docs/remote_environment.md` |
+| Dependency sync | pass, 168 packages installed with `uv sync --frozen --all-extras --dev` | `docs/experiments.md` |
+| Baseline data prep | version `cac9de3c`, 16,000 train rows, 4,000 test rows | `docs/evidence/baseline_processed_files_20260726.txt` |
+| Original pytest suite | 76 passed in 7.42 seconds; wrapper runtime 9 seconds | `docs/evidence/baseline_pytest_20260726.txt` |
+| Docker preflight | blocked: `ducan` cannot access `/var/run/docker.sock`; `docker compose` unavailable | `docs/evidence/docker_permission_20260726.txt` |
+| GCP access from VM | blocked: `ACCESS_TOKEN_SCOPE_INSUFFICIENT` | `docs/remote_environment.md` |
+
+Docker/API smoke tests were not run because Docker access requires an approved VM permission/configuration change.

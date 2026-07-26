@@ -1,0 +1,18 @@
+# Interview Story
+
+Last updated: 2026-07-26 14:05:41 Asia/Bangkok
+
+## Current 90-Second Story
+
+I started with an existing credit scoring MLOps project and rebuilt its execution model so a weak local laptop only edits and commits code, while all runtime work happens on a dedicated GCP VM. The first phase added sentinel-guarded SSH/rsync orchestration, remote Make targets, and measured VM/GCP preflight evidence. That created the foundation for reproducible ETL, AVM training, geospatial features, API integration, and cloud deployment without contaminating the local repository with data, models, or secrets.
+
+## Quantified CV Bullets
+
+- Built a remote execution baseline where 76 original tests pass on the GCP VM in 7.42 seconds after VM-only dependency sync and data prep.
+- Not ready: AVM metrics are not measured yet.
+- Not ready: cloud deployment metrics are not measured yet.
+
+## Tradeoffs
+
+- Chose a VM executor first because it preserves local responsiveness and avoids accidental local dependency or data sprawl.
+- Deferred cloud deployment because the VM currently lacks sufficient OAuth scopes for project and service inspection.
